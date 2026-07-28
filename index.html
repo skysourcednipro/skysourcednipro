@@ -39,11 +39,12 @@
         /* ОСНОВНИЙ КОНТЕЙНЕР-ОБОЛОНКА */
         .app-wrapper {
             width: 100%; height: 100%; display: flex; flex-direction: column; position: relative;
-            background: rgba(255, 255, 255, 0.4); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+            /* Зменшуємо розмиття та прозорість для мобільної версії */
+            background: rgba(255, 255, 255, 0.15); backdrop-filter: blur(0px); -webkit-backdrop-filter: blur(8px);
             transition: background 0.3s;
         }
         .dark .app-wrapper {
-            background: rgba(15, 23, 42, 0.7);
+            background: rgba(15, 23, 42, 0.4);
         }
 
         @media (min-width: 768px) {
@@ -51,9 +52,11 @@
             .app-wrapper {
                 width: 1100px; max-width: 95vw; height: 85vh; max-height: 850px;
                 border-radius: 40px; box-shadow: 0 40px 100px -20px rgba(0, 0, 0, 0.5);
+                /* Повертаємо сильне розмиття та фон для ПК */
+                background: rgba(255, 255, 255, 0.4); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
                 border: 1px solid rgba(255, 255, 255, 0.6); overflow: hidden; flex-direction: row; 
             }
-            .dark .app-wrapper { border: 1px solid rgba(255, 255, 255, 0.1); }
+            .dark .app-wrapper { background: rgba(15, 23, 42, 0.7); border: 1px solid rgba(255, 255, 255, 0.1); }
         }
 
         /* ПОЛЯ ВВЕДЕННЯ */
@@ -201,15 +204,17 @@
         <!-- ==========================================
              ФЛОУ АВТОРИЗАЦІЇ (ONBOARDING)
         =========================================== -->
-        <div id="auth-flow" class="w-full h-full flex flex-col md:flex-row bg-white/95 dark:bg-slate-900/95 md:bg-transparent md:dark:bg-transparent z-50">
+        <!-- Робимо фон повністю прозорим на мобільному, щоб бачити ручійок -->
+        <div id="auth-flow" class="w-full h-full flex flex-col md:flex-row bg-transparent z-50">
             
             <!-- Ліва колонка (Форми) -->
             <div class="w-full md:w-1/2 h-full flex flex-col items-center justify-center p-6 md:p-12 z-10 md:bg-white md:dark:bg-slate-900 md:rounded-l-[40px] relative">
                 
                 <!-- Екран 1: Вхід -->
                 <div id="screen-login" class="w-full max-w-sm flex flex-col items-center fade-in">
-                    <div class="text-center mb-8 flex justify-center w-full">
-                        <img src="https://i.ibb.co/Y7jCqPDF/c660937a-9272-4146-82e4-074b94f35d73.png" alt="Sky Source" class="h-16 md:h-20 object-contain drop-shadow-sm rounded-xl">
+                    <div class="text-center mb-10 flex justify-center w-full">
+                        <!-- Збільшуємо логотип: h-24 (96px) для моб, h-28 (112px) для ПК -->
+                        <img src="https://i.ibb.co/Y7jCqPDF/c660937a-9272-4146-82e4-074b94f35d73.png" alt="Sky Source" class="h-24 md:h-28 object-contain drop-shadow-md rounded-xl">
                     </div>
 
                     <!-- ТЕЛЕФОНИ (МОБІЛЬНІ - КЛІКАБЕЛЬНІ) -->
@@ -274,12 +279,11 @@
 
             </div>
 
-            <!-- Права колонка з відео (Тільки ПК) -->
-            <div class="hidden md:flex w-1/2 h-full bg-blue-50/50 dark:bg-slate-900/50 flex-col items-center justify-center relative overflow-hidden border-l border-white/40 dark:border-slate-700/50">
-                <video autoplay loop muted playsinline class="absolute inset-0 w-full h-full object-cover z-0 opacity-80">
-                    <source src="https://cdn.pixabay.com/video/2021/08/11/84706-587848694_tiny.mp4" type="video/mp4">
-                </video>
-                <div class="absolute inset-0 bg-blue-950/40 dark:bg-black/60 backdrop-blur-[2px] z-10"></div>
+            <!-- Права колонка із зображенням (Тільки ПК) -->
+            <div class="hidden md:flex w-1/2 h-full bg-cover bg-center bg-no-repeat flex-col items-center justify-center relative overflow-hidden border-l border-white/40 dark:border-slate-700/50" style="background-image: url('https://i.ibb.co/tp9nfZdM/9efb902b-ea5f-4d4e-8658-a8421c9d0b9c.png');">
+                
+                <!-- Сучасний overlay: легке синє/темне затемнення + ефект матового скла (blur) -->
+                <div class="absolute inset-0 bg-blue-950/30 dark:bg-black/50 backdrop-blur-[4px] z-10"></div>
                 
                 <div class="relative z-20 text-center flex flex-col items-center">
                     <h2 class="text-5xl font-black text-white leading-tight mb-6 drop-shadow-2xl">Питна вода<br>в один клік</h2>
