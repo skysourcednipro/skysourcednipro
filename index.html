@@ -416,7 +416,7 @@ src="https://www.facebook.com/tr?id=1579626687172302&ev=PageView&noscript=1"
                                     <button id="btn-qty-plus" class="w-9 h-9 flex items-center justify-center bg-blue-600 text-white rounded-full shadow-md active:scale-90 select-none">+</button>
                                 </div>
                                 <div class="bg-white/95 dark:bg-slate-800/95 px-5 py-1.5 rounded-xl shadow-sm mb-1">
-                                    <span id="display-price" class="text-xl font-black text-blue-700 dark:text-blue-400">90 ₴</span>
+                                    <span id="display-price" class="text-xl font-black text-blue-700 dark:text-blue-400">100 ₴</span>
                                 </div>
                                 <p class="text-[8px] text-blue-900 dark:text-blue-200 font-bold uppercase tracking-widest bg-white/50 dark:bg-slate-800/50 px-2 py-0.5 rounded-md">Доставка Безкоштовно</p>
                             </div>
@@ -1095,7 +1095,7 @@ src="https://www.facebook.com/tr?id=1579626687172302&ev=PageView&noscript=1"
                 actionContainer: document.getElementById('action-container')
             };
 
-            function updatePrice() { ui.qty.innerText = orderQty; ui.price.innerText = (orderQty === 1 ? 90 : orderQty * 80) + ' ₴'; }
+            function updatePrice() { ui.qty.innerText = orderQty; ui.price.innerText = (orderQty === 1 ? 100 : orderQty * 90) + ' ₴'; }
 
             function resetBottle() {
                 orderState = 'idle'; orderQty = 1; updatePrice();
