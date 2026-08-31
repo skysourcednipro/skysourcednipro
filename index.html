@@ -146,10 +146,27 @@
         }
         
         .arrow-warning {
-            color: #ef4444 !important;
+            color: #ef4444 !important; /* Червоний колір Tailwind (red-500) */
             transform: scale(1.3) translateY(2px);
         }
     </style>
+<!-- Meta Pixel Code -->
+<script>
+!function(f,b,e,v,n,t,s)
+{if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+n.queue=[];t=b.createElement(e);t.async=!0;
+t.src=v;s=b.getElementsByTagName(e)[0];
+s.parentNode.insertBefore(t,s)}(window, document,'script',
+'https://connect.facebook.net/en_US/fbevents.js');
+fbq('init', '1579626687172302');
+fbq('track', 'PageView');
+</script>
+<noscript><img height="1" width="1" style="display:none"
+src="https://www.facebook.com/tr?id=1579626687172302&ev=PageView&noscript=1"
+/></noscript>
+<!-- End Meta Pixel Code -->
 </head>
 <body class="text-gray-900 dark:text-white transition-colors duration-300">
 
@@ -201,36 +218,60 @@
     </div>
 
     <div class="app-wrapper">
-        <!-- ФЛОУ АВТОРИЗАЦІЇ -->
+
+        <!-- ==========================================
+             ФЛОУ АВТОРИЗАЦІЇ (ONBOARDING)
+        =========================================== -->
         <div id="auth-flow" class="w-full h-full flex flex-col md:flex-row bg-transparent z-50">
+            
+            <!-- Ліва колонка (Форми) -->
             <div class="w-full md:w-1/2 h-full flex flex-col items-center justify-center p-6 md:p-12 z-10 md:bg-white md:dark:bg-slate-900 md:rounded-l-[40px] relative">
                 
+                <!-- Екран 1: Вхід -->
                 <div id="screen-login" class="w-full max-w-sm flex flex-col items-center fade-in">
                     <div class="text-center mb-10 flex justify-center w-full">
                         <img src="https://i.ibb.co/Y7jCqPDF/c660937a-9272-4146-82e4-074b94f35d73.png" alt="Sky Source" class="h-24 md:h-28 object-contain drop-shadow-md rounded-xl">
                     </div>
+
+                    <!-- ТЕЛЕФОНИ (МОБІЛЬНІ) -->
                     <div class="md:hidden w-full flex flex-col gap-2.5 mb-6">
-                        <a href="tel:+380966974664" class="bg-white dark:bg-slate-800 p-3.5 rounded-2xl shadow-md border border-gray-100 dark:border-slate-700 w-full flex items-center justify-center gap-3">
-                            <span class="text-lg font-black text-gray-900 dark:text-white">+38 (096) 697-46-64</span>
+                        <a href="tel:+380966974664" class="bg-white dark:bg-slate-800 p-3.5 rounded-2xl shadow-md border border-gray-100 dark:border-slate-700 w-full flex items-center justify-center gap-3 active:scale-95 transition-transform">
+                            <div class="w-10 h-10 bg-green-100 dark:bg-green-900/30 rounded-full flex items-center justify-center shrink-0">
+                                <svg class="w-5 h-5 text-green-500" fill="currentColor" viewBox="0 0 24 24"><path d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"/></svg>
+                            </div>
+                            <span class="text-lg font-black text-gray-900 dark:text-white tracking-tight">+38 (096) 697-46-64</span>
                         </a>
-                        <a href="tel:+380506974664" class="bg-white dark:bg-slate-800 p-3.5 rounded-2xl shadow-md border border-gray-100 dark:border-slate-700 w-full flex items-center justify-center gap-3">
-                            <span class="text-lg font-black text-gray-900 dark:text-white">+38 (050) 697-46-64</span>
+                        <a href="tel:+380506974664" class="bg-white dark:bg-slate-800 p-3.5 rounded-2xl shadow-md border border-gray-100 dark:border-slate-700 w-full flex items-center justify-center gap-3 active:scale-95 transition-transform">
+                            <div class="w-10 h-10 bg-green-100 dark:bg-green-900/30 rounded-full flex items-center justify-center shrink-0">
+                                <svg class="w-5 h-5 text-green-500" fill="currentColor" viewBox="0 0 24 24"><path d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"/></svg>
+                            </div>
+                            <span class="text-lg font-black text-gray-900 dark:text-white tracking-tight">+38 (050) 697-46-64</span>
                         </a>
                     </div>
+
+                    <!-- ТЕЛЕФОНИ (ПК) -->
                     <div class="hidden md:flex w-full flex-col gap-2.5 mb-8 pointer-events-none">
                         <div class="bg-white dark:bg-slate-800 p-3.5 rounded-2xl shadow-sm border border-gray-100 dark:border-slate-700 w-full flex items-center justify-center gap-3">
-                            <span class="text-xl font-black text-gray-900 dark:text-white">+38 (096) 697-46-64</span>
+                            <div class="w-10 h-10 bg-green-50 dark:bg-green-900/30 rounded-full flex items-center justify-center shrink-0">
+                                <svg class="w-5 h-5 text-green-500" fill="currentColor" viewBox="0 0 24 24"><path d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"/></svg>
+                            </div>
+                            <span class="text-xl font-black text-gray-900 dark:text-white tracking-tight">+38 (096) 697-46-64</span>
                         </div>
                         <div class="bg-white dark:bg-slate-800 p-3.5 rounded-2xl shadow-sm border border-gray-100 dark:border-slate-700 w-full flex items-center justify-center gap-3">
-                            <span class="text-xl font-black text-gray-900 dark:text-white">+38 (050) 697-46-64</span>
+                            <div class="w-10 h-10 bg-green-50 dark:bg-green-900/30 rounded-full flex items-center justify-center shrink-0">
+                                <svg class="w-5 h-5 text-green-500" fill="currentColor" viewBox="0 0 24 24"><path d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"/></svg>
+                            </div>
+                            <span class="text-xl font-black text-gray-900 dark:text-white tracking-tight">+38 (050) 697-46-64</span>
                         </div>
                     </div>
+
                     <button id="btn-google-login" class="w-full py-4 rounded-2xl bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 text-gray-800 dark:text-gray-100 font-bold flex justify-center items-center gap-3 shadow-sm hover:bg-gray-50 dark:hover:bg-slate-700 transition-colors active:scale-95 text-base">
                         <svg class="w-6 h-6" viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg>
                         Увійти через Google
                     </button>
                 </div>
 
+                <!-- Екран 2: Адреса -->
                 <div id="screen-address" class="w-full max-w-sm flex-col hidden-view fade-in">
                     <h2 class="text-3xl font-black text-blue-950 dark:text-white mb-2">Куди доставити?</h2>
                     <p class="text-gray-500 dark:text-gray-400 text-sm mb-8 font-medium">Для автоматичного оформлення замовлень.</p>
@@ -238,6 +279,7 @@
                     <button id="btn-next-profile" class="w-full py-4 bg-blue-600 hover:bg-blue-700 text-white rounded-2xl font-bold shadow-lg shadow-blue-600/30 transition-colors active:scale-95 text-lg">Продовжити</button>
                 </div>
 
+                <!-- Екран 3: Контакти -->
                 <div id="screen-profile" class="w-full max-w-sm flex-col hidden-view fade-in">
                     <h2 class="text-3xl font-black text-blue-950 dark:text-white mb-2">Ваші контакти</h2>
                     <p class="text-gray-500 dark:text-gray-400 text-sm mb-8 font-medium">Для зв'язку з кур'єром.</p>
@@ -250,8 +292,10 @@
                         <button id="btn-finish-auth" class="w-2/3 py-4 bg-blue-600 hover:bg-blue-700 text-white rounded-2xl font-bold shadow-lg shadow-blue-600/30 transition-colors active:scale-95 text-lg">Готово</button>
                     </div>
                 </div>
+
             </div>
 
+            <!-- Права колонка із зображенням (Тільки ПК) -->
             <div class="hidden md:flex w-1/2 h-full bg-cover bg-center bg-no-repeat flex-col items-center justify-center relative overflow-hidden border-l border-white/40 dark:border-slate-700/50" style="background-image: url('https://i.ibb.co/tp9nfZdM/9efb902b-ea5f-4d4e-8658-a8421c9d0b9c.png');">
                 <div class="absolute inset-0 bg-blue-950/30 dark:bg-black/50 backdrop-blur-[4px] z-10"></div>
                 <div class="relative z-20 text-center flex flex-col items-center">
@@ -261,35 +305,74 @@
             </div>
         </div>
 
-        <!-- ОСНОВНИЙ ДОДАТОК -->
+        <!-- ==========================================
+             ОСНОВНИЙ ДОДАТОК (КАБІНЕТ)
+        =========================================== -->
         <div id="main-app" class="w-full h-full flex flex-col md:flex-row bg-white/60 dark:bg-slate-900/60 md:bg-white/40 md:dark:bg-slate-900/40 hidden-view fade-in">
-            <!-- САЙДБАР -->
+            
+            <!-- САЙДБАР (Тільки ПК) -->
             <nav class="hidden md:flex flex-col w-[320px] shrink-0 bg-white/90 dark:bg-slate-900/90 border-r border-gray-200 dark:border-slate-800 p-8 z-20">
                 <div class="mb-8 text-left flex justify-start">
                     <img src="https://i.ibb.co/Y7jCqPDF/c660937a-9272-4146-82e4-074b94f35d73.png" alt="Sky Source" class="h-9 object-contain mb-2 rounded-lg">
                 </div>
+
                 <div class="space-y-2 flex-1">
-                    <button class="nav-item flex items-center gap-4 w-full p-4 rounded-2xl text-blue-700 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/30 font-bold transition-colors scale-105" data-target="tab-home">Замовлення води</button>
-                    <button class="nav-item flex items-center gap-4 w-full p-4 rounded-2xl text-gray-500 dark:text-gray-400 hover:text-blue-700 dark:hover:bg-blue-50 font-bold transition-colors" data-target="tab-reviews">Відгуки</button>
-                    <button class="nav-item flex items-center gap-4 w-full p-4 rounded-2xl text-gray-500 dark:text-gray-400 hover:text-blue-700 dark:hover:bg-blue-50 font-bold transition-colors" data-target="tab-settings">Налаштування</button>
+                    <button class="nav-item flex items-center gap-4 w-full p-4 rounded-2xl text-blue-700 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/30 font-bold transition-colors scale-105" data-target="tab-home">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg>
+                        Замовлення води
+                    </button>
+                    <button class="nav-item flex items-center gap-4 w-full p-4 rounded-2xl text-gray-500 dark:text-gray-400 hover:text-blue-700 dark:hover:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/30 font-bold transition-colors" data-target="tab-reviews">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path></svg>
+                        Відгуки
+                    </button>
+                    <button class="nav-item flex items-center gap-4 w-full p-4 rounded-2xl text-gray-500 dark:text-gray-400 hover:text-blue-700 dark:hover:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/30 font-bold transition-colors" data-target="tab-settings">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+                        Налаштування
+                    </button>
+                </div>
+                
+                <div class="mt-auto bg-white dark:bg-slate-800 p-4 rounded-3xl border border-gray-100 dark:border-slate-700 flex flex-col items-center gap-2.5 shadow-sm pointer-events-none">
+                    <span class="text-[9px] uppercase font-black text-gray-400 tracking-wider w-full text-left pl-1">Служба турботи</span>
+                    <div class="flex items-center gap-3 w-full">
+                        <div class="w-8 h-8 bg-green-50 dark:bg-green-900/30 rounded-full flex items-center justify-center shrink-0">
+                            <svg class="w-4 h-4 text-green-600" fill="currentColor" viewBox="0 0 24 24"><path d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"/></svg>
+                        </div>
+                        <span class="text-xs font-black text-gray-900 dark:text-white tracking-tight">+38 (096) 697-46-64</span>
+                    </div>
+                    <div class="flex items-center gap-3 w-full">
+                        <div class="w-8 h-8 bg-green-50 dark:bg-green-900/30 rounded-full flex items-center justify-center shrink-0">
+                            <svg class="w-4 h-4 text-green-600" fill="currentColor" viewBox="0 0 24 24"><path d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"/></svg>
+                        </div>
+                        <span class="text-xs font-black text-gray-900 dark:text-white tracking-tight">+38 (050) 697-46-64</span>
+                    </div>
                 </div>
             </nav>
 
-            <!-- КОНТЕНТ -->
+            <!-- КОНТЕНТНА ЧАСТИНА -->
             <div class="flex-1 h-full relative overflow-hidden flex flex-col z-10 bg-white/40 dark:bg-slate-900/40 md:bg-transparent md:dark:bg-transparent">
-                <!-- ШАПКА -->
+                
+                <!-- АБСОЛЮТНА ШАПКА -->
                 <div class="absolute top-6 left-5 right-5 md:left-10 md:right-10 flex justify-between items-center z-30 pointer-events-none">
+                    
                     <div class="pointer-events-auto flex items-center gap-2 md:gap-4">
                         <img src="https://i.ibb.co/Y7jCqPDF/c660937a-9272-4146-82e4-074b94f35d73.png" alt="Sky Source" class="md:hidden h-9 object-contain rounded-md">
-                        <button id="theme-toggle" class="w-10 h-10 flex items-center justify-center bg-white/90 dark:bg-slate-800/90 backdrop-blur-md rounded-full shadow-sm border border-gray-100 dark:border-slate-700 active:scale-95">
-                            <span class="block dark:hidden">☀️</span><span class="hidden dark:block">🌙</span>
+                        
+                        <button id="theme-toggle" class="w-10 h-10 flex items-center justify-center bg-white/90 dark:bg-slate-800/90 backdrop-blur-md rounded-full shadow-sm border border-gray-100 dark:border-slate-700 transition-all hover:shadow-md active:scale-95 text-gray-600 dark:text-gray-300">
+                            <svg id="icon-sun" class="w-5 h-5 block dark:hidden" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M12 3v2.25m6.364.386l-1.591 1.591M21 12h-2.25m-.386 6.364l-1.591-1.591M12 18.75V21m-4.773-2.773l-1.591 1.591M5.25 12H3m4.227-4.773L5.636 5.636M15.75 12a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0z" />
+                            </svg>
+                            <svg id="icon-moon" class="w-5 h-5 hidden dark:block" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M21.752 15.002A9.718 9.718 0 0118 15.75c-5.385 0-9.75-4.365-9.75-9.75 0-1.33.266-2.597.748-3.752A9.753 9.753 0 003 11.25C3 16.635 7.365 21 12.75 21a9.753 9.753 0 009.002-5.998z" />
+                            </svg>
                         </button>
+
                         <div id="pc-header-title-container" class="hidden md:flex items-center gap-4 transition-opacity duration-300 opacity-0">
                             <h2 id="pc-header-title" class="text-4xl font-black text-gray-900 dark:text-white tracking-tight"></h2>
                             <div id="pc-avg-rating" class="hidden items-center bg-white/80 dark:bg-slate-800/80 backdrop-blur-md px-3 py-1.5 rounded-xl shadow-sm border border-gray-100 dark:border-slate-700"></div>
                         </div>
                     </div>
-                    <button id="btn-open-history" class="pointer-events-auto flex items-center gap-3 bg-white/90 dark:bg-slate-800/90 backdrop-blur-md px-4 py-2 rounded-full shadow-sm border border-gray-100 dark:border-slate-700 active:scale-95 ml-auto">
+                    
+                    <button id="btn-open-history" class="pointer-events-auto flex items-center gap-3 bg-white/90 dark:bg-slate-800/90 backdrop-blur-md px-4 py-2 rounded-full shadow-sm border border-gray-100 dark:border-slate-700 hover:shadow-md transition-all active:scale-95 ml-auto">
                         <div id="header-avatar-container" class="w-6 h-6 bg-blue-100 dark:bg-slate-700 rounded-full flex items-center justify-center text-xs overflow-hidden shrink-0">
                             <span id="header-avatar-icon">👤</span>
                             <img id="header-avatar-img" class="w-full h-full object-cover hidden">
@@ -301,7 +384,7 @@
                     </button>
                 </div>
 
-                <!-- ВКЛАДКА: ГОЛОВНА -->
+                <!-- ВКЛАДКА: ГОЛОВНА (БУТЕЛЬ) -->
                 <div id="tab-home" class="w-full h-full flex flex-col items-center justify-center px-4 pb-28 md:pb-0 fade-in">
                     <div id="bottle" class="bottle-wrapper cursor-pointer hover:scale-105 active:scale-95 z-10 mt-6 md:mt-0">
                         <div class="bottle-neck"></div>
@@ -321,11 +404,14 @@
                             </div>
                         </div>
                     </div>
+
                     <div id="action-container" class="h-0 mt-0 md:h-[56px] md:mt-6 w-full max-w-[300px] relative z-20 transition-all duration-300">
                         <button id="order-status" class="absolute inset-0 w-full bg-white dark:bg-slate-800 text-gray-900 dark:text-white font-black text-base rounded-2xl shadow-lg border border-gray-100 dark:border-slate-700 transition-all hover:scale-105 active:scale-95 hidden md:block">Замовити воду</button>
                         <div id="action-panel" class="absolute inset-0 flex items-center justify-center gap-3 transition-all duration-300 opacity-0 pointer-events-none scale-95">
-                            <button id="btn-cancel-order" class="px-5 h-full bg-white dark:bg-slate-800 hover:bg-red-50 text-red-500 font-bold rounded-2xl shadow-md border transition-colors">Скасування</button>
-                            <button id="btn-confirm-order" class="flex-1 h-full bg-blue-600 hover:bg-blue-700 text-white font-black rounded-2xl shadow-lg transition-colors">Підтвердити</button>
+                            <button id="btn-cancel-order" class="px-5 h-full bg-white dark:bg-slate-800 hover:bg-red-50 dark:hover:bg-slate-700 text-red-500 font-bold rounded-2xl shadow-md border border-gray-100 dark:border-slate-700 transition-colors">Скасування</button>
+                            <button id="btn-confirm-order" class="flex-1 h-full bg-blue-600 hover:bg-blue-700 text-white font-black rounded-2xl shadow-lg shadow-blue-600/30 transition-colors flex items-center justify-center gap-2 text-base">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg> Підтвердити
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -336,11 +422,17 @@
                         <h3 class="text-3xl font-black text-gray-900 dark:text-white">Відгуки</h3>
                         <div id="mobile-avg-rating" class="hidden items-center bg-white dark:bg-slate-800 px-3 py-1.5 rounded-xl shadow-sm border border-gray-100 dark:border-slate-700"></div>
                     </div>
-                    <div id="reviews-list" class="flex-1 overflow-y-auto no-scrollbar grid grid-cols-1 md:grid-cols-2 gap-5 content-start pr-1"></div>
-                    <button id="btn-show-add-review" class="absolute bottom-28 md:bottom-10 right-6 md:right-10 w-[60px] h-[60px] bg-blue-600 hover:bg-blue-700 rounded-full shadow-lg text-white active:scale-90 transition-transform">➕</button>
+
+                    <div id="reviews-list" class="flex-1 overflow-y-auto no-scrollbar grid grid-cols-1 md:grid-cols-2 gap-5 content-start pr-1">
+                        <div class="text-center mt-12 text-gray-500 w-full col-span-full">Завантаження відгуків...</div>
+                    </div>
+                    
+                    <button id="btn-show-add-review" class="absolute bottom-28 md:bottom-10 right-6 md:right-10 w-[60px] h-[60px] bg-blue-600 hover:bg-blue-700 rounded-full shadow-lg shadow-blue-600/40 flex items-center justify-center text-white active:scale-90 transition-transform z-30">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"></path></svg>
+                    </button>
                 </div>
 
-                <!-- ВКЛАДКА: НАЛАШТУВАННЯ -->
+                <!-- ВКЛАДКА: НАЛАШТУВАННЯ ПРОФІЛЮ -->
                 <div id="tab-settings" class="w-full h-full flex flex-col p-6 md:p-10 pt-24 md:pt-24 pb-32 md:pb-10 hidden-view fade-in">
                     <h3 class="text-3xl font-black text-gray-900 dark:text-white mb-8 shrink-0 md:hidden">Профіль</h3>
                     <div class="flex-1 overflow-y-auto no-scrollbar space-y-4 max-w-2xl w-full pr-1 pb-4">
@@ -348,353 +440,604 @@
                             <div id="settings-avatar-wrapper" class="w-20 h-20 rounded-full bg-blue-100 dark:bg-slate-800 border-2 border-blue-500 overflow-hidden flex items-center justify-center cursor-pointer relative group shrink-0">
                                 <span id="settings-avatar-icon" class="text-3xl">👤</span>
                                 <img id="settings-avatar-img" class="w-full h-full object-cover hidden">
-                                <div class="absolute inset-0 bg-black/50 hidden group-hover:flex items-center justify-center text-white text-[10px] font-bold">Змінити</div>
+                                <div class="absolute inset-0 bg-black/50 hidden group-hover:flex items-center justify-center text-white text-[10px] font-bold transition-all uppercase tracking-wider">Змінити</div>
                             </div>
                             <div>
                                 <h4 class="text-xl font-black text-gray-900 dark:text-white" id="settings-display-name">Користувач</h4>
+                                <p class="text-sm text-gray-500 dark:text-gray-400">Натисніть на фото, щоб оновити</p>
                             </div>
                             <input type="file" id="avatar-upload-input" accept="image/*" class="hidden">
                         </div>
+
                         <div class="flex flex-col md:flex-row gap-4 w-full">
-                            <div class="bg-white/80 dark:bg-slate-800/80 p-4 rounded-2xl border shadow-sm w-full md:w-1/2">
+                            <div class="bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm p-4 rounded-2xl border border-gray-100 dark:border-slate-700 shadow-sm w-full md:w-1/2">
                                 <label class="app-label">Ім'я</label>
                                 <input type="text" id="edit-name" class="w-full font-black text-gray-900 dark:text-white text-base border-none outline-none bg-transparent">
                             </div>
-                            <div class="bg-white/80 dark:bg-slate-800/80 p-4 rounded-2xl border shadow-sm w-full md:w-1/2">
+                            <div class="bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm p-4 rounded-2xl border border-gray-100 dark:border-slate-700 shadow-sm w-full md:w-1/2">
                                 <label class="app-label">Телефон</label>
                                 <input type="tel" id="edit-phone" class="w-full font-black text-gray-900 dark:text-white text-base border-none outline-none bg-transparent font-mono tracking-tight">
                             </div>
                         </div>
-                        <div class="bg-white/80 dark:bg-slate-800/80 p-4 rounded-2xl border shadow-sm w-full">
+
+                        <div class="bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm p-4 rounded-2xl border border-gray-100 dark:border-slate-700 shadow-sm w-full">
                             <label class="app-label">Адреса доставки</label>
                             <input type="text" id="edit-address" class="w-full font-black text-gray-900 dark:text-white text-base border-none outline-none bg-transparent">
                         </div>
+                        
                         <div class="flex gap-3 w-full mt-2 pt-2">
                             <div class="flex-[2] relative">
-                                <button id="btn-save-settings" class="w-full py-4 bg-blue-600 text-white font-bold rounded-2xl shadow-lg active:scale-95 transition-all">Зберегти</button>
+                                <div id="unsaved-arrow" class="absolute bottom-full mb-2 left-1/2 -translate-x-1/2 flex-col items-center transition-all duration-300 opacity-0 pointer-events-none text-blue-500">
+                                    <svg class="w-8 h-8 animate-bounce transition-transform duration-300" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 14l-7 7m0 0l-7-7m7 7V3"></path></svg>
+                                </div>
+                                <button id="btn-save-settings" class="w-full py-4 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-2xl shadow-lg shadow-blue-600/30 active:scale-95 transition-all">Зберегти</button>
                             </div>
-                            <button id="btn-logout" class="flex-1 py-4 bg-white hover:bg-red-50 text-red-500 font-bold rounded-2xl border active:scale-95 transition-colors">Вийти</button>
+                            <button id="btn-logout" class="flex-1 py-4 bg-white dark:bg-slate-800 hover:bg-red-50 dark:hover:bg-slate-700 text-red-500 font-bold rounded-2xl border border-gray-200 dark:border-slate-700 shadow-sm active:scale-95 transition-colors">Вийти</button>
                         </div>
                     </div>
                 </div>
-                
-                <!-- МОДАЛКА ВІДГУКУ -->
-                <div id="modal-add-review" class="absolute inset-0 bg-white/95 dark:bg-slate-900/95 backdrop-blur-xl z-40 p-6 pb-32 flex flex-col transition-transform duration-300 translate-y-full">
-                    <div class="flex justify-between items-center mb-6 shrink-0">
-                        <h3 class="text-3xl font-black">Новий відгук</h3>
-                        <button id="btn-close-review" class="bg-gray-100 p-3 rounded-full text-gray-500">❌</button>
+
+                <!-- МОДАЛКА: ДОДАТИ ВІДГУК -->
+                <div id="modal-add-review" class="absolute inset-0 bg-white/95 dark:bg-slate-900/95 backdrop-blur-xl z-50 p-6 pb-32 md:p-12 md:pb-12 flex flex-col transition-transform duration-300 translate-y-full">
+                    <div class="flex justify-between items-center mb-6 pt-4 md:pt-0 shrink-0">
+                        <h3 class="text-3xl font-black text-gray-900 dark:text-white">Новий відгук</h3>
+                        <button id="btn-close-review" class="bg-gray-100 dark:bg-slate-800 p-3 rounded-full text-gray-500 dark:text-gray-400 active:scale-90 transition-transform"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg></button>
                     </div>
+
+                    <div class="flex items-center gap-3 mb-6 shrink-0">
+                        <span class="text-sm font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Оцінка:</span>
+                        <div class="flex gap-1" id="review-stars-input">
+                            <svg data-value="1" class="w-8 h-8 text-yellow-400 fill-current cursor-pointer active:scale-90 transition-transform" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
+                            <svg data-value="2" class="w-8 h-8 text-yellow-400 fill-current cursor-pointer active:scale-90 transition-transform" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
+                            <svg data-value="3" class="w-8 h-8 text-yellow-400 fill-current cursor-pointer active:scale-90 transition-transform" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
+                            <svg data-value="4" class="w-8 h-8 text-yellow-400 fill-current cursor-pointer active:scale-90 transition-transform" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
+                            <svg data-value="5" class="w-8 h-8 text-yellow-400 fill-current cursor-pointer active:scale-90 transition-transform" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
+                        </div>
+                    </div>
+
                     <textarea id="input-review-text" class="app-input flex-1 resize-none mb-6 text-lg" placeholder="Напишіть ваш відгук..."></textarea>
-                    <button id="btn-submit-review" class="w-full py-4 bg-blue-600 text-white font-bold rounded-2xl">Опублікувати</button>
+                    <button id="btn-submit-review" class="w-full py-4 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-2xl shadow-lg shrink-0 active:scale-95 transition-transform">Опублікувати</button>
                 </div>
+
             </div>
 
-            <!-- МОБІЛЬНЕ МЕНЮ -->
-            <div class="md:hidden fixed bottom-5 left-4 right-4 bg-white/90 dark:bg-slate-900/90 backdrop-blur-xl border border-gray-100/50 dark:border-slate-700/50 shadow-[0_20px_40px_-10px_rgba(0,0,0,0.1)] rounded-[2rem] p-1.5 flex justify-between items-center z-50">
-                <button id="btn-open-call" class="flex flex-col items-center justify-center p-2 text-green-500 w-[70px] h-[60px] rounded-2xl active:scale-90"><span class="text-[10px] font-bold">Виклик</span></button>
-                <button class="nav-item flex flex-col items-center justify-center p-2 text-blue-600 bg-blue-50 w-[70px] h-[60px] rounded-2xl active:scale-90 scale-105" data-target="tab-home"><span class="text-[10px] font-bold">Замовлення</span></button>
-                <button class="nav-item flex flex-col items-center justify-center p-2 text-gray-400 w-[70px] h-[60px] rounded-2xl active:scale-90" data-target="tab-reviews"><span class="text-[10px] font-bold">Відгуки</span></button>
-                <button class="nav-item flex flex-col items-center justify-center p-2 text-gray-400 w-[70px] h-[60px] rounded-2xl active:scale-90" data-target="tab-settings"><span class="text-[10px] font-bold">Профіль</span></button>
+            <!-- BOTTOM NAVIGATION (ТІЛЬКИ МОБІЛЬНІ - DOCK STYLE) -->
+            <div class="md:hidden fixed bottom-5 left-4 right-4 bg-white/90 dark:bg-slate-900/90 backdrop-blur-xl border border-gray-100/50 dark:border-slate-700/50 shadow-[0_20px_40px_-10px_rgba(0,0,0,0.1)] dark:shadow-[0_20px_40px_-10px_rgba(0,0,0,0.5)] rounded-[2rem] p-1.5 flex justify-between items-center z-50">
+                <button id="btn-open-call" class="flex flex-col items-center justify-center p-2 text-green-500 w-[70px] h-[60px] rounded-2xl active:scale-90 transition-transform">
+                    <svg class="w-6 h-6 mb-1" fill="currentColor" viewBox="0 0 24 24"><path d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"/></svg>
+                    <span class="text-[10px] font-bold">Виклик</span>
+                </button>
+                <button class="nav-item flex flex-col items-center justify-center p-2 text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/30 w-[70px] h-[60px] rounded-2xl transition-all duration-300 active:scale-90 scale-105" data-target="tab-home">
+                    <svg class="w-6 h-6 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg>
+                    <span class="text-[10px] font-bold">Замовлення</span>
+                </button>
+                <button class="nav-item flex flex-col items-center justify-center p-2 text-gray-400 dark:text-gray-500 w-[70px] h-[60px] rounded-2xl transition-all duration-300 active:scale-90" data-target="tab-reviews">
+                    <svg class="w-6 h-6 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path></svg>
+                    <span class="text-[10px] font-bold">Відгуки</span>
+                </button>
+                <button class="nav-item flex flex-col items-center justify-center p-2 text-gray-400 dark:text-gray-500 w-[70px] h-[60px] rounded-2xl transition-all duration-300 active:scale-90" data-target="tab-settings">
+                    <svg class="w-6 h-6 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+                    <span class="text-[10px] font-bold">Профіль</span>
+                </button>
             </div>
         </div>
     </div>
 
+    <!-- ТІЛЬКИ JAVASCRIPT З FIREBASE ЛОГІКОЮ ВНИЗУ -->
     <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
-    import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
-    import { getFirestore, collection, addDoc, getDocs, query, orderBy, serverTimestamp, doc, setDoc, getDoc, where } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
+        import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
+        import { getFirestore, collection, addDoc, getDocs, query, where, serverTimestamp, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
 
-    const firebaseConfig = {
-        apiKey: "AIzaSyAutXr0WYq-5CkkJUESpOpIsOrZXKpULjs",
-        authDomain: "skysource.firebaseapp.com",
-        projectId: "skysource",
-        storageBucket: "skysource.firebasestorage.app",
-        messagingSenderId: "1033630811129",
-        appId: "1:1033630811129:web:0388eb20c87250b28ab328",
-        measurementId: "G-HXXEY875L2"
-    };
+        const firebaseConfig = {
+            apiKey: "AIzaSyAutXr0WYq-5CkkJUESpOpIsOrZXKpULjs",
+            authDomain: "skysource.firebaseapp.com",
+            projectId: "skysource",
+            storageBucket: "skysource.firebasestorage.app",
+            messagingSenderId: "1033630811129",
+            appId: "1:1033630811129:web:0388eb20c87250b28ab328",
+            measurementId: "G-HXXEY875L2"
+        };
 
-    const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
-    const db = getFirestore(app);
-    const provider = new GoogleAuthProvider();
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+        const provider = new GoogleAuthProvider();
 
-    let currentUser = null;
-    let currentTabId = 'tab-home';
+        let currentUser = null;
+        let hasUnsavedChanges = false;
+        let currentTabId = 'tab-home';
+        let currentReviewRating = 5;
 
-    document.addEventListener('DOMContentLoaded', () => {
-        // --- ТЕМА ---
-        if(localStorage.getItem('theme') === 'dark') document.documentElement.classList.add('dark');
-        document.getElementById('theme-toggle').addEventListener('click', () => {
-            document.documentElement.classList.toggle('dark');
-            localStorage.setItem('theme', document.documentElement.classList.contains('dark') ? 'dark' : 'light');
-        });
+        document.addEventListener('DOMContentLoaded', () => {
+            
+            // --- ТЕМА ---
+            if(localStorage.getItem('theme') === 'dark') document.documentElement.classList.add('dark');
+            
+            document.getElementById('theme-toggle').addEventListener('click', (e) => {
+                const isDark = document.documentElement.classList.contains('dark');
+                if (!document.startViewTransition) { toggleDarkClass(); return; }
+                const x = e.clientX, y = e.clientY;
+                const endRadius = Math.hypot(Math.max(x, innerWidth - x), Math.max(y, innerHeight - y));
+                const transition = document.startViewTransition(() => { toggleDarkClass(); });
+                transition.ready.then(() => {
+                    const clipPath = [`circle(0px at ${x}px ${y}px)`, `circle(${endRadius}px at ${x}px ${y}px)`];
+                    document.documentElement.animate({ clipPath: isDark ? [...clipPath].reverse() : clipPath }, { duration: 600, easing: "ease-in-out", pseudoElement: isDark ? "::view-transition-old(root)" : "::view-transition-new(root)" });
+                });
+            });
+            function toggleDarkClass() { document.documentElement.classList.toggle('dark'); localStorage.setItem('theme', document.documentElement.classList.contains('dark') ? 'dark' : 'light'); }
 
-        // --- УВЕДОМЛЕНИЯ ---
-        const toast = document.getElementById('toast');
-        const toastMsg = document.getElementById('toast-msg');
-        let toastTimeout;
+            // --- УВЕДОМЛЕНИЯ ---
+            const toast = document.getElementById('toast');
+            const toastMsg = document.getElementById('toast-msg');
+            const toastIcon = document.getElementById('toast-icon');
+            let toastTimeout;
 
-        function showToast(message, type = 'success') {
-            clearTimeout(toastTimeout);
-            toastMsg.innerText = message;
-            toast.className = `fixed top-8 left-1/2 -translate-x-1/2 z-[100] px-6 py-4 rounded-full shadow-2xl transition-all duration-300 flex items-center gap-3 font-bold text-sm toast-active ${type === 'success' ? 'bg-green-50 text-green-800' : 'bg-red-50 text-red-800'}`;
-            toastTimeout = setTimeout(() => {
-                toast.classList.remove('toast-active');
-                toast.classList.add('opacity-0', '-translate-y-10', 'pointer-events-none');
-            }, 3000);
-        }
+            function showToast(message, type = 'success') {
+                clearTimeout(toastTimeout);
+                toastMsg.innerText = message;
+                if (type === 'success') {
+                    toast.className = 'fixed top-8 left-1/2 -translate-x-1/2 z-[100] px-6 py-4 rounded-full shadow-2xl transition-all duration-300 flex items-center gap-3 font-bold text-sm bg-green-50 dark:bg-green-900 border border-green-200 dark:border-green-700 text-green-800 dark:text-green-100 toast-active';
+                    toastIcon.innerHTML = `<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>`;
+                } else {
+                    toast.className = 'fixed top-8 left-1/2 -translate-x-1/2 z-[100] px-6 py-4 rounded-full shadow-2xl transition-all duration-300 flex items-center gap-3 font-bold text-sm bg-red-50 dark:bg-red-900 border border-red-200 dark:border-red-700 text-red-800 dark:text-red-100 toast-active';
+                    toastIcon.innerHTML = `<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>`;
+                }
+                toastTimeout = setTimeout(() => { toast.classList.remove('toast-active'); toast.classList.add('opacity-0', '-translate-y-10', 'pointer-events-none'); }, 3000);
+            }
 
-        // --- АВТОРИЗАЦИЯ И МАРШРУТИЗАЦИЯ ---
-        onAuthStateChanged(auth, async (user) => {
-            if (user) {
-                currentUser = user;
-                try {
-                    // ПЫТАЕМСЯ ДОСТАТЬ ПРОФИЛЬ ИЗ БАЗЫ
-                    const userDoc = await getDoc(doc(db, "users", user.uid));
-                    
-                    if (userDoc.exists()) {
-                        const data = userDoc.data();
-                        
-                        // СТРОГАЯ ПРОВЕРКА ЛОГИКИ: Точно ли адрес и телефон были сохранены?
-                        if (data.address && data.phone) {
-                            localStorage.setItem('app_name', data.name || user.displayName || '');
-                            localStorage.setItem('app_phone', data.phone);
-                            localStorage.setItem('app_address', data.address);
-                            localStorage.setItem('app_avatar', data.avatar || user.photoURL || '');
-                            initAppUI();
+            // --- АВТОРИЗАЦИЯ И МАРШРУТИЗАЦИЯ ---
+            onAuthStateChanged(auth, async (user) => {
+                if (user) {
+                    currentUser = user;
+                    try {
+                        const userDoc = await getDoc(doc(db, "users", user.uid));
+                        if (userDoc.exists()) {
+                            const data = userDoc.data();
+                            if (data.address && data.phone) {
+                                localStorage.setItem('app_name', data.name || user.displayName || '');
+                                localStorage.setItem('app_phone', data.phone);
+                                localStorage.setItem('app_address', data.address);
+                                localStorage.setItem('app_avatar', data.avatar || user.photoURL || '');
+                                initAppUI();
+                            } else {
+                                localStorage.setItem('app_name', data.name || user.displayName || '');
+                                localStorage.setItem('app_avatar', data.avatar || user.photoURL || '');
+                                switchAuthScreen('screen-address');
+                            }
                         } else {
-                            // Профиль есть, но адрес не дописали (пользователь закрыл вкладку на полпути)
-                            localStorage.setItem('app_name', data.name || user.displayName || '');
-                            localStorage.setItem('app_avatar', data.avatar || user.photoURL || '');
+                            localStorage.setItem('app_name', user.displayName || '');
+                            localStorage.setItem('app_avatar', user.photoURL || '');
                             switchAuthScreen('screen-address');
                         }
-                    } else {
-                        // Полностью новый пользователь
+                    } catch (error) {
                         localStorage.setItem('app_name', user.displayName || '');
                         localStorage.setItem('app_avatar', user.photoURL || '');
                         switchAuthScreen('screen-address');
                     }
-                } catch (error) {
-                    console.error("Firestore error:", error);
-                    // СПАСЕНИЕ ОТ ЗАВИСАНИЯ: Если база отклонила запрос (Rules if false), все равно пускаем на ввод адреса
-                    localStorage.setItem('app_name', user.displayName || '');
-                    localStorage.setItem('app_avatar', user.photoURL || '');
-                    switchAuthScreen('screen-address');
-                    showToast("Увага: Перевірте Rules у Firestore!", "error");
+                } else {
+                    currentUser = null;
+                    switchAuthScreen('screen-login');
                 }
-            } else {
-                currentUser = null;
-                switchAuthScreen('screen-login');
-            }
-        });
-
-        function switchAuthScreen(id) {
-            document.getElementById('auth-flow').classList.remove('hidden-view');
-            document.getElementById('main-app').classList.add('hidden-view');
-            ['screen-login', 'screen-address', 'screen-profile'].forEach(sid => {
-                const el = document.getElementById(sid);
-                if(sid === id) { el.classList.remove('hidden-view'); el.classList.add('fade-in'); }
-                else { el.classList.add('hidden-view'); el.classList.remove('fade-in'); }
             });
-        }
 
-        function initAppUI() {
-            document.getElementById('display-user-name').innerText = localStorage.getItem('app_name');
-            document.getElementById('settings-display-name').innerText = localStorage.getItem('app_name');
-            updateAvatarUI();
-            loadSettingsToForm();
-            document.getElementById('auth-flow').classList.add('hidden-view');
-            document.getElementById('main-app').classList.remove('hidden-view');
-            switchTab('tab-home');
-        }
+            function switchAuthScreen(id) {
+                document.getElementById('auth-flow').classList.remove('hidden-view');
+                document.getElementById('main-app').classList.add('hidden-view');
+                ['screen-login', 'screen-address', 'screen-profile'].forEach(sid => {
+                    const el = document.getElementById(sid);
+                    if(sid === id) { el.classList.remove('hidden-view'); el.classList.add('fade-in'); }
+                    else { el.classList.add('hidden-view'); el.classList.remove('fade-in'); }
+                });
+            }
 
-        document.getElementById('btn-google-login').onclick = () => {
-            signInWithPopup(auth, provider).catch(err => showToast('Помилка входу', 'error'));
-        };
+            function initAppUI() {
+                document.getElementById('display-user-name').innerText = localStorage.getItem('app_name');
+                document.getElementById('settings-display-name').innerText = localStorage.getItem('app_name');
+                updateAvatarUI();
+                loadSettingsToForm();
+                document.getElementById('auth-flow').classList.add('hidden-view');
+                document.getElementById('main-app').classList.remove('hidden-view');
+                switchTab('tab-home');
+                resetBottle();
+            }
 
-        document.getElementById('btn-next-profile').onclick = () => {
-            const val = document.getElementById('input-address').value.trim();
-            if (val.length < 5) showToast('Введіть точну адресу', 'error');
-            else { localStorage.setItem('app_address', val); switchAuthScreen('screen-profile'); }
-        };
+            document.getElementById('btn-google-login').onclick = () => { signInWithPopup(auth, provider).catch(err => showToast('Помилка входу', 'error')); };
+            document.getElementById('btn-next-profile').onclick = () => {
+                const val = document.getElementById('input-address').value.trim();
+                if (val.length < 5) showToast('Введіть точну адресу', 'error');
+                else { localStorage.setItem('app_address', val); switchAuthScreen('screen-profile'); }
+            };
+            document.getElementById('btn-back-address').onclick = () => switchAuthScreen('screen-address');
+            document.getElementById('btn-finish-auth').onclick = async () => {
+                const n = document.getElementById('input-name').value.trim() || localStorage.getItem('app_name');
+                const p = document.getElementById('input-phone').value.trim();
+                if (!n) { showToast('Вкажіть ім\'я', 'error'); return; }
+                localStorage.setItem('app_name', n); localStorage.setItem('app_phone', p);
+                if (currentUser) {
+                    try {
+                        await setDoc(doc(db, "users", currentUser.uid), { name: n, phone: p, address: localStorage.getItem('app_address'), avatar: localStorage.getItem('app_avatar') }, { merge: true });
+                        initAppUI();
+                    } catch (error) { showToast("Помилка БД! Перевірте Rules", "error"); }
+                }
+            };
+            document.getElementById('btn-logout').onclick = () => { signOut(auth); localStorage.clear(); };
 
-        document.getElementById('btn-back-address').onclick = () => switchAuthScreen('screen-address');
-
-        document.getElementById('btn-finish-auth').onclick = async () => {
-            const n = document.getElementById('input-name').value.trim() || localStorage.getItem('app_name');
-            const p = document.getElementById('input-phone').value.trim();
-            if (!n) { showToast('Вкажіть ім\'я', 'error'); return; }
-            
-            localStorage.setItem('app_name', n);
-            localStorage.setItem('app_phone', p);
-
-            if (currentUser) {
+            // --- АВАТАР (IMGBB) ---
+            const avatarUploadInput = document.getElementById('avatar-upload-input');
+            document.getElementById('settings-avatar-wrapper').addEventListener('click', () => { avatarUploadInput.click(); });
+            avatarUploadInput.addEventListener('change', async (e) => {
+                const file = e.target.files[0]; if(!file) return;
+                const IMGBB_API_KEY = 'd7aec9ed693c8efb3fb88781683399e0'; 
+                const formData = new FormData(); formData.append('image', file);
                 try {
-                    // ОБЕРНУТО В TRY...CATCH
-                    await setDoc(doc(db, "users", currentUser.uid), {
-                        name: n,
-                        phone: p,
-                        address: localStorage.getItem('app_address'),
-                        avatar: localStorage.getItem('app_avatar')
-                    }, { merge: true });
-                    initAppUI();
-                } catch (error) {
-                    console.error("Save profile error:", error);
-                    showToast("Помилка БД! Перевірте Rules", "error");
+                    showToast('Завантаження фото...', 'success');
+                    const res = await fetch(`https://api.imgbb.com/1/upload?expiration=0&key=${IMGBB_API_KEY}`, { method: 'POST', body: formData });
+                    const data = await res.json();
+                    if(data.success) {
+                        localStorage.setItem('app_avatar', data.data.url);
+                        updateAvatarUI();
+                        if (currentUser) await setDoc(doc(db, "users", currentUser.uid), { avatar: data.data.url }, { merge: true });
+                        showToast('Фото успішно оновлено!', 'success');
+                    } else showToast('Помилка завантаження фото', 'error');
+                } catch(error) { showToast('Помилка мережі', 'error'); }
+            });
+
+            function updateAvatarUI() {
+                const avatarUrl = localStorage.getItem('app_avatar');
+                const headerImg = document.getElementById('header-avatar-img'); const headerIcon = document.getElementById('header-avatar-icon');
+                const settingsImg = document.getElementById('settings-avatar-img'); const settingsIcon = document.getElementById('settings-avatar-icon');
+                if (avatarUrl) {
+                    headerImg.src = avatarUrl; settingsImg.src = avatarUrl;
+                    headerImg.classList.remove('hidden'); settingsImg.classList.remove('hidden');
+                    headerIcon.classList.add('hidden'); settingsIcon.classList.add('hidden');
+                } else {
+                    headerImg.classList.add('hidden'); settingsImg.classList.add('hidden');
+                    headerIcon.classList.remove('hidden'); settingsIcon.classList.remove('hidden');
                 }
             }
-        };
 
-        document.getElementById('btn-logout').onclick = () => { signOut(auth); localStorage.clear(); };
+            // --- МАСКА ДЛЯ ТЕЛЕФОНУ ---
+            [document.getElementById('input-phone'), document.getElementById('edit-phone')].forEach(input => {
+                if(!input) return;
+                input.addEventListener('input', function (e) {
+                    let val = e.target.value.replace(/\D/g, ''); if (val.startsWith('38')) val = val.slice(2);
+                    let formatted = '+38 ';
+                    if (val.length > 0) formatted += '(' + val.substring(0, 3);
+                    if (val.length >= 4) formatted += ') ' + val.substring(3, 6);
+                    if (val.length >= 7) formatted += '-' + val.substring(6, 8);
+                    if (val.length >= 9) formatted += '-' + val.substring(8, 10);
+                    e.target.value = formatted;
+                });
+            });
 
-        // --- АВАТАР ---
-        function updateAvatarUI() {
-            const avatarUrl = localStorage.getItem('app_avatar');
-            if (avatarUrl) {
-                document.getElementById('header-avatar-img').src = avatarUrl;
-                document.getElementById('settings-avatar-img').src = avatarUrl;
-                document.getElementById('header-avatar-img').classList.remove('hidden');
-                document.getElementById('settings-avatar-img').classList.remove('hidden');
+            // --- НАЛАШТУВАННЯ ТА ЗБЕРЕЖЕННЯ ---
+            const unsavedArrow = document.getElementById('unsaved-arrow');
+            const btnSaveSettings = document.getElementById('btn-save-settings');
+            function markUnsaved() {
+                hasUnsavedChanges = true;
+                unsavedArrow.classList.remove('opacity-0'); unsavedArrow.classList.add('opacity-100');
+                unsavedArrow.querySelector('svg').classList.remove('arrow-warning');
+                btnSaveSettings.classList.remove('animate-wave-pulse');
             }
-        }
+            ['edit-name', 'edit-phone', 'edit-address'].forEach(id => {
+                const el = document.getElementById(id);
+                if(el) el.addEventListener('input', markUnsaved);
+            });
 
-        // --- ИСТОРИЯ ЗАКАЗОВ (ИЗ FIRESTORE) ---
-        document.getElementById('btn-open-history').onclick = async () => {
-            const list = document.getElementById('history-list');
-            list.innerHTML = '<div class="text-center mt-12 text-gray-500">Завантаження...</div>';
-            document.getElementById('modal-history').classList.add('active');
-            document.getElementById('modal-history-content').classList.add('active');
+            function loadSettingsToForm() {
+                document.getElementById('edit-name').value = localStorage.getItem('app_name') || '';
+                document.getElementById('edit-phone').value = localStorage.getItem('app_phone') || '';
+                document.getElementById('edit-address').value = localStorage.getItem('app_address') || '';
+                hasUnsavedChanges = false;
+                unsavedArrow.classList.add('opacity-0'); unsavedArrow.classList.remove('opacity-100');
+            }
 
-            if(currentUser) {
+            document.getElementById('btn-save-settings').onclick = async () => {
+                const n = document.getElementById('edit-name').value.trim();
+                const p = document.getElementById('edit-phone').value.trim();
+                const a = document.getElementById('edit-address').value.trim();
+                if(!n || p.length < 17 || !a) { showToast('Перевірте дані', 'error'); return; }
+                if(currentUser) {
+                    try {
+                        await setDoc(doc(db, "users", currentUser.uid), { name: n, phone: p, address: a }, { merge: true });
+                        localStorage.setItem('app_name', n); localStorage.setItem('app_phone', p); localStorage.setItem('app_address', a);
+                        document.getElementById('display-user-name').innerText = n;
+                        document.getElementById('settings-display-name').innerText = n;
+                        hasUnsavedChanges = false;
+                        unsavedArrow.classList.add('opacity-0'); unsavedArrow.classList.remove('opacity-100');
+                        unsavedArrow.querySelector('svg').classList.remove('arrow-warning');
+                        btnSaveSettings.classList.remove('animate-wave-pulse');
+                        showToast('Налаштування збережено', 'success');
+                    } catch (error) { showToast('Помилка збереження', 'error'); }
+                }
+            };
+
+            // --- НАВІГАЦІЯ ---
+            const navItems = document.querySelectorAll('.nav-item');
+            navItems.forEach(item => {
+                item.addEventListener('click', () => {
+                    const targetId = item.getAttribute('data-target');
+                    if (currentTabId === 'tab-settings' && targetId !== 'tab-settings' && hasUnsavedChanges) {
+                        const arrowSvg = unsavedArrow.querySelector('svg');
+                        arrowSvg.classList.add('arrow-warning'); btnSaveSettings.classList.add('animate-wave-pulse');
+                        showToast('Збережіть зміни перед виходом', 'error');
+                        setTimeout(() => { arrowSvg.classList.remove('arrow-warning'); btnSaveSettings.classList.remove('animate-wave-pulse'); }, 2000);
+                        return;
+                    }
+                    switchTab(targetId);
+                    navItems.forEach(n => {
+                        n.classList.remove('text-blue-600', 'bg-blue-50', 'dark:text-blue-400', 'dark:bg-blue-900/30', 'scale-105');
+                        n.classList.add('text-gray-400', 'dark:text-gray-500');
+                    });
+                    item.classList.remove('text-gray-400', 'dark:text-gray-500');
+                    item.classList.add('text-blue-600', 'bg-blue-50', 'dark:text-blue-400', 'dark:bg-blue-900/30', 'scale-105');
+                });
+            });
+
+            function switchTab(tabId) {
+                currentTabId = tabId;
+                ['tab-home', 'tab-reviews', 'tab-settings'].forEach(tid => {
+                    const el = document.getElementById(tid);
+                    if(tid === tabId) { el.classList.remove('hidden-view'); el.classList.add('fade-in'); }
+                    else { el.classList.add('hidden-view'); el.classList.remove('fade-in'); }
+                });
+                const pcHeaderContainer = document.getElementById('pc-header-title-container');
+                const pcTitle = document.getElementById('pc-header-title');
+                const pcAvgRating = document.getElementById('pc-avg-rating');
+                
+                if(tabId === 'tab-reviews') { 
+                    pcTitle.innerText = 'Відгуки'; 
+                    pcHeaderContainer.classList.remove('opacity-0');
+                    pcAvgRating.classList.remove('hidden'); pcAvgRating.classList.add('flex');
+                    loadReviewsFromDB(); 
+                }
+                else if(tabId === 'tab-settings') { 
+                    pcTitle.innerText = 'Профіль'; 
+                    pcHeaderContainer.classList.remove('opacity-0');
+                    pcAvgRating.classList.add('hidden'); pcAvgRating.classList.remove('flex');
+                }
+                else { pcHeaderContainer.classList.add('opacity-0'); }
+            }
+
+            // --- ЗАМОВЛЕННЯ ВОДИ ---
+            let orderState = 'idle', orderQty = 1;
+            const ui = { water: document.getElementById('water'), hint: document.getElementById('bottle-hint'), select: document.getElementById('bottle-select-ui'), qty: document.getElementById('display-qty'), price: document.getElementById('display-price'), btnInit: document.getElementById('order-status'), actionPanel: document.getElementById('action-panel'), actionContainer: document.getElementById('action-container') };
+
+            function updatePrice() { ui.qty.innerText = orderQty; ui.price.innerText = (orderQty === 1 ? 100 : orderQty * 90) + ' ₴'; }
+
+            function resetBottle() {
+                orderState = 'idle'; orderQty = 1; updatePrice();
+                ui.water.style.height = '15%'; ui.hint.style.opacity = '1';
+                ui.select.classList.add('hidden'); ui.select.classList.remove('flex');
+                ui.actionPanel.classList.add('opacity-0', 'pointer-events-none', 'scale-95');
+                ui.btnInit.classList.remove('opacity-0', 'pointer-events-none');
+                ui.actionContainer.classList.add('h-0', 'mt-0'); ui.actionContainer.classList.remove('h-[56px]', 'mt-6');
+            }
+
+            function startOrder() {
+                if(orderState === 'idle') {
+                    orderState = 'selecting'; ui.water.style.height = '8%'; ui.hint.style.opacity = '0';
+                    ui.select.classList.remove('hidden'); ui.select.classList.add('flex');
+                    ui.btnInit.classList.add('opacity-0', 'pointer-events-none');
+                    ui.actionPanel.classList.remove('opacity-0', 'pointer-events-none', 'scale-95');
+                    ui.actionContainer.classList.remove('h-0', 'mt-0'); ui.actionContainer.classList.add('h-[56px]', 'mt-6');
+                }
+            }
+
+            document.getElementById('bottle').onclick = startOrder;
+            ui.btnInit.onclick = startOrder;
+            document.getElementById('btn-qty-plus').onclick = (e) => { e.stopPropagation(); orderQty++; updatePrice(); };
+            document.getElementById('btn-qty-minus').onclick = (e) => { e.stopPropagation(); if(orderQty > 1) { orderQty--; updatePrice(); } };
+            document.getElementById('btn-cancel-order').onclick = (e) => { e.stopPropagation(); resetBottle(); };
+            
+            document.getElementById('btn-confirm-order').onclick = async (e) => {
+                e.stopPropagation();
+                if(orderState === 'selecting' && currentUser) {
+                    ui.actionPanel.classList.add('opacity-0', 'pointer-events-none');
+                    try {
+                        await addDoc(collection(db, "orders"), {
+                            uid: currentUser.uid,
+                            name: localStorage.getItem('app_name'),
+                            phone: localStorage.getItem('app_phone'),
+                            address: localStorage.getItem('app_address'),
+                            quantity: orderQty,
+                            totalPrice: (orderQty === 1 ? 100 : orderQty * 90),
+                            status: 'processing',
+                            timestamp: Date.now() // Використовуємо локальний час для миттєвого доступу
+                        });
+                        showToast('Замовлення оформлено!', 'success');
+                        setTimeout(resetBottle, 2000);
+                    } catch (error) { showToast('Помилка бази даних', 'error'); console.error(error); resetBottle(); }
+                }
+            };
+
+            // --- ІСТОРІЯ ЗАМОВЛЕНЬ (МОДАЛКА + СОРТУВАННЯ НА КЛІЄНТІ) ---
+            const modalHistory = document.getElementById('modal-history');
+            const modalHistoryBg = document.getElementById('modal-history-bg');
+            const modalHistoryContent = document.getElementById('modal-history-content');
+            
+            document.getElementById('btn-open-history').onclick = async () => {
+                const list = document.getElementById('history-list');
+                list.innerHTML = '<div class="text-center mt-12 text-gray-500 font-bold animate-pulse">Завантаження...</div>';
+                modalHistory.classList.add('active'); modalHistoryContent.classList.add('active');
+
+                if(currentUser) {
+                    try {
+                        // Витягуємо всі замовлення юзера БЕЗ orderBy, щоб уникнути помилки індексу Firestore
+                        const q = query(collection(db, "orders"), where("uid", "==", currentUser.uid));
+                        const querySnapshot = await getDocs(q);
+                        
+                        if(querySnapshot.empty) {
+                            list.innerHTML = `<div class="text-center mt-12 text-gray-400 dark:text-gray-500"><p class="font-bold text-lg mb-2">Тут поки порожньо</p><p class="text-sm">Зробіть своє перше замовлення!</p></div>`;
+                            return;
+                        }
+
+                        // Сортуємо на стороні клієнта від нових до старих
+                        let orders = [];
+                        querySnapshot.forEach(doc => orders.push(doc.data()));
+                        orders.sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
+
+                        list.innerHTML = orders.map(o => {
+                            let stClass = 'bg-blue-100 dark:bg-blue-900/40 text-blue-700 dark:text-blue-400'; let stText = 'В обробці';
+                            if (o.status === 'processing') { stClass = 'bg-yellow-100 dark:bg-yellow-900/40 text-yellow-700 dark:text-yellow-400'; stText = 'В дорозі'; }
+                            else if (o.status === 'completed') { stClass = 'bg-green-100 dark:bg-green-900/40 text-green-700 dark:text-green-400'; stText = 'Доставлено'; }
+                            
+                            // Форматування дати
+                            let dateStr = "Щойно";
+                            if (o.timestamp) {
+                                const dateObj = new Date(o.timestamp);
+                                dateStr = dateObj.toLocaleDateString('uk-UA', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' });
+                            }
+
+                            return `
+                            <div class="bg-white dark:bg-slate-800 p-5 rounded-2xl shadow-sm border border-gray-100 dark:border-slate-700">
+                                <div class="flex justify-between items-start mb-3">
+                                    <div>
+                                        <p class="text-[10px] font-black uppercase text-gray-400 tracking-wider mb-1">${dateStr}</p>
+                                        <p class="text-lg font-black text-gray-900 dark:text-white">${o.quantity} бут. • ${o.totalPrice} ₴</p>
+                                    </div>
+                                    <span class="px-3 py-1 rounded-lg text-[9px] font-black uppercase tracking-widest ${stClass}">${stText}</span>
+                                </div>
+                                <p class="text-xs font-bold text-gray-500 dark:text-gray-400 line-clamp-1 truncate">📍 ${o.address}</p>
+                            </div>`;
+                        }).join('');
+                    } catch (error) { 
+                        list.innerHTML = `<div class="text-center mt-12 text-red-500"><p class="font-bold text-lg mb-2">Помилка доступу</p><p class="text-sm">Перевірте Firestore Rules</p></div>`; 
+                        console.error(error); 
+                    }
+                }
+            };
+            
+            function closeHistory() { modalHistory.classList.remove('active'); modalHistoryContent.classList.remove('active'); }
+            document.getElementById('btn-close-history').onclick = closeHistory; modalHistoryBg.onclick = closeHistory;
+
+            // --- ВИКЛИК (МОДАЛКА) ---
+            const modalCall = document.getElementById('modal-call');
+            const modalCallBg = document.getElementById('modal-call-bg');
+            const modalCallContent = document.getElementById('modal-call-content');
+            document.getElementById('btn-open-call').onclick = () => { modalCall.classList.add('active'); modalCallContent.classList.add('active'); };
+            function closeCall() { modalCall.classList.remove('active'); modalCallContent.classList.remove('active'); }
+            document.getElementById('btn-close-call').onclick = closeCall; modalCallBg.onclick = closeCall;
+
+            // --- ВІДГУКИ ТА РЕЙТИНГ (ІЗ FIRESTORE) ---
+            const modalReview = document.getElementById('modal-add-review');
+            
+            const starInputs = document.querySelectorAll('#review-stars-input svg');
+            starInputs.forEach(star => {
+                star.addEventListener('click', () => {
+                    currentReviewRating = parseInt(star.getAttribute('data-value'));
+                    starInputs.forEach(s => {
+                        if (parseInt(s.getAttribute('data-value')) <= currentReviewRating) {
+                            s.classList.add('text-yellow-400'); s.classList.remove('text-gray-300', 'dark:text-gray-600');
+                        } else {
+                            s.classList.remove('text-yellow-400'); s.classList.add('text-gray-300', 'dark:text-gray-600');
+                        }
+                    });
+                });
+            });
+
+            function generateStarsHtml(rating) {
+                let html = '<div class="flex gap-1 mb-2">';
+                for (let i = 1; i <= 5; i++) {
+                    if (i <= rating) {
+                        html += `<svg class="w-4 h-4 text-yellow-400 fill-current" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>`;
+                    } else {
+                        html += `<svg class="w-4 h-4 text-gray-300 dark:text-gray-600 fill-current" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>`;
+                    }
+                }
+                html += '</div>'; return html;
+            }
+
+            function updateAverageRatingUI(reviews) {
+                if (reviews.length === 0) return;
+                const total = reviews.reduce((acc, r) => acc + (r.rating || 5), 0);
+                const avg = total / reviews.length; const avgFormatted = avg.toFixed(1); const roundedAvg = Math.round(avg); 
+                let avgStarsHtml = '<div class="flex gap-0.5 items-center">';
+                for (let i = 1; i <= 5; i++) {
+                    if (i <= roundedAvg) {
+                        avgStarsHtml += `<svg class="w-4 h-4 text-yellow-400 fill-current" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>`;
+                    } else {
+                        avgStarsHtml += `<svg class="w-4 h-4 text-gray-300 dark:text-gray-600 fill-current" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>`;
+                    }
+                }
+                avgStarsHtml += `<span class="ml-1.5 font-black text-gray-900 dark:text-white text-lg leading-none mt-0.5">${avgFormatted}</span></div>`;
+                const mobileAvg = document.getElementById('mobile-avg-rating'); const pcAvg = document.getElementById('pc-avg-rating');
+                mobileAvg.innerHTML = avgStarsHtml; mobileAvg.classList.remove('hidden'); mobileAvg.classList.add('flex');
+                pcAvg.innerHTML = avgStarsHtml;
+            }
+
+            async function loadReviewsFromDB() {
+                const list = document.getElementById('reviews-list');
                 try {
-                    const q = query(collection(db, "orders"), where("uid", "==", currentUser.uid), orderBy("timestamp", "desc"));
-                    const querySnapshot = await getDocs(q);
-                    
-                    if(querySnapshot.empty) {
-                        list.innerHTML = `<div class="text-center mt-12 text-gray-400"><p class="font-bold text-lg mb-2">Тут поки порожньо</p></div>`;
+                    // Зчитуємо всі відгуки та сортуємо на клієнті
+                    const querySnapshot = await getDocs(collection(db, "reviews"));
+                    let reviews = [];
+                    querySnapshot.forEach(doc => reviews.push(doc.data()));
+                    reviews.sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
+
+                    if (reviews.length === 0) {
+                        list.innerHTML = '<div class="text-center mt-12 text-gray-400 w-full col-span-full font-bold">Немає відгуків. Будьте першим!</div>';
                         return;
                     }
 
-                    list.innerHTML = '';
-                    querySnapshot.forEach((doc) => {
-                        const o = doc.data();
-                        let stClass = 'bg-blue-100 text-blue-700'; let stText = 'В обробці';
-                        if (o.status === 'completed') { stClass = 'bg-green-100 text-green-700'; stText = 'Доставлено'; }
-                        
-                        list.innerHTML += `
-                        <div class="bg-white p-5 rounded-2xl shadow-sm border mb-4">
-                            <div class="flex justify-between items-start mb-3">
-                                <div><p class="text-lg font-black">${o.quantity} бут. • ${o.totalPrice} ₴</p></div>
-                                <span class="px-3 py-1 rounded-lg text-[9px] font-black uppercase tracking-widest ${stClass}">${stText}</span>
+                    updateAverageRatingUI(reviews);
+                    list.innerHTML = reviews.map(r => {
+                        let dateStr = "Нещодавно";
+                        if (r.timestamp) {
+                            const dateObj = new Date(r.timestamp);
+                            dateStr = dateObj.toLocaleDateString('uk-UA');
+                        }
+                        return `
+                        <div class="bg-white dark:bg-slate-800 p-6 rounded-[1.5rem] border border-gray-100 dark:border-slate-700 shadow-sm">
+                            <div class="flex justify-between items-end mb-1">
+                                <span class="font-black text-gray-900 dark:text-white text-lg">${r.name}</span>
+                                <span class="text-[9px] text-gray-400 font-bold uppercase tracking-wider">${dateStr}</span>
                             </div>
-                            <p class="text-xs font-bold text-gray-500 truncate">📍 ${o.address}</p>
+                            ${generateStarsHtml(r.rating || 5)}
+                            <p class="text-gray-600 dark:text-gray-300 text-sm font-medium">${r.text}</p>
                         </div>`;
-                    });
+                    }).join('');
                 } catch (error) {
-                    list.innerHTML = `<div class="text-center mt-12 text-red-500"><p class="font-bold">Помилка доступу</p><p class="text-xs">Перевірте Firestore Rules</p></div>`;
+                    list.innerHTML = '<div class="text-center mt-12 text-red-500 w-full col-span-full">Помилка завантаження відгуків (Перевірте Rules)</div>';
+                    console.error(error);
                 }
             }
-        };
 
-        document.getElementById('btn-close-history').onclick = () => {
-            document.getElementById('modal-history').classList.remove('active');
-            document.getElementById('modal-history-content').classList.remove('active');
-        };
-
-        // --- НАВИГАЦИЯ ---
-        document.querySelectorAll('.nav-item').forEach(item => {
-            item.addEventListener('click', () => { switchTab(item.getAttribute('data-target')); });
-        });
-
-        function switchTab(tabId) {
-            currentTabId = tabId;
-            ['tab-home', 'tab-reviews', 'tab-settings'].forEach(tid => {
-                const el = document.getElementById(tid);
-                if(tid === tabId) { el.classList.remove('hidden-view'); el.classList.add('fade-in'); }
-                else { el.classList.add('hidden-view'); el.classList.remove('fade-in'); }
-            });
-        }
-
-        // --- НАСТРОЙКИ ---
-        function loadSettingsToForm() {
-            document.getElementById('edit-name').value = localStorage.getItem('app_name') || '';
-            document.getElementById('edit-phone').value = localStorage.getItem('app_phone') || '';
-            document.getElementById('edit-address').value = localStorage.getItem('app_address') || '';
-        }
-
-        document.getElementById('btn-save-settings').onclick = async () => {
-            const n = document.getElementById('edit-name').value.trim();
-            const p = document.getElementById('edit-phone').value.trim();
-            const a = document.getElementById('edit-address').value.trim();
+            document.getElementById('btn-show-add-review').onclick = () => { 
+                modalReview.classList.remove('hidden-view'); 
+                setTimeout(() => modalReview.classList.remove('translate-y-full'), 10); 
+            };
             
-            if(currentUser) {
-                try {
-                    await setDoc(doc(db, "users", currentUser.uid), { name: n, phone: p, address: a }, { merge: true });
-                    localStorage.setItem('app_name', n); localStorage.setItem('app_phone', p); localStorage.setItem('app_address', a);
-                    document.getElementById('display-user-name').innerText = n;
-                    showToast('Налаштування збережено', 'success');
-                } catch (error) {
-                    showToast('Помилка збереження. Перевірте Rules', 'error');
-                }
-            }
-        };
-
-        // --- ЗАКАЗ ВОДЫ ---
-        let orderState = 'idle', orderQty = 1;
-        const ui = { water: document.getElementById('water'), hint: document.getElementById('bottle-hint'), select: document.getElementById('bottle-select-ui'), qty: document.getElementById('display-qty'), price: document.getElementById('display-price'), btnInit: document.getElementById('order-status'), actionPanel: document.getElementById('action-panel') };
-
-        function updatePrice() { ui.qty.innerText = orderQty; ui.price.innerText = (orderQty === 1 ? 100 : orderQty * 90) + ' ₴'; }
-
-        function resetBottle() {
-            orderState = 'idle'; orderQty = 1; updatePrice();
-            ui.water.style.height = '15%'; ui.hint.style.opacity = '1';
-            ui.select.classList.add('hidden'); ui.select.classList.remove('flex');
-            ui.actionPanel.classList.add('opacity-0', 'pointer-events-none');
-            ui.btnInit.classList.remove('opacity-0', 'pointer-events-none');
-        }
-
-        function startOrder() {
-            if(orderState === 'idle') {
-                orderState = 'selecting'; ui.water.style.height = '8%'; ui.hint.style.opacity = '0';
-                ui.select.classList.remove('hidden'); ui.select.classList.add('flex');
-                ui.btnInit.classList.add('opacity-0', 'pointer-events-none');
-                ui.actionPanel.classList.remove('opacity-0', 'pointer-events-none', 'scale-95');
-            }
-        }
-
-        document.getElementById('bottle').onclick = startOrder;
-        ui.btnInit.onclick = startOrder;
-        
-        document.getElementById('btn-qty-plus').onclick = (e) => { e.stopPropagation(); orderQty++; updatePrice(); };
-        document.getElementById('btn-qty-minus').onclick = (e) => { e.stopPropagation(); if(orderQty > 1) { orderQty--; updatePrice(); } };
-        document.getElementById('btn-cancel-order').onclick = (e) => { e.stopPropagation(); resetBottle(); };
-        
-        document.getElementById('btn-confirm-order').onclick = async (e) => {
-            e.stopPropagation();
-            if(orderState === 'selecting' && currentUser) {
-                ui.actionPanel.classList.add('opacity-0', 'pointer-events-none');
+            document.getElementById('btn-close-review').onclick = () => { 
+                modalReview.classList.add('translate-y-full'); 
+                setTimeout(() => modalReview.classList.add('hidden-view'), 300); 
+            };
+            
+            document.getElementById('btn-submit-review').onclick = async () => {
+                const text = document.getElementById('input-review-text').value.trim();
+                if (!text) { showToast('Напишіть текст', 'error'); return; }
                 
                 try {
-                    await addDoc(collection(db, "orders"), {
-                        uid: currentUser.uid,
-                        name: localStorage.getItem('app_name'),
-                        phone: localStorage.getItem('app_phone'),
-                        address: localStorage.getItem('app_address'),
-                        quantity: orderQty,
-                        totalPrice: (orderQty === 1 ? 100 : orderQty * 90),
-                        status: 'processing',
-                        timestamp: serverTimestamp()
+                    await addDoc(collection(db, "reviews"), {
+                        uid: currentUser ? currentUser.uid : 'anonymous',
+                        name: localStorage.getItem('app_name') || 'Користувач',
+                        text: text,
+                        rating: currentReviewRating,
+                        timestamp: Date.now()
                     });
                     
-                    showToast('Замовлення оформлено!', 'success');
-                    setTimeout(resetBottle, 2000);
+                    document.getElementById('input-review-text').value = '';
+                    currentReviewRating = 5;
+                    starInputs.forEach(s => { s.classList.add('text-yellow-400'); s.classList.remove('text-gray-300', 'dark:text-gray-600'); });
+                    document.getElementById('btn-close-review').click();
+                    showToast('Дякуємо за відгук!', 'success');
+                    loadReviewsFromDB(); 
                 } catch (error) {
-                    showToast('Помилка бази даних', 'error');
+                    showToast('Помилка! Перевірте Firestore Rules', 'error');
                 }
-            }
-        };
-    });
+            };
+        });
     </script>
 </body>
 </html>
