@@ -5,14 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SkySource Admin - Аналітика та Керування</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Підключення бібліотеки для графіків -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         .toast-active { transform: translateY(0) translateX(-50%); opacity: 1; pointer-events: auto; }
         .hidden-view { display: none !important; }
         .fade-in { animation: fadeIn 0.4s ease-out forwards; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-        /* Кастомний скроллбар для панелі */
         ::-webkit-scrollbar { width: 6px; }
         ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
@@ -32,12 +30,12 @@
             <div class="absolute -top-10 -left-10 w-32 h-32 bg-blue-500 opacity-20 rounded-full blur-2xl"></div>
             <div class="absolute -bottom-10 -right-10 w-32 h-32 bg-blue-600 opacity-20 rounded-full blur-2xl"></div>
             <h2 class="text-3xl font-black text-slate-900 mb-2 relative z-10">SkySource ERP</h2>
-            <p class="text-slate-500 mb-8 text-sm relative z-10">Робочий простір персоналу</p>
+            <p class="text-slate-500 mb-8 text-sm relative z-10">Захищений корпоративний портал</p>
             <button id="btn-login" class="w-full py-4 rounded-2xl bg-blue-600 hover:bg-blue-700 text-white font-bold transition-all active:scale-95 shadow-lg shadow-blue-600/30 flex items-center justify-center gap-3 relative z-10">
                 <svg class="w-5 h-5" viewBox="0 0 48 48"><path fill="#fff" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#fff" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#fff" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#fff" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg>
                 Вхід через Google
             </button>
-            <p id="auth-error" class="text-red-500 mt-4 text-xs font-bold hidden relative z-10">Доступ заборонено</p>
+            <p id="auth-error" class="text-red-500 mt-4 text-xs font-bold hidden relative z-10">У вас немає доступу до системи</p>
         </div>
     </div>
 
@@ -53,33 +51,45 @@
                     </div>
                     SkySource
                 </h2>
-                <span class="text-[10px] font-bold uppercase tracking-widest text-slate-500 mt-2 block">Management Dashboard</span>
             </div>
             
             <div class="flex-1 px-4 py-6 space-y-2 overflow-y-auto">
-                <button class="nav-item w-full flex items-center gap-3 px-4 py-3.5 rounded-xl bg-blue-600/10 text-blue-400 font-bold transition-all" data-target="panel-analytics">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
-                    Аналітика
-                </button>
+                <!-- Аналітика (Тільки Адмін/Власник) -->
+                <div id="nav-wrapper-analytics">
+                    <button class="nav-item w-full flex items-center gap-3 px-4 py-3.5 rounded-xl bg-blue-600/10 text-blue-400 font-bold transition-all" data-target="panel-analytics">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
+                        Аналітика
+                    </button>
+                </div>
+                
+                <!-- Замовлення (Всі) -->
                 <button class="nav-item w-full flex items-center gap-3 px-4 py-3.5 rounded-xl hover:bg-slate-800 font-bold transition-all" data-target="panel-orders">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path></svg>
                     Замовлення
                 </button>
-                <button class="nav-item w-full flex items-center gap-3 px-4 py-3.5 rounded-xl hover:bg-slate-800 font-bold transition-all" data-target="panel-reviews">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"></path></svg>
-                    Відгуки
-                </button>
-                <button class="nav-item w-full flex items-center gap-3 px-4 py-3.5 rounded-xl hover:bg-slate-800 font-bold transition-all" data-target="panel-admins">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
-                    Менеджери
-                </button>
+
+                <!-- Відгуки (Тільки Адмін/Власник) -->
+                <div id="nav-wrapper-reviews">
+                    <button class="nav-item w-full flex items-center gap-3 px-4 py-3.5 rounded-xl hover:bg-slate-800 font-bold transition-all" data-target="panel-reviews">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"></path></svg>
+                        Відгуки
+                    </button>
+                </div>
+
+                <!-- Команда (Тільки Адмін/Власник) -->
+                <div id="nav-wrapper-admins">
+                    <button class="nav-item w-full flex items-center gap-3 px-4 py-3.5 rounded-xl hover:bg-slate-800 font-bold transition-all" data-target="panel-admins">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
+                        Команда
+                    </button>
+                </div>
             </div>
             
             <div class="p-6 mt-auto border-t border-slate-800">
                 <div class="flex items-center justify-between mb-4 px-2">
                     <div class="text-xs">
-                        <p class="font-bold text-white" id="admin-user-email">admin@mail.com</p>
-                        <p class="text-slate-500 uppercase tracking-wider text-[9px] mt-0.5">Власник</p>
+                        <p class="font-bold text-white truncate w-40" id="admin-user-email">email</p>
+                        <p id="admin-user-role" class="text-blue-400 font-black uppercase tracking-wider text-[10px] mt-0.5">РОЛЬ</p>
                     </div>
                 </div>
                 <button id="btn-logout" class="w-full flex items-center justify-center gap-2 py-3 bg-slate-800 hover:bg-red-500/10 text-red-400 rounded-xl font-bold transition-colors">
@@ -90,7 +100,7 @@
         </nav>
 
         <!-- РОБОЧА ЗОНА -->
-        <div class="flex-1 bg-slate-50 h-screen overflow-y-auto">
+        <div class="flex-1 bg-slate-50 h-screen overflow-y-auto relative">
             
             <!-- 1. АНАЛІТИКА -->
             <div id="panel-analytics" class="p-6 md:p-10 fade-in h-full">
@@ -104,7 +114,6 @@
                     </button>
                 </div>
 
-                <!-- Віджети показників -->
                 <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
                     <div class="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm relative overflow-hidden">
                         <div class="absolute -right-4 -top-4 text-slate-50 opacity-50"><svg class="w-24 h-24" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z"/></svg></div>
@@ -126,24 +135,19 @@
                     </div>
                 </div>
 
-                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                    <!-- Графік -->
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 pb-10">
                     <div class="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm lg:col-span-2">
                         <h3 class="text-lg font-black text-slate-800 mb-4">Динаміка продажу бутлів</h3>
-                        <div class="relative h-64 w-full">
-                            <canvas id="salesChart"></canvas>
-                        </div>
+                        <div class="relative h-64 w-full"><canvas id="salesChart"></canvas></div>
                     </div>
 
-                    <!-- Ручне введення замовлення -->
                     <div class="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm">
                         <h3 class="text-lg font-black text-slate-800 mb-1">Додати продаж</h3>
                         <p class="text-xs text-slate-500 mb-5">Замовлення з телефону чи Viber</p>
-                        
                         <div class="space-y-4">
                             <div>
-                                <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1 pl-2">Клієнт (Телефон)</label>
-                                <input type="text" id="manual-phone" placeholder="096 123 45 67" class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all font-medium text-sm">
+                                <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1 pl-2">Клієнт (Телефон/Ім'я)</label>
+                                <input type="text" id="manual-phone" placeholder="Введіть дані" class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200 font-medium text-sm">
                             </div>
                             <div class="flex gap-3">
                                 <div class="flex-1">
@@ -157,7 +161,7 @@
                             </div>
                             <button id="btn-add-manual-order" class="w-full py-3.5 bg-slate-900 hover:bg-slate-800 text-white font-bold rounded-xl active:scale-95 transition-all shadow-md flex items-center justify-center gap-2 mt-2">
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M12 4v16m8-8H4"></path></svg>
-                                Зберегти в базу
+                                В базу
                             </button>
                         </div>
                     </div>
@@ -176,7 +180,6 @@
                         Оновити
                     </button>
                 </div>
-                <!-- Зробили список у вигляді сучасної таблиці-карток -->
                 <div id="orders-list" class="flex flex-col gap-3 pb-10"></div>
             </div>
 
@@ -190,18 +193,26 @@
             <!-- 4. МЕНЕДЖЕРИ -->
             <div id="panel-admins" class="hidden-view p-6 md:p-10 fade-in h-full max-w-4xl">
                 <h1 class="text-3xl font-black text-slate-900 mb-1">Команда</h1>
-                <p class="text-slate-500 text-sm mb-8">Надавайте доступ до цієї панелі своїм працівникам.</p>
+                <p class="text-slate-500 text-sm mb-8">Надавайте доступ до панелі та керуйте ролями персоналу.</p>
                 
                 <div class="bg-white p-6 rounded-3xl border border-slate-100 shadow-sm mb-8">
-                    <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2 pl-1">Запросити адміністратора</label>
+                    <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2 pl-1">Додати працівника</label>
                     <div class="flex flex-col sm:flex-row gap-3">
-                        <input type="email" id="input-new-admin" placeholder="Google Пошта працівника" class="flex-1 px-5 py-3.5 bg-slate-50 rounded-xl border border-slate-200 focus:outline-none focus:border-blue-500 font-medium transition-colors">
+                        <input type="email" id="input-new-admin" placeholder="Google Пошта" class="flex-1 px-5 py-3.5 bg-slate-50 rounded-xl border border-slate-200 focus:outline-none focus:border-blue-500 font-medium transition-colors">
+                        
+                        <!-- СЕЛЕКТОР РОЛЕЙ -->
+                        <select id="input-new-role" class="px-5 py-3.5 bg-slate-50 rounded-xl border border-slate-200 focus:outline-none focus:border-blue-500 font-bold text-slate-700 cursor-pointer">
+                            <option value="manager">Менеджер</option>
+                            <option value="admin">Адміністратор</option>
+                        </select>
+
                         <button id="btn-add-admin" class="px-8 py-3.5 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl active:scale-95 transition-all shadow-md shadow-blue-600/20">Надати доступ</button>
                     </div>
+                    <p class="text-[10px] text-slate-400 mt-3 ml-1"><b>Менеджер:</b> тільки замовлення. <b>Адміністратор:</b> замовлення, аналітика, відгуки та команда.</p>
                 </div>
                 
                 <h3 class="text-lg font-black text-slate-800 mb-4 pl-1">Активні доступи</h3>
-                <div id="admins-list" class="bg-white rounded-3xl border border-slate-100 shadow-sm divide-y divide-slate-100"></div>
+                <div id="admins-list" class="bg-white rounded-3xl border border-slate-100 shadow-sm divide-y divide-slate-100 pb-2"></div>
             </div>
 
         </div>
@@ -210,9 +221,8 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
         import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
-        import { getFirestore, collection, getDocs, doc, setDoc, deleteDoc, updateDoc, query, orderBy, addDoc } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
+        import { getFirestore, collection, getDocs, doc, setDoc, deleteDoc, updateDoc, getDoc, query, orderBy, addDoc } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
 
-        // КОНФІГУРАЦІЯ FIREBASE
         const firebaseConfig = {
             apiKey: "AIzaSyAutXr0WYq-5CkkJUESpOpIsOrZXKpULjs",
             authDomain: "skysource.firebaseapp.com",
@@ -228,9 +238,9 @@
         const provider = new GoogleAuthProvider();
 
         const OWNER_EMAIL = 'skysourcednipro@gmail.com';
-        let analyticsChart = null; // Для зберігання інстансу графіка
+        let currentUserRole = 'none'; // 'owner', 'admin', 'manager'
+        let analyticsChart = null;
 
-        // --- УВЕДОМЛЕНИЯ ---
         const toast = document.getElementById('toast');
         let toastTimeout;
         function showToast(msg, isError = false) {
@@ -240,19 +250,26 @@
             toastTimeout = setTimeout(() => { toast.classList.remove('toast-active'); toast.classList.add('opacity-0', '-translate-y-10'); }, 3000);
         }
 
-        // --- АВТОРИЗАЦІЯ ---
+        // --- АВТОРИЗАЦІЯ І ПЕРЕВІРКА РОЛІ ---
         onAuthStateChanged(auth, async (user) => {
             if (user) {
-                if (user.email === OWNER_EMAIL || await checkAdmin(user.email)) {
-                    document.getElementById('auth-screen').classList.add('hidden-view');
-                    document.getElementById('main-panel').classList.remove('hidden-view');
-                    document.getElementById('admin-user-email').innerText = user.email;
-                    
-                    // По замовчуванню завантажуємо Аналітику
-                    loadAnalytics();
+                if (user.email === OWNER_EMAIL) {
+                    currentUserRole = 'owner';
+                    initAdminPanel(user.email);
                 } else {
-                    document.getElementById('auth-error').classList.remove('hidden');
-                    signOut(auth);
+                    try {
+                        // Працівник намагається прочитати СВІЙ запис у базі
+                        const docSnap = await getDoc(doc(db, "admins", user.email));
+                        if (docSnap.exists()) {
+                            currentUserRole = docSnap.data().role || 'manager';
+                            initAdminPanel(user.email);
+                        } else {
+                            throw new Error("Немає в базі");
+                        }
+                    } catch (e) {
+                        document.getElementById('auth-error').classList.remove('hidden');
+                        signOut(auth);
+                    }
                 }
             } else {
                 document.getElementById('auth-screen').classList.remove('hidden-view');
@@ -260,16 +277,40 @@
             }
         });
 
-        async function checkAdmin(email) {
-            try { await getDocs(collection(db, "admins")); return true; } catch (e) { return false; }
-        }
-
         document.getElementById('btn-login').onclick = () => signInWithPopup(auth, provider);
-        document.getElementById('btn-logout').onclick = () => signOut(auth);
+        document.getElementById('btn-logout').onclick = () => { signOut(auth); location.reload(); };
+
+        function initAdminPanel(email) {
+            document.getElementById('auth-screen').classList.add('hidden-view');
+            document.getElementById('main-panel').classList.remove('hidden-view');
+            document.getElementById('admin-user-email').innerText = email;
+
+            const roleNames = { 'owner': 'Власник', 'admin': 'Адміністратор', 'manager': 'Менеджер' };
+            document.getElementById('admin-user-role').innerText = roleNames[currentUserRole] || 'Невідомо';
+
+            // ОБМЕЖЕННЯ ІНТЕРФЕЙСУ ДЛЯ МЕНЕДЖЕРІВ
+            if (currentUserRole === 'manager') {
+                document.getElementById('nav-wrapper-analytics').classList.add('hidden');
+                document.getElementById('nav-wrapper-reviews').classList.add('hidden');
+                document.getElementById('nav-wrapper-admins').classList.add('hidden');
+                // Примусово перемикаємо на вкладку Замовлень
+                document.querySelector('[data-target="panel-orders"]').click();
+            } else {
+                // Власник та Адміни бачать Аналітику першою
+                document.querySelector('[data-target="panel-analytics"]').click();
+            }
+        }
 
         // --- НАВІГАЦІЯ ---
         document.querySelectorAll('.nav-item').forEach(btn => {
             btn.addEventListener('click', () => {
+                const target = btn.dataset.target;
+                
+                // Захист від кліків через консоль
+                if (currentUserRole === 'manager' && target !== 'panel-orders') {
+                    showToast('Недостатньо прав', true); return;
+                }
+
                 document.querySelectorAll('.nav-item').forEach(b => {
                     b.classList.remove('bg-blue-600/10', 'text-blue-400');
                     b.classList.add('text-slate-400', 'hover:bg-slate-800');
@@ -278,44 +319,33 @@
                 btn.classList.remove('text-slate-400', 'hover:bg-slate-800');
                 
                 ['panel-analytics', 'panel-orders', 'panel-reviews', 'panel-admins'].forEach(id => document.getElementById(id).classList.add('hidden-view'));
-                document.getElementById(btn.dataset.target).classList.remove('hidden-view');
+                document.getElementById(target).classList.remove('hidden-view');
 
-                if(btn.dataset.target === 'panel-analytics') loadAnalytics();
-                if(btn.dataset.target === 'panel-orders') loadOrders();
-                if(btn.dataset.target === 'panel-reviews') loadReviews();
-                if(btn.dataset.target === 'panel-admins') loadAdmins();
+                if(target === 'panel-analytics') loadAnalytics();
+                if(target === 'panel-orders') loadOrders();
+                if(target === 'panel-reviews') loadReviews();
+                if(target === 'panel-admins') loadAdmins();
             });
         });
 
         // --- 1. АНАЛІТИКА ---
         window.loadAnalytics = async () => {
+            if (currentUserRole === 'manager') return;
             try {
-                // Витягуємо всі замовлення для розрахунків
                 const snap = await getDocs(collection(db, "orders"));
-                let totalRevenue = 0;
-                let totalBottles = 0;
-                let clientsPhones = {}; // Для підрахунку LTV / нові-постійні
-                
-                // Для графіку по днях (останні 30 днів)
-                const now = new Date();
-                const thirtyDaysAgo = now.getTime() - (30 * 24 * 60 * 60 * 1000);
+                let totalRevenue = 0, totalBottles = 0;
+                let clientsPhones = {}; 
+                const now = new Date(); const thirtyDaysAgo = now.getTime() - (30 * 24 * 60 * 60 * 1000);
                 let dailySales = {};
 
                 snap.forEach(docSnap => {
                     const o = docSnap.data();
-                    const qty = parseInt(o.quantity) || 0;
-                    const price = parseFloat(o.totalPrice) || 0;
-                    const phone = o.phone || o.source || 'Невідомий'; // source для ручних замовлень
-                    const time = o.timestamp || 0;
-
-                    // Загальна стата (вважаємо тільки виконані або оброблені, не видалені)
-                    totalBottles += qty;
-                    totalRevenue += price;
-
-                    // Клієнти (рахуємо кількість покупок на кожен телефон)
+                    const qty = parseInt(o.quantity) || 0; const price = parseFloat(o.totalPrice) || 0;
+                    const phone = o.phone || o.source || 'Невідомий'; const time = o.timestamp || 0;
+                    
+                    totalBottles += qty; totalRevenue += price;
                     clientsPhones[phone] = (clientsPhones[phone] || 0) + 1;
 
-                    // Для графіка (фільтруємо за останні 30 днів)
                     if(time >= thirtyDaysAgo) {
                         const dateObj = new Date(time);
                         const dateStr = `${dateObj.getDate().toString().padStart(2, '0')}.${(dateObj.getMonth()+1).toString().padStart(2, '0')}`;
@@ -323,119 +353,42 @@
                     }
                 });
 
-                // Розрахунок нових vs постійних
-                let newClients = 0;
-                let regularClients = 0;
-                for (let phone in clientsPhones) {
-                    if (clientsPhones[phone] === 1) newClients++;
-                    else regularClients++;
-                }
+                let newClients = 0, regularClients = 0;
+                for (let p in clientsPhones) { if (clientsPhones[p] === 1) newClients++; else regularClients++; }
 
-                // Оновлення віджетів UI
                 document.getElementById('stat-revenue').innerText = `${totalRevenue.toLocaleString()} ₴`;
                 document.getElementById('stat-bottles').innerText = totalBottles;
                 document.getElementById('stat-regular-clients').innerText = regularClients;
                 document.getElementById('stat-new-clients').innerText = newClients;
 
-                // Підготовка даних для Chart.js
-                // Сортуємо ключі дат (щоб графік йшов зліва направо по хронології)
                 const sortedDates = Object.keys(dailySales).sort((a, b) => {
                     const [da, ma] = a.split('.'); const [db, mb] = b.split('.');
                     return new Date(2026, ma-1, da) - new Date(2026, mb-1, db);
                 });
                 
-                const chartLabels = sortedDates;
-                const chartData = sortedDates.map(date => dailySales[date]);
+                const ctx = document.getElementById('salesChart').getContext('2d');
+                if (analyticsChart) analyticsChart.destroy();
+                let gradient = ctx.createLinearGradient(0, 0, 0, 400);
+                gradient.addColorStop(0, 'rgba(37, 99, 235, 0.5)'); gradient.addColorStop(1, 'rgba(37, 99, 235, 0.0)');
 
-                renderChart(chartLabels, chartData);
-
-            } catch (e) {
-                console.error(e);
-                showToast('Помилка завантаження аналітики', true);
-            }
+                analyticsChart = new Chart(ctx, {
+                    type: 'line',
+                    data: { labels: sortedDates, datasets: [{ label: 'Бутлів', data: sortedDates.map(d => dailySales[d]), borderColor: '#2563eb', backgroundColor: gradient, borderWidth: 3, fill: true, tension: 0.4 }] },
+                    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, grid: { color: '#f1f5f9', drawBorder: false } }, x: { grid: { display: false } } } }
+                });
+            } catch (e) { showToast('Помилка аналітики', true); }
         };
 
-        function renderChart(labels, data) {
-            const ctx = document.getElementById('salesChart').getContext('2d');
-            
-            // Якщо графік вже існує - знищуємо його перед малюванням нового (щоб не накладалися)
-            if (analyticsChart) {
-                analyticsChart.destroy();
-            }
-
-            // Градієнт для лінії
-            let gradient = ctx.createLinearGradient(0, 0, 0, 400);
-            gradient.addColorStop(0, 'rgba(37, 99, 235, 0.5)'); // синій прозорий
-            gradient.addColorStop(1, 'rgba(37, 99, 235, 0.0)');
-
-            analyticsChart = new Chart(ctx, {
-                type: 'line',
-                data: {
-                    labels: labels,
-                    datasets: [{
-                        label: 'Продано бутлів',
-                        data: data,
-                        borderColor: '#2563eb', // text-blue-600
-                        backgroundColor: gradient,
-                        borderWidth: 3,
-                        pointBackgroundColor: '#ffffff',
-                        pointBorderColor: '#2563eb',
-                        pointBorderWidth: 2,
-                        pointRadius: 4,
-                        pointHoverRadius: 6,
-                        fill: true,
-                        tension: 0.4 // Плавні вигини
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: { display: false }
-                    },
-                    scales: {
-                        y: {
-                            beginAtZero: true,
-                            grid: { color: '#f1f5f9', drawBorder: false }, // text-slate-100
-                            ticks: { precision: 0, color: '#94a3b8' } // цілі числа
-                        },
-                        x: {
-                            grid: { display: false, drawBorder: false },
-                            ticks: { color: '#94a3b8' }
-                        }
-                    }
-                }
-            });
-        }
-
-        // РУЧНЕ ДОДАВАННЯ ЗАМОВЛЕННЯ
         document.getElementById('btn-add-manual-order').onclick = async () => {
-            const phone = document.getElementById('manual-phone').value.trim() || 'Ручне (Без телефону)';
+            const phone = document.getElementById('manual-phone').value.trim() || 'Без імені';
             const qty = parseInt(document.getElementById('manual-qty').value) || 1;
             const price = parseFloat(document.getElementById('manual-price').value) || 100;
-
             try {
-                await addDoc(collection(db, "orders"), {
-                    uid: 'manual_entry',
-                    name: 'Ручне введення',
-                    phone: phone,
-                    address: 'Офлайн / Самовивіз',
-                    quantity: qty,
-                    totalPrice: price,
-                    status: 'completed', // Одразу як виконане
-                    timestamp: Date.now(),
-                    source: 'manual'
-                });
-                
-                document.getElementById('manual-phone').value = '';
-                document.getElementById('manual-price').value = '';
-                showToast('Замовлення додано в статистику!', false);
-                loadAnalytics(); // Оновлюємо дашборд
-            } catch (e) {
-                showToast('Помилка збереження', true);
-            }
+                await addDoc(collection(db, "orders"), { uid: 'manual', name: 'Офлайн', phone: phone, address: 'Самовивіз/Соцмережі', quantity: qty, totalPrice: price, status: 'completed', timestamp: Date.now(), source: 'manual' });
+                document.getElementById('manual-phone').value = ''; document.getElementById('manual-price').value = '';
+                showToast('Успішно збережено!', false); loadAnalytics(); 
+            } catch (e) { showToast('Помилка збереження', true); }
         };
-
 
         // --- 2. ЗАМОВЛЕННЯ ---
         window.copyToClipboard = (name, phone, addr) => {
@@ -443,19 +396,14 @@
         };
 
         window.updateOrderStatus = async (id, status) => {
-            try {
-                await updateDoc(doc(db, "orders", id), { status });
-                showToast(status === 'archived' ? 'Перенесено в архів' : 'Статус змінено');
-                loadOrders();
-            } catch (e) { showToast('Помилка бази', true); }
+            try { await updateDoc(doc(db, "orders", id), { status }); showToast('Статус змінено'); loadOrders(); }
+            catch (e) { showToast('Помилка бази', true); }
         };
 
         window.deleteOrder = async (id) => {
             if(confirm('Видалити замовлення з бази назавжди? (Це змінить аналітику)')) {
-                try {
-                    await deleteDoc(doc(db, "orders", id));
-                    showToast('Замовлення стерто'); loadOrders();
-                } catch(e) { showToast('Помилка видалення', true); }
+                try { await deleteDoc(doc(db, "orders", id)); showToast('Замовлення стерто'); loadOrders(); }
+                catch(e) { showToast('Помилка видалення', true); }
             }
         };
 
@@ -463,53 +411,31 @@
             const list = document.getElementById('orders-list');
             list.innerHTML = '<div class="text-center p-10"><p class="text-slate-400 font-bold animate-pulse">Зв\'язок з базою...</p></div>';
             try {
-                // Всі замовлення, сортування на клієнті щоб уникнути проблем з індексами
                 const snap = await getDocs(collection(db, "orders"));
-                let ordersArr = [];
-                snap.forEach(doc => ordersArr.push({ id: doc.id, ...doc.data() }));
+                let ordersArr = []; snap.forEach(doc => ordersArr.push({ id: doc.id, ...doc.data() }));
                 ordersArr.sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
 
                 list.innerHTML = '';
                 ordersArr.forEach(o => {
-                    const date = o.timestamp ? new Date(o.timestamp).toLocaleString('uk-UA', { day:'2-digit', month:'2-digit', hour:'2-digit', minute:'2-digit'}) : '--';
-                    
+                    const date = o.timestamp ? new Date(o.timestamp).toLocaleDateString('uk-UA', { day:'2-digit', month:'2-digit', hour:'2-digit', minute:'2-digit'}) : '--';
                     let statusBadge = '<span class="bg-blue-100 text-blue-700 px-2.5 py-1 rounded-md text-[10px] font-black uppercase tracking-widest">В обробці</span>';
                     let bgCard = 'bg-white';
-                    
-                    if(o.status === 'archived' || o.status === 'completed') {
-                        statusBadge = '<span class="bg-slate-100 text-slate-500 px-2.5 py-1 rounded-md text-[10px] font-black uppercase tracking-widest">Виконано</span>';
-                        bgCard = 'bg-slate-50 opacity-70 border-dashed';
-                    }
-                    if(o.source === 'manual') {
-                         statusBadge = '<span class="bg-purple-100 text-purple-700 px-2.5 py-1 rounded-md text-[10px] font-black uppercase tracking-widest">Ручне (Офлайн)</span>';
-                    }
+                    if(o.status === 'archived' || o.status === 'completed') { statusBadge = '<span class="bg-slate-100 text-slate-500 px-2.5 py-1 rounded-md text-[10px] font-black uppercase tracking-widest">Виконано</span>'; bgCard = 'bg-slate-50 opacity-70 border-dashed'; }
+                    if(o.source === 'manual') statusBadge = '<span class="bg-purple-100 text-purple-700 px-2.5 py-1 rounded-md text-[10px] font-black uppercase tracking-widest">Офлайн</span>';
                     
                     list.innerHTML += `
                     <div class="${bgCard} p-5 rounded-2xl border border-slate-200 shadow-sm flex flex-col md:flex-row justify-between items-start md:items-center gap-4 hover:shadow-md transition-shadow">
                         <div class="flex-1">
-                            <div class="flex items-center gap-3 mb-1.5">
-                                ${statusBadge}
-                                <span class="text-xs font-bold text-slate-400">${date}</span>
-                            </div>
+                            <div class="flex items-center gap-3 mb-1.5">${statusBadge}<span class="text-xs font-bold text-slate-400">${date}</span></div>
                             <h3 class="text-xl font-black text-slate-900 leading-tight mb-1">${o.quantity} бут. • <span class="text-blue-600">${o.totalPrice} ₴</span></h3>
-                            <div class="flex items-center gap-2 text-sm font-medium text-slate-600">
-                                <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
-                                ${o.name} • ${o.phone}
-                            </div>
-                            <div class="flex items-center gap-2 text-sm font-medium text-slate-600 mt-1">
-                                <svg class="w-4 h-4 text-slate-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
-                                <span class="truncate">${o.address}</span>
-                            </div>
+                            <div class="flex items-center gap-2 text-sm font-medium text-slate-600">👤 ${o.name} • 📞 ${o.phone}</div>
+                            <div class="flex items-center gap-2 text-sm font-medium text-slate-600 mt-1">📍 <span class="truncate">${o.address}</span></div>
                         </div>
-                        
                         <div class="flex flex-row md:flex-col gap-2 w-full md:w-auto mt-2 md:mt-0">
-                            <button onclick="copyToClipboard('${o.name}', '${o.phone}', '${o.address}')" class="flex-1 md:flex-none flex items-center justify-center gap-2 px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-sm rounded-xl transition-colors">
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg>
-                                Копіювати
-                            </button>
+                            <button onclick="copyToClipboard('${o.name}', '${o.phone}', '${o.address}')" class="flex-1 md:flex-none flex items-center justify-center gap-2 px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-sm rounded-xl transition-colors">Копіювати</button>
                             <div class="flex gap-2 w-full">
-                                ${o.status !== 'archived' && o.status !== 'completed' ? `<button onclick="updateOrderStatus('${o.id}', 'archived')" class="flex-1 px-3 py-2 bg-green-50 hover:bg-green-100 text-green-600 font-bold text-sm rounded-xl transition-colors text-center">✓ Готово</button>` : ''}
-                                <button onclick="deleteOrder('${o.id}')" class="flex-1 px-3 py-2 bg-red-50 hover:bg-red-100 text-red-600 font-bold text-sm rounded-xl transition-colors text-center">✕ Видалити</button>
+                                ${o.status !== 'archived' && o.status !== 'completed' ? `<button onclick="updateOrderStatus('${o.id}', 'archived')" class="flex-1 px-3 py-2 bg-green-50 hover:bg-green-100 text-green-600 font-bold text-sm rounded-xl text-center">✓ Готово</button>` : ''}
+                                <button onclick="deleteOrder('${o.id}')" class="flex-1 px-3 py-2 bg-red-50 hover:bg-red-100 text-red-600 font-bold text-sm rounded-xl text-center">✕ Видал.</button>
                             </div>
                         </div>
                     </div>`;
@@ -520,45 +446,37 @@
 
         // --- 3. ВІДГУКИ ---
         window.approveReview = async (id) => {
-            try { await updateDoc(doc(db, "reviews", id), { approved: true }); showToast('Відгук схвалено!'); loadReviews(); }
-            catch(e) { showToast('Помилка схвалення', true); }
+            try { await updateDoc(doc(db, "reviews", id), { approved: true }); showToast('Відгук схвалено!'); loadReviews(); } catch(e) { showToast('Помилка', true); }
         };
-        
         window.deleteReview = async (id) => {
             if(confirm('Точно видалити відгук?')) {
-                try { await deleteDoc(doc(db, "reviews", id)); showToast('Відгук знищено'); loadReviews(); }
-                catch(e) { showToast('Помилка', true); }
+                try { await deleteDoc(doc(db, "reviews", id)); showToast('Відгук знищено'); loadReviews(); } catch(e) { showToast('Помилка', true); }
             }
         };
 
         async function loadReviews() {
+            if (currentUserRole === 'manager') return;
             const list = document.getElementById('reviews-list');
             list.innerHTML = '<div class="col-span-full text-center p-10"><p class="text-slate-400 font-bold animate-pulse">Завантаження...</p></div>';
             try {
                 const snap = await getDocs(collection(db, "reviews"));
-                let revArr = [];
-                snap.forEach(doc => revArr.push({ id: doc.id, ...doc.data() }));
+                let revArr = []; snap.forEach(doc => revArr.push({ id: doc.id, ...doc.data() }));
                 revArr.sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
 
                 list.innerHTML = '';
                 revArr.forEach(r => {
                     const isApproved = r.approved === true;
-                    
                     list.innerHTML += `
                     <div class="bg-white p-6 rounded-3xl border ${isApproved ? 'border-slate-100' : 'border-yellow-300 shadow-yellow-100'} shadow-sm relative flex flex-col h-full">
                         ${!isApproved ? '<div class="absolute -top-3 -right-2 bg-yellow-400 text-slate-900 text-[10px] font-black uppercase tracking-widest px-4 py-1.5 rounded-full shadow-lg">Потребує перевірки</div>' : ''}
-                        
                         <div class="flex justify-between items-center mb-3">
                             <span class="font-black text-lg text-slate-900">${r.name}</span>
-                            <div class="flex gap-0.5 text-yellow-400">
-                                ${Array(r.rating || 5).fill('<svg class="w-4 h-4 fill-current" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>').join('')}
-                            </div>
+                            <span class="text-yellow-400 font-black tracking-widest">${'★'.repeat(r.rating || 5)}</span>
                         </div>
                         <p class="text-slate-600 text-sm mb-6 flex-1 italic">«${r.text}»</p>
-                        
                         <div class="flex gap-2 mt-auto pt-4 border-t border-slate-50">
-                            ${!isApproved ? `<button onclick="approveReview('${r.id}')" class="flex-1 py-2.5 bg-green-50 text-green-600 font-bold text-sm rounded-xl hover:bg-green-100 transition-colors">Схвалити</button>` : ''}
-                            <button onclick="deleteReview('${r.id}')" class="flex-1 py-2.5 bg-red-50 text-red-500 font-bold text-sm rounded-xl hover:bg-red-100 transition-colors">Видалити</button>
+                            ${!isApproved ? `<button onclick="approveReview('${r.id}')" class="flex-1 py-2.5 bg-green-50 text-green-600 font-bold text-sm rounded-xl">Схвалити</button>` : ''}
+                            <button onclick="deleteReview('${r.id}')" class="flex-1 py-2.5 bg-red-50 text-red-500 font-bold text-sm rounded-xl">Видалити</button>
                         </div>
                     </div>`;
                 });
@@ -567,32 +485,33 @@
 
         // --- 4. МЕНЕДЖЕРИ ---
         window.removeAdmin = async (email) => {
-            if(email === OWNER_EMAIL) { showToast('Головного власника видалити неможливо', true); return; }
-            if(confirm(`Позбавити доступу менеджера ${email}?`)) {
-                try { await deleteDoc(doc(db, "admins", email)); showToast('Менеджера усунуто'); loadAdmins(); }
-                catch(e) { showToast('Помилка', true); }
+            if(email === OWNER_EMAIL) { showToast('Головного власника не можна видалити', true); return; }
+            if(confirm(`Позбавити доступу співробітника ${email}?`)) {
+                try { await deleteDoc(doc(db, "admins", email)); showToast('Співробітника усунуто'); loadAdmins(); } catch(e) { showToast('Помилка', true); }
             }
         };
 
         document.getElementById('btn-add-admin').onclick = async () => {
             const email = document.getElementById('input-new-admin').value.trim().toLowerCase();
+            const role = document.getElementById('input-new-role').value;
             if(!email) return;
             try {
-                await setDoc(doc(db, "admins", email), { email: email, addedAt: Date.now() });
+                await setDoc(doc(db, "admins", email), { email: email, role: role, addedAt: Date.now() });
                 document.getElementById('input-new-admin').value = '';
                 showToast('Успішно! Працівник має доступ.'); loadAdmins();
             } catch(e) { showToast('Помилка БД. Перевірте права', true); }
         };
 
         async function loadAdmins() {
+            if (currentUserRole === 'manager') return;
             const list = document.getElementById('admins-list');
             list.innerHTML = '<div class="p-6 text-slate-400 font-bold">Отримання даних...</div>';
             try {
                 const snap = await getDocs(collection(db, "admins"));
                 list.innerHTML = `
-                    <div class="p-5 flex justify-between items-center bg-blue-50/50">
+                    <div class="p-5 flex justify-between items-center bg-blue-50/50 mt-4 rounded-t-2xl">
                         <div class="flex items-center gap-3">
-                            <div class="w-8 h-8 rounded-full bg-blue-600 text-white flex items-center justify-center font-bold text-xs">Вл</div>
+                            <div class="w-8 h-8 rounded-full bg-blue-600 text-white flex items-center justify-center font-bold text-xs shadow-md shadow-blue-500/30">Вл</div>
                             <span class="font-bold text-slate-900">${OWNER_EMAIL}</span>
                         </div>
                         <span class="px-3 py-1 bg-blue-100 text-blue-700 text-[10px] font-black uppercase tracking-widest rounded-lg">Власник</span>
@@ -600,13 +519,20 @@
                 
                 snap.forEach(docSnap => {
                     const data = docSnap.data();
+                    const isAdm = data.role === 'admin';
+                    
                     list.innerHTML += `
                     <div class="p-5 flex justify-between items-center">
                         <div class="flex items-center gap-3">
-                            <div class="w-8 h-8 rounded-full bg-slate-200 text-slate-500 flex items-center justify-center font-bold text-xs">Мн</div>
-                            <span class="font-medium text-slate-700">${data.email}</span>
+                            <div class="w-8 h-8 rounded-full ${isAdm ? 'bg-indigo-100 text-indigo-600' : 'bg-green-100 text-green-600'} flex items-center justify-center font-bold text-xs">
+                                ${isAdm ? 'Ад' : 'Мн'}
+                            </div>
+                            <div>
+                                <span class="font-medium text-slate-800 block">${data.email}</span>
+                                <span class="text-[10px] font-bold uppercase tracking-widest ${isAdm ? 'text-indigo-500' : 'text-green-500'}">${isAdm ? 'Адміністратор' : 'Менеджер'}</span>
+                            </div>
                         </div>
-                        <button onclick="removeAdmin('${data.email}')" class="px-4 py-1.5 border border-red-200 text-red-500 hover:bg-red-50 font-bold text-xs rounded-lg transition-colors">Відключити</button>
+                        <button onclick="removeAdmin('${data.email}')" class="px-4 py-2 bg-white border border-red-200 text-red-500 hover:bg-red-50 hover:border-red-300 font-bold text-xs rounded-xl transition-colors shadow-sm">Звільнити</button>
                     </div>`;
                 });
             } catch(e) { list.innerHTML = '<div class="p-6 text-red-500">Помилка завантаження</div>'; }
