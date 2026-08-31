@@ -1,16 +1,34 @@
-## Hi there 👋
+# SkySource App 💧
 
-<!--
-**skysourcednipro/skysourcednipro** is a ✨ _special_ ✨ repository because its `README.md` (this file) appears on your GitHub profile.
+Сучасний веб-додаток для зручного та швидкого замовлення питної води (19 літрів) у місті Дніпро. Проєкт створено для автоматизації роботи служби доставки, покращення клієнтського досвіду та зручного керування замовленнями.
 
-Here are some ideas to get you started:
+## Основні можливості
 
-- 🔭 I’m currently working on ...
-- 🌱 I’m currently learning ...
-- 👯 I’m looking to collaborate on ...
-- 🤔 I’m looking for help with ...
-- 💬 Ask me about ...
-- 📫 How to reach me: ...
-- 😄 Pronouns: ...
-- ⚡ Fun fact: ...
--->
+* **Для клієнтів (`index.html`)**:
+  * Швидка авторизація через Google.
+  * Інтерактивний інтерфейс вибору кількості бутлів.
+  * Збереження контактних даних та адреси доставки.
+  * Історія замовлень із відображенням поточного статусу.
+  * Можливість залишати відгуки.
+  * Завантаження власного фото профілю.
+
+* **Для адміністраторів (`admin.html`)**:
+  * Захищений доступ лише для авторизованого персоналу.
+  * Керування статусами замовлень (обробка, архівація).
+  * Швидке копіювання даних клієнта для кур'єрів.
+  * Модерація відгуків.
+  * Керування доступами для менеджерів.
+
+## Технологічний стек
+
+* **Frontend**: HTML5, CSS3, Vanilla JavaScript (ES6 Modules).
+* **Стилізація**: Tailwind CSS (з підтримкою Dark/Light Mode).
+* **Backend / BaaS**: Firebase (Authentication, Cloud Firestore).
+* **Інтеграції**: ImgBB API.
+
+## Запуск проєкту
+
+Проєкт не потребує складного збирання (без Node.js чи Webpack). Для запуску достатньо відкрити файл `index.html` або `admin.html` у будь-якому сучасному браузері, або розмістити файли на будь-якому статичному хостингу (GitHub Pages, Firebase Hosting, Vercel тощо).
+
+---
+*Автор: Євген Чернов*
