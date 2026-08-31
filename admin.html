@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SkySource Адмін-панель</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .toast-active { transform: translateY(0) translateX(-50%); opacity: 1; pointer-events: auto; }
+        .hidden-view { display: none !important; }
+    </style>
+</head>
+<body class="bg-gray-50 text-gray-900 font-sans min-h-screen flex flex-col md:flex-row">
+
+    <!-- СПОВІЩЕННЯ -->
+    <div id="toast" class="fixed top-8 left-1/2 -translate-x-1/2 z-[100] px-6 py-4 rounded-full shadow-2xl transition-all duration-300 opacity-0 -translate-y-10 flex items-center gap-3 font-bold text-sm pointer-events-none">
+        <span id="toast-msg"></span>
+    </div>
+
+    <!-- ЕКРАН АВТОРИЗАЦІЇ -->
+    <div id="auth-screen" class="fixed inset-0 bg-slate-900 z-50 flex items-center justify-center fade-in">
+        <div class="bg-white p-10 rounded-3xl shadow-2xl max-w-sm w-full text-center">
+            <h2 class="text-3xl font-black text-blue-900 mb-2">SkySource Admin</h2>
+            <p class="text-gray-500 mb-8 text-sm">Вхід тільки для персоналу</p>
+            <button id="btn-login" class="w-full py-4 rounded-2xl bg-blue-600 hover:bg-blue-700 text-white font-bold transition-all active:scale-95">
+                Увійти через Google
+            </button>
+            <p id="auth-error" class="text-red-500 mt-4 text-xs font-bold hidden">Доступ заборонено</p>
+        </div>
+    </div>
+
+    <!-- ОСНОВНА ПАНЕЛЬ -->
+    <div id="main-panel" class="hidden-view w-full h-screen flex flex-col md:flex-row">
+        
+        <!-- САЙДБАР -->
+        <nav class="w-full md:w-64 bg-slate-900 text-white flex flex-col shrink-0">
+            <div class="p-6">
+                <h2 class="text-2xl font-black text-blue-400 tracking-tight">SkySource<br><span class="text-white">Admin</span></h2>
+            </div>
+            <div class="flex-1 px-4 space-y-2">
+                <button class="nav-item w-full text-left px-4 py-3 rounded-xl bg-blue-600/30 text-blue-400 font-bold" data-target="panel-orders">📦 Замовлення</button>
+                <button class="nav-item w-full text-left px-4 py-3 rounded-xl hover:bg-slate-800 text-gray-400 font-bold" data-target="panel-reviews">⭐ Відгуки</button>
+                <button class="nav-item w-full text-left px-4 py-3 rounded-xl hover:bg-slate-800 text-gray-400 font-bold" data-target="panel-admins">👥 Менеджери</button>
+            </div>
+            <div class="p-6 mt-auto">
+                <button id="btn-logout" class="w-full py-3 bg-slate-800 hover:bg-red-500/20 text-red-400 rounded-xl font-bold transition-colors">Вийти</button>
+            </div>
+        </nav>
+
+        <!-- КОНТЕНТ -->
+        <div class="flex-1 bg-gray-50 overflow-y-auto p-6 md:p-10">
+            
+            <!-- ЗАМОВЛЕННЯ -->
+            <div id="panel-orders" class="fade-in">
+                <div class="flex justify-between items-center mb-8">
+                    <h1 class="text-3xl font-black">Замовлення</h1>
+                    <button id="btn-refresh-orders" class="px-4 py-2 bg-white border shadow-sm rounded-lg font-bold text-gray-600 hover:bg-gray-50">🔄 Оновити</button>
+                </div>
+                <div id="orders-list" class="grid gap-4"></div>
+            </div>
+
+            <!-- ВІДГУКИ -->
+            <div id="panel-reviews" class="hidden-view fade-in">
+                <h1 class="text-3xl font-black mb-8">Модерація відгуків</h1>
+                <div id="reviews-list" class="grid gap-4 md:grid-cols-2"></div>
+            </div>
+
+            <!-- МЕНЕДЖЕРИ -->
+            <div id="panel-admins" class="hidden-view fade-in">
+                <h1 class="text-3xl font-black mb-2">Менеджери</h1>
+                <p class="text-gray-500 mb-8">Керування доступом до цієї панелі.</p>
+                
+                <div class="bg-white p-6 rounded-2xl border shadow-sm mb-8 flex gap-3">
+                    <input type="email" id="input-new-admin" placeholder="Google Пошта менеджера" class="flex-1 px-4 py-3 bg-gray-50 rounded-xl border focus:outline-none focus:border-blue-500 font-medium">
+                    <button id="btn-add-admin" class="px-6 py-3 bg-slate-900 text-white font-bold rounded-xl active:scale-95">Додати</button>
+                </div>
+                
+                <div id="admins-list" class="bg-white rounded-2xl border shadow-sm divide-y"></div>
+            </div>
+
+        </div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
+        import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
+        import { getFirestore, collection, getDocs, doc, setDoc, deleteDoc, updateDoc, query, orderBy } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
+
+        // ВАШ КОНФІГ
+        const firebaseConfig = {
+            apiKey: "AIzaSyAutXr0WYq-5CkkJUESpOpIsOrZXKpULjs",
+            authDomain: "skysource.firebaseapp.com",
+            projectId: "skysource",
+            storageBucket: "skysource.firebasestorage.app",
+            messagingSenderId: "1033630811129",
+            appId: "1:1033630811129:web:0388eb20c87250b28ab328"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+        const provider = new GoogleAuthProvider();
+
+        const OWNER_EMAIL = 'skysourcednipro@gmail.com';
+
+        // --- УВЕДОМЛЕНИЯ ---
+        const toast = document.getElementById('toast');
+        let toastTimeout;
+        function showToast(msg, isError = false) {
+            clearTimeout(toastTimeout);
+            document.getElementById('toast-msg').innerText = msg;
+            toast.className = `fixed top-8 left-1/2 -translate-x-1/2 z-[100] px-6 py-4 rounded-full shadow-2xl transition-all duration-300 flex items-center gap-3 font-bold text-sm toast-active ${isError ? 'bg-red-50 text-red-800 border border-red-200' : 'bg-slate-900 text-white'}`;
+            toastTimeout = setTimeout(() => { toast.classList.remove('toast-active'); toast.classList.add('opacity-0', '-translate-y-10'); }, 3000);
+        }
+
+        // --- АВТОРИЗАЦИЯ ---
+        onAuthStateChanged(auth, async (user) => {
+            if (user) {
+                // Перевіряємо чи має право
+                if (user.email === OWNER_EMAIL || await checkAdmin(user.email)) {
+                    document.getElementById('auth-screen').classList.add('hidden-view');
+                    document.getElementById('main-panel').classList.remove('hidden-view');
+                    loadOrders();
+                } else {
+                    document.getElementById('auth-error').classList.remove('hidden');
+                    signOut(auth);
+                }
+            } else {
+                document.getElementById('auth-screen').classList.remove('hidden-view');
+                document.getElementById('main-panel').classList.add('hidden-view');
+            }
+        });
+
+        async function checkAdmin(email) {
+            try {
+                // Спроба прочитати список адмінів. Якщо не адмін - виб'є помилку Rules
+                await getDocs(collection(db, "admins"));
+                return true;
+            } catch (e) { return false; }
+        }
+
+        document.getElementById('btn-login').onclick = () => signInWithPopup(auth, provider);
+        document.getElementById('btn-logout').onclick = () => signOut(auth);
+
+        // --- НАВІГАЦІЯ ---
+        document.querySelectorAll('.nav-item').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.nav-item').forEach(b => {
+                    b.classList.remove('bg-blue-600/30', 'text-blue-400');
+                    b.classList.add('text-gray-400');
+                });
+                btn.classList.add('bg-blue-600/30', 'text-blue-400');
+                btn.classList.remove('text-gray-400');
+                
+                ['panel-orders', 'panel-reviews', 'panel-admins'].forEach(id => document.getElementById(id).classList.add('hidden-view'));
+                document.getElementById(btn.dataset.target).classList.remove('hidden-view');
+
+                if(btn.dataset.target === 'panel-orders') loadOrders();
+                if(btn.dataset.target === 'panel-reviews') loadReviews();
+                if(btn.dataset.target === 'panel-admins') loadAdmins();
+            });
+        });
+
+        // --- ЗАМОВЛЕННЯ ---
+        window.copyToClipboard = (name, phone, addr) => {
+            navigator.clipboard.writeText(`Ім'я: ${name}\nТелефон: ${phone}\nАдреса: ${addr}`).then(() => showToast('Дані клієнта скопійовано!'));
+        };
+
+        window.updateOrderStatus = async (id, status) => {
+            try {
+                await updateDoc(doc(db, "orders", id), { status });
+                showToast(status === 'archived' ? 'Замовлення в архіві' : 'Статус оновлено');
+                loadOrders();
+            } catch (e) { showToast('Помилка', true); }
+        };
+
+        window.deleteOrder = async (id) => {
+            if(confirm('Точно видалити замовлення назавжди?')) {
+                try {
+                    await deleteDoc(doc(db, "orders", id));
+                    showToast('Видалено'); loadOrders();
+                } catch(e) { showToast('Помилка', true); }
+            }
+        };
+
+        async function loadOrders() {
+            const list = document.getElementById('orders-list');
+            list.innerHTML = '<p class="text-gray-500">Завантаження...</p>';
+            try {
+                const snap = await getDocs(query(collection(db, "orders"), orderBy("timestamp", "desc")));
+                list.innerHTML = '';
+                snap.forEach(docSnap => {
+                    const o = docSnap.data(); const id = docSnap.id;
+                    const date = o.timestamp ? new Date(o.timestamp).toLocaleString('uk-UA') : 'Невідомо';
+                    
+                    let bg = o.status === 'archived' ? 'bg-gray-100 opacity-60' : 'bg-white';
+                    
+                    list.innerHTML += `
+                    <div class="${bg} p-6 rounded-2xl border shadow-sm flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                        <div>
+                            <div class="flex items-center gap-3 mb-2">
+                                <span class="font-bold text-lg">${o.quantity} бут. (${o.totalPrice} ₴)</span>
+                                <span class="text-xs font-bold px-2 py-1 rounded bg-slate-200 uppercase">${o.status}</span>
+                                <span class="text-xs text-gray-400">${date}</span>
+                            </div>
+                            <p class="font-medium text-gray-900">${o.name} • ${o.phone}</p>
+                            <p class="text-gray-500 text-sm">📍 ${o.address}</p>
+                        </div>
+                        <div class="flex flex-wrap gap-2 w-full md:w-auto">
+                            <button onclick="copyToClipboard('${o.name}', '${o.phone}', '${o.address}')" class="px-4 py-2 bg-blue-50 hover:bg-blue-100 text-blue-600 font-bold rounded-lg transition-colors">📄 Копіювати</button>
+                            ${o.status !== 'archived' ? `<button onclick="updateOrderStatus('${id}', 'archived')" class="px-4 py-2 bg-yellow-50 hover:bg-yellow-100 text-yellow-600 font-bold rounded-lg transition-colors">📥 В архів</button>` : ''}
+                            <button onclick="deleteOrder('${id}')" class="px-4 py-2 bg-red-50 hover:bg-red-100 text-red-600 font-bold rounded-lg transition-colors">🗑 Видалити</button>
+                        </div>
+                    </div>`;
+                });
+            } catch(e) { list.innerHTML = '<p class="text-red-500">Помилка завантаження</p>'; }
+        }
+        document.getElementById('btn-refresh-orders').onclick = loadOrders;
+
+        // --- ВІДГУКИ ---
+        window.approveReview = async (id) => {
+            try { await updateDoc(doc(db, "reviews", id), { approved: true }); showToast('Відгук опубліковано!'); loadReviews(); }
+            catch(e) { showToast('Помилка', true); }
+        };
+        
+        window.deleteReview = async (id) => {
+            if(confirm('Видалити цей відгук?')) {
+                try { await deleteDoc(doc(db, "reviews", id)); showToast('Видалено'); loadReviews(); }
+                catch(e) { showToast('Помилка', true); }
+            }
+        };
+
+        async function loadReviews() {
+            const list = document.getElementById('reviews-list');
+            list.innerHTML = '<p class="text-gray-500 col-span-full">Завантаження...</p>';
+            try {
+                const snap = await getDocs(query(collection(db, "reviews"), orderBy("timestamp", "desc")));
+                list.innerHTML = '';
+                snap.forEach(docSnap => {
+                    const r = docSnap.data(); const id = docSnap.id;
+                    const isApproved = r.approved === true;
+                    
+                    list.innerHTML += `
+                    <div class="bg-white p-6 rounded-2xl border shadow-sm relative">
+                        ${!isApproved ? '<span class="absolute -top-3 -right-3 bg-yellow-400 text-black text-[10px] font-black uppercase px-3 py-1 rounded-full shadow-md">Очікує</span>' : ''}
+                        <div class="flex justify-between items-center mb-2">
+                            <span class="font-black text-lg">${r.name}</span>
+                            <span class="text-yellow-400 font-black tracking-widest">${'★'.repeat(r.rating || 5)}</span>
+                        </div>
+                        <p class="text-gray-600 text-sm mb-4">${r.text}</p>
+                        <div class="flex gap-2">
+                            ${!isApproved ? `<button onclick="approveReview('${id}')" class="flex-1 py-2 bg-green-50 text-green-600 font-bold rounded-lg hover:bg-green-100">✅ Підтвердити</button>` : ''}
+                            <button onclick="deleteReview('${id}')" class="flex-1 py-2 bg-red-50 text-red-600 font-bold rounded-lg hover:bg-red-100">🗑 Видалити</button>
+                        </div>
+                    </div>`;
+                });
+            } catch(e) { list.innerHTML = '<p class="text-red-500">Помилка завантаження</p>'; }
+        }
+
+        // --- МЕНЕДЖЕРИ ---
+        window.removeAdmin = async (email) => {
+            if(email === OWNER_EMAIL) { showToast('Власника не можна видалити', true); return; }
+            if(confirm(`Вилучити доступ для ${email}?`)) {
+                try { await deleteDoc(doc(db, "admins", email)); showToast('Менеджера видалено'); loadAdmins(); }
+                catch(e) { showToast('Помилка', true); }
+            }
+        };
+
+        document.getElementById('btn-add-admin').onclick = async () => {
+            const email = document.getElementById('input-new-admin').value.trim().toLowerCase();
+            if(!email) return;
+            try {
+                await setDoc(doc(db, "admins", email), { email: email, addedAt: Date.now() });
+                document.getElementById('input-new-admin').value = '';
+                showToast('Менеджера додано!'); loadAdmins();
+            } catch(e) { showToast('Помилка', true); }
+        };
+
+        async function loadAdmins() {
+            const list = document.getElementById('admins-list');
+            list.innerHTML = '<div class="p-4 text-gray-500">Завантаження...</div>';
+            try {
+                const snap = await getDocs(collection(db, "admins"));
+                list.innerHTML = `
+                    <div class="p-4 flex justify-between items-center bg-blue-50">
+                        <span class="font-bold">${OWNER_EMAIL}</span>
+                        <span class="text-xs font-black uppercase text-blue-600">Власник</span>
+                    </div>`;
+                
+                snap.forEach(docSnap => {
+                    const data = docSnap.data();
+                    list.innerHTML += `
+                    <div class="p-4 flex justify-between items-center">
+                        <span class="font-medium">${data.email}</span>
+                        <button onclick="removeAdmin('${data.email}')" class="text-red-500 hover:text-red-700 font-bold text-sm">Вилучити</button>
+                    </div>`;
+                });
+            } catch(e) { list.innerHTML = '<div class="p-4 text-red-500">Помилка</div>'; }
+        }
+    </script>
+</body>
+</html>
