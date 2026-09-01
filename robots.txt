@@ -3,4 +3,4 @@ Allow: /index.html
 Allow: /
 Disallow: /admin.html
 
-Sitemap: https://skysource.dp.ua/sitemap.xml
+Sitemap: https://skysource.com.ua/sitemap.xml
