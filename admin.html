@@ -137,7 +137,7 @@
             
             <!-- 1. АНАЛІТИКА -->
             <div id="panel-analytics" class="hidden-view p-4 md:p-8 lg:p-10 fade-in h-full">
-                <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8">
+                <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6 md:mb-8">
                     <div>
                         <h1 class="text-2xl md:text-3xl font-black text-slate-900">Дашборд</h1>
                         <p class="text-slate-500 text-xs md:text-sm mt-1">Огляд показників бізнесу</p>
@@ -152,7 +152,7 @@
                     </div>
                 </div>
 
-                <div class="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4 mb-8">
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4 mb-4 md:mb-6">
                     <div class="bg-white p-4 md:p-5 rounded-2xl border border-slate-100 shadow-sm relative overflow-hidden">
                         <div class="absolute -right-4 -top-4 text-slate-50 opacity-50"><svg class="w-20 h-20 md:w-24 md:h-24" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z"/></svg></div>
                         <p class="text-slate-500 text-[10px] md:text-xs font-bold uppercase tracking-wider mb-1 relative z-10">Дохід</p>
@@ -169,13 +169,45 @@
                     </div>
                     <div class="bg-white p-4 md:p-5 rounded-2xl border border-slate-100 shadow-sm">
                         <p class="text-slate-500 text-[10px] md:text-xs font-bold uppercase tracking-wider mb-1">Нові клієнти</p>
-                        <h3 class="text-xl md:text-2xl font-black text-green-500" id="stat-new-clients" data-value="0">0</h3>
+                        <h3 class="text-xl md:text-2xl font-black text-blue-500" id="stat-new-clients" data-value="0">0</h3>
                     </div>
                 </div>
 
-                <div class="bg-white p-4 md:p-6 rounded-2xl border border-slate-100 shadow-sm pb-10">
+                <!-- ГРАФІК -->
+                <div class="bg-white p-4 md:p-6 rounded-2xl border border-slate-100 shadow-sm">
                     <h3 class="text-base md:text-lg font-black text-slate-800 mb-4" id="chart-title">Динаміка продажу бутлів</h3>
                     <div class="relative h-48 md:h-64 w-full"><canvas id="salesChart"></canvas></div>
+                </div>
+
+                <!-- ДОДАТКОВІ МЕТРИКИ (НОВИЙ БЛОК) -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-3 md:gap-4 mt-4 md:mt-6 pb-10">
+                    <div class="bg-white p-4 md:p-5 rounded-2xl border border-slate-100 shadow-sm flex items-center justify-between">
+                        <div>
+                            <p class="text-slate-500 text-[10px] md:text-xs font-bold uppercase tracking-wider mb-1">Середній чек</p>
+                            <h4 class="text-lg md:text-xl font-black text-slate-900" id="stat-avg-check">0 ₴</h4>
+                        </div>
+                        <div class="w-10 h-10 rounded-full bg-emerald-50 text-emerald-500 flex items-center justify-center">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 14l6-6m-5.5.5h.01m4.99 5h.01M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16l3.5-2 3.5 2 3.5-2 3.5 2zM10 8.5a.5.5 0 11-1 0 .5.5 0 011 0zm5 5a.5.5 0 11-1 0 .5.5 0 011 0z"></path></svg>
+                        </div>
+                    </div>
+                    <div class="bg-white p-4 md:p-5 rounded-2xl border border-slate-100 shadow-sm flex items-center justify-between">
+                        <div>
+                            <p class="text-slate-500 text-[10px] md:text-xs font-bold uppercase tracking-wider mb-1">Всього замовлень</p>
+                            <h4 class="text-lg md:text-xl font-black text-slate-900" id="stat-total-orders">0</h4>
+                        </div>
+                        <div class="w-10 h-10 rounded-full bg-purple-50 text-purple-500 flex items-center justify-center">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path></svg>
+                        </div>
+                    </div>
+                     <div class="bg-white p-4 md:p-5 rounded-2xl border border-slate-100 shadow-sm flex items-center justify-between">
+                        <div>
+                            <p class="text-slate-500 text-[10px] md:text-xs font-bold uppercase tracking-wider mb-1">Частка постійних</p>
+                            <h4 class="text-lg md:text-xl font-black text-slate-900" id="stat-retention">0%</h4>
+                        </div>
+                        <div class="w-10 h-10 rounded-full bg-orange-50 text-orange-500 flex items-center justify-center">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
+                        </div>
+                    </div>
                 </div>
             </div>
 
@@ -378,7 +410,13 @@
             }
         });
 
-        document.getElementById('btn-login').onclick = () => signInWithPopup(auth, provider);
+        document.getElementById('btn-login').onclick = () => {
+            signInWithPopup(auth, provider).catch(err => {
+                console.error("Auth error:", err);
+                showToast("Помилка вікна авторизації. Дозвольте спливаючі вікна.", true);
+            });
+        };
+        
         document.getElementById('btn-logout').onclick = () => { signOut(auth); location.reload(); };
 
         function initAdminPanel(email) {
@@ -455,7 +493,7 @@
             if (currentUserRole === 'manager') return;
             try {
                 const snap = await getDocs(collection(db, "orders"));
-                let totalRevenue = 0, totalBottles = 0;
+                let totalRevenue = 0, totalBottles = 0, totalOrdersCount = 0;
                 let clientsPhones = {}; 
                 
                 const now = new Date();
@@ -483,7 +521,7 @@
                     const phone = o.phone || o.source || 'Невідомий'; const time = o.timestamp || 0;
                     
                     if(time >= startTime) {
-                        totalBottles += qty; totalRevenue += price;
+                        totalBottles += qty; totalRevenue += price; totalOrdersCount++;
                         clientsPhones[phone] = (clientsPhones[phone] || 0) + 1;
 
                         const dateObj = new Date(time);
@@ -504,10 +542,19 @@
                 let newClients = 0, regularClients = 0;
                 for (let p in clientsPhones) { if (clientsPhones[p] === 1) newClients++; else regularClients++; }
 
+                // Нові метрики під графіком
+                let avgCheck = totalOrdersCount > 0 ? Math.round(totalRevenue / totalOrdersCount) : 0;
+                let totalUnique = newClients + regularClients;
+                let retention = totalUnique > 0 ? Math.round((regularClients / totalUnique) * 100) : 0;
+
                 animateValue(document.getElementById('stat-revenue'), 0, totalRevenue, 800, "", " ₴");
                 animateValue(document.getElementById('stat-bottles'), 0, totalBottles, 800);
                 animateValue(document.getElementById('stat-regular-clients'), 0, regularClients, 800);
                 animateValue(document.getElementById('stat-new-clients'), 0, newClients, 800);
+                
+                animateValue(document.getElementById('stat-avg-check'), 0, avgCheck, 800, "", " ₴");
+                animateValue(document.getElementById('stat-total-orders'), 0, totalOrdersCount, 800);
+                animateValue(document.getElementById('stat-retention'), 0, retention, 800, "", "%");
 
                 const sortedKeys = Object.keys(salesData).sort((a, b) => {
                     if(period === 'day') return parseInt(a) - parseInt(b);
@@ -526,7 +573,7 @@
                 if(sortedKeys.length === 0) {
                      analyticsChart = new Chart(ctx, {
                         type: 'line', data: { labels: ['Немає даних'], datasets: [{ data: [0] }] },
-                        options: { maintainAspectRatio: false, plugins: { legend: { display: false } } }
+                        options: { maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { min: 0, ticks: { precision:0 } } } }
                      });
                      return;
                 }
@@ -534,7 +581,21 @@
                 analyticsChart = new Chart(ctx, {
                     type: 'line',
                     data: { labels: sortedKeys, datasets: [{ label: 'Бутлів', data: sortedKeys.map(k => salesData[k]), borderColor: '#2563eb', backgroundColor: gradient, borderWidth: 3, pointBackgroundColor: '#fff', pointBorderWidth: 2, pointRadius: 4, fill: true, tension: 0.4 }] },
-                    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, grid: { color: '#f1f5f9', drawBorder: false }, ticks:{ precision:0 } }, x: { grid: { display: false } } } }
+                    options: { 
+                        responsive: true, 
+                        maintainAspectRatio: false, 
+                        plugins: { legend: { display: false } }, 
+                        scales: { 
+                            y: { 
+                                min: 0, // ЗАХИСТ ВІД ВІД'ЄМНИХ ЗНАЧЕНЬ
+                                suggestedMin: 0,
+                                beginAtZero: true, 
+                                grid: { color: '#f1f5f9', drawBorder: false }, 
+                                ticks:{ precision:0 } 
+                            }, 
+                            x: { grid: { display: false } } 
+                        } 
+                    }
                 });
             } catch (e) { showToast('Помилка аналітики', true); }
         };
@@ -553,10 +614,9 @@
         window.loadClients = async () => {
             if (currentUserRole === 'manager' || currentUserRole === 'admin') return;
             const list = document.getElementById('clients-list');
-            list.innerHTML = '<div class="p-6 text-slate-400 font-bold animate-pulse text-center">Отримання всіх клієнтів...</div>';
+            list.innerHTML = '<div class="p-6 text-slate-400 font-bold animate-pulse text-center">Отримання даних...</div>';
 
             try {
-                // Виправляємо проблему: беремо всіх і сортуємо локально
                 const snap = await getDocs(collection(db, "users"));
                 let clientsArr = [];
                 snap.forEach(doc => clientsArr.push({ id: doc.id, ...doc.data() }));
@@ -640,7 +700,7 @@
 
             try {
                 await addDoc(collection(db, "orders"), { uid: 'manual_' + phone, name: name, phone: phone, address: addr, quantity: qty, totalPrice: price, status: 'processing', timestamp: timestamp, source: 'manual' });
-                // Створюємо або оновлюємо клієнта в базі (з timestamp)
+                // Створюємо або оновлюємо клієнта в базі
                 await setDoc(doc(db, "users", 'manual_' + phone), { name: name, phone: phone, address: addr, addedBy: 'admin', timestamp: timestamp }, { merge: true });
                 
                 document.getElementById('manual-address').value = ''; document.getElementById('manual-name').value = ''; document.getElementById('manual-phone').value = ''; document.getElementById('manual-qty').value = '1';
@@ -687,7 +747,6 @@
                 ordersArr.forEach(o => {
                     const date = o.timestamp ? new Date(o.timestamp).toLocaleDateString('uk-UA', { day:'2-digit', month:'2-digit', hour:'2-digit', minute:'2-digit'}) : '--';
                     
-                    // Обчислення "як давно"
                     let timeAgo = '';
                     if(o.timestamp) {
                         const diffMins = Math.floor((now - o.timestamp) / 60000);
