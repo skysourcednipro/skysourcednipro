@@ -387,7 +387,7 @@
             document.querySelectorAll('#admin-user-email').forEach(el => el.innerText = email);
 
             const roleNames = { 'owner': 'Власник', 'assistant': 'Помічник власника', 'admin': 'Адміністратор', 'manager': 'Менеджер' };
-            document.querySelectorAll('#admin-user-role').forEach(el => el.innerText = roleNames[currentUserRole] || 'Невідомо';);
+            document.querySelectorAll('#admin-user-role').forEach(el => el.innerText = roleNames[currentUserRole] || 'Невідомо');
 
             // ОБМЕЖЕННЯ ІНТЕРФЕЙСУ ЗАЛЕЖНО ВІД РОЛІ
             if (currentUserRole === 'manager') {
