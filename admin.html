@@ -2,8 +2,13 @@
 <html lang="uk">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#0f172a">
     <title>SkySource Admin - Аналітика та Керування</title>
+    
+    <!-- Красивий SVG Фавікон (Крапля води) -->
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%232563eb'><path d='M12 2.69L5.64 9.76a8 8 0 1 0 12.72 0L12 2.69z'/></svg>">
+    
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
@@ -15,9 +20,15 @@
         ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
         ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+        /* Анімація для мобільного сайдбару */
+        .sidebar-open { transform: translateX(0); }
+        .sidebar-closed { transform: translateX(-100%); }
+        @media (min-width: 768px) {
+            .sidebar-closed { transform: translateX(0); }
+        }
     </style>
 </head>
-<body class="bg-slate-50 text-slate-800 font-sans min-h-screen flex flex-col md:flex-row overflow-hidden">
+<body class="bg-slate-50 text-slate-800 font-sans min-h-screen flex flex-col md:flex-row overflow-hidden relative">
 
     <!-- СПОВІЩЕННЯ -->
     <div id="toast" class="fixed top-8 left-1/2 -translate-x-1/2 z-[100] px-6 py-4 rounded-full shadow-2xl transition-all duration-300 opacity-0 -translate-y-10 flex items-center gap-3 font-bold text-sm pointer-events-none">
@@ -25,10 +36,13 @@
     </div>
 
     <!-- ЕКРАН АВТОРИЗАЦІЇ -->
-    <div id="auth-screen" class="fixed inset-0 bg-slate-900 z-50 flex items-center justify-center fade-in">
-        <div class="bg-white p-10 rounded-3xl shadow-2xl max-w-sm w-full text-center relative overflow-hidden">
+    <div id="auth-screen" class="fixed inset-0 bg-slate-900 z-[100] flex items-center justify-center fade-in">
+        <div class="bg-white p-8 md:p-10 rounded-3xl shadow-2xl max-w-sm w-full mx-4 text-center relative overflow-hidden">
             <div class="absolute -top-10 -left-10 w-32 h-32 bg-blue-500 opacity-20 rounded-full blur-2xl"></div>
             <div class="absolute -bottom-10 -right-10 w-32 h-32 bg-blue-600 opacity-20 rounded-full blur-2xl"></div>
+            <div class="w-16 h-16 bg-blue-600 rounded-2xl mx-auto flex items-center justify-center shadow-lg shadow-blue-600/40 mb-4 relative z-10">
+                <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+            </div>
             <h2 class="text-3xl font-black text-slate-900 mb-2 relative z-10">SkySource ERP</h2>
             <p class="text-slate-500 mb-8 text-sm relative z-10">Захищений корпоративний портал</p>
             <button id="btn-login" class="w-full py-4 rounded-2xl bg-blue-600 hover:bg-blue-700 text-white font-bold transition-all active:scale-95 shadow-lg shadow-blue-600/30 flex items-center justify-center gap-3 relative z-10">
@@ -39,12 +53,28 @@
         </div>
     </div>
 
-    <!-- ОСНОВНА ПАНЕЛЬ -->
-    <div id="main-panel" class="hidden-view w-full h-screen flex flex-col md:flex-row">
+    <!-- ОСНОВНА ПАНЕЛЬ (МІСТИТЬ МОБІЛЬНИЙ ХЕДЕР, САЙДБАР ТА КОНТЕНТ) -->
+    <div id="main-panel" class="hidden-view w-full h-screen flex flex-col md:flex-row relative">
         
+        <!-- МОБІЛЬНИЙ ХЕДЕР (Зникає на ПК) -->
+        <div class="md:hidden w-full bg-slate-900 text-white flex items-center justify-between p-4 shrink-0 shadow-md z-40 relative">
+            <h2 class="text-xl font-black tracking-tight flex items-center gap-2">
+                <div class="w-7 h-7 bg-blue-500 rounded-lg flex items-center justify-center shadow-lg shadow-blue-500/50">
+                    <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+                </div>
+                SkySource
+            </h2>
+            <button id="btn-mobile-menu" class="text-slate-300 hover:text-white p-1 active:scale-90 transition-transform">
+                <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 6h16M4 12h16M4 18h16"></path></svg>
+            </button>
+        </div>
+
+        <!-- ОВЕРЛЕЙ ДЛЯ МОБІЛЬНОГО МЕНЮ -->
+        <div id="mobile-overlay" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-40 hidden md:hidden transition-opacity opacity-0"></div>
+
         <!-- ПРОФЕСІЙНИЙ САЙДБАР -->
-        <nav class="w-full md:w-72 bg-slate-900 text-slate-300 flex flex-col shrink-0 shadow-2xl z-20 relative">
-            <div class="p-8 border-b border-slate-800">
+        <nav id="sidebar" class="fixed inset-y-0 left-0 w-72 bg-slate-900 text-slate-300 flex flex-col shrink-0 shadow-2xl z-50 transition-transform duration-300 sidebar-closed md:relative">
+            <div class="p-6 md:p-8 border-b border-slate-800 hidden md:block">
                 <h2 class="text-3xl font-black text-white tracking-tight flex items-center gap-3">
                     <div class="w-8 h-8 bg-blue-500 rounded-lg flex items-center justify-center shadow-lg shadow-blue-500/50">
                         <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
@@ -56,7 +86,7 @@
             <div class="flex-1 px-4 py-6 space-y-2 overflow-y-auto">
                 <!-- Аналітика -->
                 <div id="nav-wrapper-analytics">
-                    <button class="nav-item w-full flex items-center gap-3 px-4 py-3.5 rounded-xl hover:bg-slate-800 font-bold transition-all" data-target="panel-analytics">
+                    <button class="nav-item w-full flex items-center gap-3 px-4 py-3.5 rounded-xl bg-blue-600/10 text-blue-400 font-bold transition-all" data-target="panel-analytics">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
                         Аналітика
                     </button>
@@ -93,10 +123,10 @@
                 </div>
             </div>
             
-            <div class="p-6 mt-auto border-t border-slate-800">
+            <div class="p-4 md:p-6 mt-auto border-t border-slate-800 bg-slate-900">
                 <div class="flex items-center justify-between mb-4 px-2">
-                    <div class="text-xs">
-                        <p class="font-bold text-white truncate w-40" id="admin-user-email">email</p>
+                    <div class="text-xs w-full">
+                        <p class="font-bold text-white truncate w-full" id="admin-user-email">email</p>
                         <p id="admin-user-role" class="text-blue-400 font-black uppercase tracking-wider text-[10px] mt-0.5">РОЛЬ</p>
                     </div>
                 </div>
@@ -108,96 +138,100 @@
         </nav>
 
         <!-- РОБОЧА ЗОНА -->
-        <div class="flex-1 bg-slate-50 h-screen overflow-y-auto relative">
+        <div class="flex-1 h-full overflow-y-auto relative w-full">
             
             <!-- 1. АНАЛІТИКА -->
-            <div id="panel-analytics" class="hidden-view p-6 md:p-10 fade-in h-full">
-                <div class="flex justify-between items-center mb-8">
+            <div id="panel-analytics" class="hidden-view p-4 md:p-8 lg:p-10 fade-in h-full">
+                <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8">
                     <div>
-                        <h1 class="text-3xl font-black text-slate-900">Дашборд</h1>
-                        <p class="text-slate-500 text-sm mt-1">Огляд показників бізнесу за останні 30 днів</p>
+                        <h1 class="text-2xl md:text-3xl font-black text-slate-900">Дашборд</h1>
+                        <p class="text-slate-500 text-xs md:text-sm mt-1">Огляд показників бізнесу</p>
                     </div>
-                    <button onclick="loadAnalytics()" class="w-10 h-10 bg-white rounded-full shadow-sm border border-slate-200 flex items-center justify-center text-slate-500 hover:text-blue-600 transition-colors">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
-                    </button>
-                </div>
-
-                <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-                    <div class="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm relative overflow-hidden">
-                        <div class="absolute -right-4 -top-4 text-slate-50 opacity-50"><svg class="w-24 h-24" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z"/></svg></div>
-                        <p class="text-slate-500 text-xs font-bold uppercase tracking-wider mb-1 relative z-10">Дохід (Місяць)</p>
-                        <h3 class="text-2xl font-black text-slate-900 relative z-10" id="stat-revenue">0 ₴</h3>
-                    </div>
-                    <div class="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm relative overflow-hidden">
-                        <div class="absolute -right-4 -top-4 text-blue-50 opacity-50"><svg class="w-24 h-24" fill="currentColor" viewBox="0 0 24 24"><path d="M12 3v18m9-9H3" stroke-width="2" stroke="currentColor" stroke-linecap="round"/></svg></div>
-                        <p class="text-slate-500 text-xs font-bold uppercase tracking-wider mb-1 relative z-10">Продано бутлів</p>
-                        <h3 class="text-2xl font-black text-blue-600 relative z-10" id="stat-bottles">0</h3>
-                    </div>
-                    <div class="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm">
-                        <p class="text-slate-500 text-xs font-bold uppercase tracking-wider mb-1">Постійні клієнти</p>
-                        <h3 class="text-2xl font-black text-slate-900" id="stat-regular-clients">0</h3>
-                    </div>
-                    <div class="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm">
-                        <p class="text-slate-500 text-xs font-bold uppercase tracking-wider mb-1">Нові клієнти</p>
-                        <h3 class="text-2xl font-black text-green-500" id="stat-new-clients">0</h3>
+                    
+                    <!-- Перемикач періодів -->
+                    <div class="flex bg-slate-200/70 p-1 rounded-xl w-full md:w-auto overflow-x-auto no-scrollbar shadow-inner">
+                        <button class="period-btn flex-1 md:flex-none px-4 py-2 text-sm font-bold rounded-lg text-slate-500 hover:text-slate-900 transition-colors whitespace-nowrap" data-period="day">Сьогодні</button>
+                        <button class="period-btn flex-1 md:flex-none px-4 py-2 text-sm font-bold rounded-lg text-slate-500 hover:text-slate-900 transition-colors whitespace-nowrap" data-period="week">Тиждень</button>
+                        <button class="period-btn flex-1 md:flex-none px-4 py-2 text-sm font-bold rounded-lg bg-white shadow-sm text-blue-600 transition-colors whitespace-nowrap" data-period="month">Місяць</button>
+                        <button class="period-btn flex-1 md:flex-none px-4 py-2 text-sm font-bold rounded-lg text-slate-500 hover:text-slate-900 transition-colors whitespace-nowrap" data-period="year">Рік</button>
                     </div>
                 </div>
 
-                <div class="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm pb-10">
-                    <h3 class="text-lg font-black text-slate-800 mb-4">Динаміка продажу бутлів</h3>
-                    <div class="relative h-64 w-full"><canvas id="salesChart"></canvas></div>
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4 mb-8">
+                    <div class="bg-white p-4 md:p-5 rounded-2xl border border-slate-100 shadow-sm relative overflow-hidden">
+                        <div class="absolute -right-4 -top-4 text-slate-50 opacity-50"><svg class="w-20 h-20 md:w-24 md:h-24" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z"/></svg></div>
+                        <p class="text-slate-500 text-[10px] md:text-xs font-bold uppercase tracking-wider mb-1 relative z-10">Дохід</p>
+                        <h3 class="text-xl md:text-2xl font-black text-slate-900 relative z-10" id="stat-revenue">0 ₴</h3>
+                    </div>
+                    <div class="bg-white p-4 md:p-5 rounded-2xl border border-slate-100 shadow-sm relative overflow-hidden">
+                        <div class="absolute -right-4 -top-4 text-blue-50 opacity-50"><svg class="w-20 h-20 md:w-24 md:h-24" fill="currentColor" viewBox="0 0 24 24"><path d="M12 3v18m9-9H3" stroke-width="2" stroke="currentColor" stroke-linecap="round"/></svg></div>
+                        <p class="text-slate-500 text-[10px] md:text-xs font-bold uppercase tracking-wider mb-1 relative z-10">Продано бутлів</p>
+                        <h3 class="text-xl md:text-2xl font-black text-blue-600 relative z-10" id="stat-bottles">0</h3>
+                    </div>
+                    <div class="bg-white p-4 md:p-5 rounded-2xl border border-slate-100 shadow-sm">
+                        <p class="text-slate-500 text-[10px] md:text-xs font-bold uppercase tracking-wider mb-1">Постійні (Період)</p>
+                        <h3 class="text-xl md:text-2xl font-black text-slate-900" id="stat-regular-clients">0</h3>
+                    </div>
+                    <div class="bg-white p-4 md:p-5 rounded-2xl border border-slate-100 shadow-sm">
+                        <p class="text-slate-500 text-[10px] md:text-xs font-bold uppercase tracking-wider mb-1">Нові клієнти</p>
+                        <h3 class="text-xl md:text-2xl font-black text-green-500" id="stat-new-clients">0</h3>
+                    </div>
+                </div>
+
+                <div class="bg-white p-4 md:p-6 rounded-2xl border border-slate-100 shadow-sm pb-10">
+                    <h3 class="text-base md:text-lg font-black text-slate-800 mb-4" id="chart-title">Динаміка продажу бутлів</h3>
+                    <div class="relative h-48 md:h-64 w-full"><canvas id="salesChart"></canvas></div>
                 </div>
             </div>
 
             <!-- 2. БАЗА КЛІЄНТІВ -->
-            <div id="panel-clients" class="hidden-view p-6 md:p-10 fade-in h-full">
-                <div class="flex justify-between items-center mb-8">
+            <div id="panel-clients" class="hidden-view p-4 md:p-8 lg:p-10 fade-in h-full">
+                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
                     <div>
-                        <h1 class="text-3xl font-black text-slate-900">База клієнтів</h1>
-                        <p class="text-slate-500 text-sm mt-1">Реєстр всіх покупців</p>
+                        <h1 class="text-2xl md:text-3xl font-black text-slate-900">База клієнтів</h1>
+                        <p class="text-slate-500 text-xs md:text-sm mt-1">Реєстр всіх покупців</p>
                     </div>
-                    <button onclick="exportClients()" class="px-5 py-2.5 bg-blue-50 text-blue-600 font-bold rounded-xl flex items-center gap-2 hover:bg-blue-100 transition-colors shadow-sm">
+                    <button onclick="exportClients()" class="w-full sm:w-auto px-5 py-3 md:py-2.5 bg-blue-50 text-blue-600 font-bold rounded-xl flex items-center justify-center gap-2 hover:bg-blue-100 transition-colors shadow-sm">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
                         Експорт у TXT
                     </button>
                 </div>
 
-                <!-- Список клієнтів -->
                 <div class="bg-white rounded-3xl border border-slate-100 shadow-sm overflow-hidden mb-6">
-                    <div class="px-6 py-4 bg-slate-50 border-b border-slate-100 flex justify-between items-center">
+                    <div class="px-4 md:px-6 py-4 bg-slate-50 border-b border-slate-100 flex justify-between items-center">
                         <span class="font-bold text-slate-600 text-sm">Всі клієнти</span>
-                        <button onclick="loadClients()" class="text-blue-500 hover:text-blue-700 text-sm font-bold flex items-center gap-1">Оновити</button>
+                        <button onclick="loadClients()" class="text-blue-500 hover:text-blue-700 text-sm font-bold flex items-center gap-1 active:scale-95">🔄 Оновити</button>
                     </div>
                     <div id="clients-list" class="divide-y divide-slate-100"></div>
                 </div>
                 
                 <div class="text-center pb-10">
-                    <button id="btn-load-more-clients" onclick="loadClients(true)" class="hidden px-6 py-3 bg-white border border-slate-200 text-slate-600 font-bold rounded-xl shadow-sm hover:bg-slate-50 transition-colors">
+                    <button id="btn-load-more-clients" onclick="loadClients(true)" class="hidden w-full md:w-auto px-6 py-4 md:py-3 bg-white border border-slate-200 text-slate-600 font-bold rounded-xl shadow-sm hover:bg-slate-50 transition-colors">
                         Завантажити ще 25
                     </button>
                 </div>
             </div>
 
             <!-- 3. ЗАМОВЛЕННЯ ТА ДОДАВАННЯ ОФЛАЙН ЗАМОВЛЕНЬ -->
-            <div id="panel-orders" class="hidden-view p-6 md:p-10 fade-in h-full">
-                <div class="flex justify-between items-center mb-8">
+            <div id="panel-orders" class="hidden-view p-4 md:p-8 lg:p-10 fade-in h-full">
+                <div class="flex justify-between items-center mb-6 md:mb-8">
                     <div>
-                        <h1 class="text-3xl font-black text-slate-900">Обробка замовлень</h1>
-                        <p class="text-slate-500 text-sm mt-1">Керування замовленнями та додавання нових</p>
+                        <h1 class="text-2xl md:text-3xl font-black text-slate-900">Замовлення</h1>
+                        <p class="text-slate-500 text-xs md:text-sm mt-1">Організація та додавання доставок</p>
                     </div>
-                    <button id="btn-refresh-orders" class="px-5 py-2.5 bg-white border border-slate-200 shadow-sm rounded-xl font-bold text-slate-600 hover:bg-slate-50 flex items-center gap-2 transition-colors">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
-                        Оновити
+                    <button id="btn-refresh-orders" class="p-2.5 md:px-5 md:py-2.5 bg-white border border-slate-200 shadow-sm rounded-xl font-bold text-slate-600 hover:bg-slate-50 flex items-center gap-2 transition-colors active:scale-95">
+                        <svg class="w-5 h-5 md:w-4 md:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
+                        <span class="hidden md:inline">Оновити</span>
                     </button>
                 </div>
 
                 <!-- Форма додавання -->
-                <div class="bg-white p-6 rounded-3xl border border-slate-200 shadow-sm mb-8 relative overflow-hidden">
-                    <div class="absolute top-0 right-0 w-32 h-32 bg-indigo-50 rounded-bl-full -z-10"></div>
-                    <h3 class="text-lg font-black text-slate-800 mb-1">Оформити нове замовлення</h3>
-                    <p class="text-xs text-slate-500 mb-5">Для клієнтів з телефону, Viber чи Telegram</p>
+                <div class="bg-white p-5 md:p-6 rounded-3xl border border-slate-200 shadow-sm mb-6 md:mb-8 relative overflow-hidden">
+                    <div class="absolute top-0 right-0 w-24 h-24 md:w-32 md:h-32 bg-indigo-50 rounded-bl-full -z-10"></div>
+                    <h3 class="text-base md:text-lg font-black text-slate-800 mb-1">Створити замовлення</h3>
+                    <p class="text-xs text-slate-500 mb-4 md:mb-5">Для клієнтів з телефону, Viber чи Telegram</p>
                     
-                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 items-end">
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-3 md:gap-4 items-end">
                         <div class="lg:col-span-2">
                             <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1 pl-2">Адреса доставки</label>
                             <input type="text" id="manual-address" placeholder="Вулиця, Будинок..." class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:border-blue-500 font-medium text-sm">
@@ -213,9 +247,9 @@
                         <div>
                             <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1 pl-2">Бутлів</label>
                             <div class="flex gap-2">
-                                <input type="number" id="manual-qty" value="1" min="1" class="w-16 px-3 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:border-blue-500 font-medium text-sm text-center">
+                                <input type="number" id="manual-qty" value="1" min="1" class="w-16 md:w-20 px-3 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:border-blue-500 font-medium text-sm text-center">
                                 <button id="btn-add-manual-order" class="flex-1 py-3 bg-slate-900 hover:bg-slate-800 text-white font-bold rounded-xl active:scale-95 transition-all shadow-md">
-                                    В базу
+                                    Додати
                                 </button>
                             </div>
                         </div>
@@ -226,34 +260,34 @@
             </div>
 
             <!-- 4. ВІДГУКИ -->
-            <div id="panel-reviews" class="hidden-view p-6 md:p-10 fade-in h-full">
-                <h1 class="text-3xl font-black text-slate-900 mb-1">Модерація відгуків</h1>
-                <p class="text-slate-500 text-sm mb-8">Затверджуйте відгуки перед їх появою у клієнтському додатку.</p>
-                <div id="reviews-list" class="grid gap-6 md:grid-cols-2 pb-10 xl:grid-cols-3"></div>
+            <div id="panel-reviews" class="hidden-view p-4 md:p-8 lg:p-10 fade-in h-full">
+                <h1 class="text-2xl md:text-3xl font-black text-slate-900 mb-1">Модерація відгуків</h1>
+                <p class="text-slate-500 text-xs md:text-sm mb-6 md:mb-8">Затверджуйте відгуки перед їх появою у додатку.</p>
+                <div id="reviews-list" class="grid gap-4 md:gap-6 md:grid-cols-2 pb-10 xl:grid-cols-3"></div>
             </div>
 
             <!-- 5. МЕНЕДЖЕРИ (Команда) -->
-            <div id="panel-admins" class="hidden-view p-6 md:p-10 fade-in h-full max-w-4xl">
-                <h1 class="text-3xl font-black text-slate-900 mb-1">Команда</h1>
-                <p class="text-slate-500 text-sm mb-8">Надавайте доступ до панелі та керуйте ролями персоналу.</p>
+            <div id="panel-admins" class="hidden-view p-4 md:p-8 lg:p-10 fade-in h-full max-w-4xl">
+                <h1 class="text-2xl md:text-3xl font-black text-slate-900 mb-1">Команда</h1>
+                <p class="text-slate-500 text-xs md:text-sm mb-6 md:mb-8">Надавайте доступ до панелі та керуйте ролями.</p>
                 
-                <div class="bg-white p-6 rounded-3xl border border-slate-100 shadow-sm mb-8">
+                <div class="bg-white p-5 md:p-6 rounded-3xl border border-slate-100 shadow-sm mb-6 md:mb-8">
                     <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2 pl-1">Додати працівника</label>
                     <div class="flex flex-col sm:flex-row gap-3">
-                        <input type="email" id="input-new-admin" placeholder="Google Пошта" class="flex-1 px-5 py-3.5 bg-slate-50 rounded-xl border border-slate-200 focus:outline-none focus:border-blue-500 font-medium transition-colors">
+                        <input type="email" id="input-new-admin" placeholder="Google Пошта" class="flex-1 px-4 md:px-5 py-3.5 bg-slate-50 rounded-xl border border-slate-200 focus:outline-none focus:border-blue-500 font-medium transition-colors text-sm">
                         
-                        <select id="input-new-role" class="px-5 py-3.5 bg-slate-50 rounded-xl border border-slate-200 focus:outline-none focus:border-blue-500 font-bold text-slate-700 cursor-pointer">
+                        <select id="input-new-role" class="px-4 md:px-5 py-3.5 bg-slate-50 rounded-xl border border-slate-200 focus:outline-none focus:border-blue-500 font-bold text-slate-700 cursor-pointer text-sm">
                             <option value="manager">Менеджер</option>
                             <option value="admin">Адміністратор</option>
                             <option value="assistant">Помічник власника</option>
                         </select>
 
-                        <button id="btn-add-admin" class="px-8 py-3.5 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl active:scale-95 transition-all shadow-md shadow-blue-600/20">Надати доступ</button>
+                        <button id="btn-add-admin" class="w-full sm:w-auto px-8 py-3.5 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl active:scale-95 transition-all shadow-md shadow-blue-600/20">Надати</button>
                     </div>
                     <p class="text-[10px] text-slate-400 mt-3 ml-1 leading-relaxed"><b>Менеджер:</b> тільки замовлення. <br><b>Адміністратор:</b> + аналітика і відгуки. <br><b>Помічник:</b> повний доступ (вкл. базу клієнтів і команду).</p>
                 </div>
                 
-                <h3 class="text-lg font-black text-slate-800 mb-4 pl-1">Активні доступи</h3>
+                <h3 class="text-lg font-black text-slate-800 mb-3 md:mb-4 pl-1">Активні доступи</h3>
                 <div id="admins-list" class="bg-white rounded-3xl border border-slate-100 shadow-sm divide-y divide-slate-100 pb-2"></div>
             </div>
 
@@ -281,7 +315,9 @@
 
         const OWNER_EMAIL = 'skysourcednipro@gmail.com';
         let currentUserRole = 'none'; // 'owner', 'assistant', 'admin', 'manager'
+        let currentAnalyticsPeriod = 'month'; // default period
         let analyticsChart = null;
+        let isSaving = false; // Захист від подвійних кліків
 
         const toast = document.getElementById('toast');
         let toastTimeout;
@@ -291,6 +327,29 @@
             toast.className = `fixed top-8 left-1/2 -translate-x-1/2 z-[100] px-6 py-4 rounded-full shadow-2xl transition-all duration-300 flex items-center gap-3 font-bold text-sm toast-active ${isError ? 'bg-red-50 text-red-800 border border-red-200' : 'bg-slate-900 text-white'}`;
             toastTimeout = setTimeout(() => { toast.classList.remove('toast-active'); toast.classList.add('opacity-0', '-translate-y-10'); }, 3000);
         }
+
+        // --- МОБІЛЬНЕ МЕНЮ ЛОГІКА ---
+        const btnMobileMenu = document.getElementById('btn-mobile-menu');
+        const sidebar = document.getElementById('sidebar');
+        const mobileOverlay = document.getElementById('mobile-overlay');
+
+        function toggleMobileMenu() {
+            const isOpen = sidebar.classList.contains('sidebar-open');
+            if (isOpen) {
+                sidebar.classList.remove('sidebar-open');
+                sidebar.classList.add('sidebar-closed');
+                mobileOverlay.classList.remove('opacity-100');
+                setTimeout(() => mobileOverlay.classList.add('hidden'), 300);
+            } else {
+                mobileOverlay.classList.remove('hidden');
+                setTimeout(() => mobileOverlay.classList.add('opacity-100'), 10);
+                sidebar.classList.remove('sidebar-closed');
+                sidebar.classList.add('sidebar-open');
+            }
+        }
+        btnMobileMenu.onclick = toggleMobileMenu;
+        mobileOverlay.onclick = toggleMobileMenu;
+
 
         // --- АВТОРИЗАЦІЯ І ПЕРЕВІРКА РОЛІ ---
         onAuthStateChanged(auth, async (user) => {
@@ -324,26 +383,23 @@
         function initAdminPanel(email) {
             document.getElementById('auth-screen').classList.add('hidden-view');
             document.getElementById('main-panel').classList.remove('hidden-view');
-            document.getElementById('admin-user-email').innerText = email;
+            document.querySelectorAll('#admin-user-email').forEach(el => el.innerText = email);
 
             const roleNames = { 'owner': 'Власник', 'assistant': 'Помічник власника', 'admin': 'Адміністратор', 'manager': 'Менеджер' };
-            document.getElementById('admin-user-role').innerText = roleNames[currentUserRole] || 'Невідомо';
+            document.querySelectorAll('#admin-user-role').forEach(el => el.innerText = roleNames[currentUserRole] || 'Невідомо');
 
             // ОБМЕЖЕННЯ ІНТЕРФЕЙСУ ЗАЛЕЖНО ВІД РОЛІ
             if (currentUserRole === 'manager') {
-                // Менеджер бачить тільки Замовлення
                 document.getElementById('nav-wrapper-analytics').classList.add('hidden');
                 document.getElementById('nav-wrapper-reviews').classList.add('hidden');
                 document.getElementById('nav-wrapper-admins').classList.add('hidden');
                 document.getElementById('nav-wrapper-clients').classList.add('hidden');
                 document.querySelector('[data-target="panel-orders"]').click();
             } else if (currentUserRole === 'admin') {
-                // Адмін бачить Аналітику, Замовлення, Відгуки
                 document.getElementById('nav-wrapper-admins').classList.add('hidden');
                 document.getElementById('nav-wrapper-clients').classList.add('hidden');
                 document.querySelector('[data-target="panel-analytics"]').click();
             } else {
-                // Власник та Помічник бачать все
                 document.querySelector('[data-target="panel-analytics"]').click();
             }
         }
@@ -353,13 +409,15 @@
             btn.addEventListener('click', () => {
                 const target = btn.dataset.target;
                 
-                // Жорсткий захист маршрутів
                 if (currentUserRole === 'manager' && target !== 'panel-orders') {
                     showToast('Недостатньо прав', true); return;
                 }
                 if (currentUserRole === 'admin' && ['panel-admins', 'panel-clients'].includes(target)) {
                     showToast('Тільки для Власника та Помічника', true); return;
                 }
+
+                // Закрити мобільне меню при кліку
+                if(window.innerWidth < 768) toggleMobileMenu();
 
                 document.querySelectorAll('.nav-item').forEach(b => {
                     b.classList.remove('bg-blue-600/10', 'text-blue-400');
@@ -371,7 +429,7 @@
                 ['panel-analytics', 'panel-clients', 'panel-orders', 'panel-reviews', 'panel-admins'].forEach(id => document.getElementById(id).classList.add('hidden-view'));
                 document.getElementById(target).classList.remove('hidden-view');
 
-                if(target === 'panel-analytics') loadAnalytics();
+                if(target === 'panel-analytics') loadAnalytics(currentAnalyticsPeriod);
                 if(target === 'panel-clients') loadClients();
                 if(target === 'panel-orders') loadOrders();
                 if(target === 'panel-reviews') loadReviews();
@@ -379,28 +437,68 @@
             });
         });
 
-        // --- 1. АНАЛІТИКА ---
-        window.loadAnalytics = async () => {
+        // --- 1. АНАЛІТИКА З ПЕРЕМИКАЧЕМ ПЕРІОДІВ ---
+        document.querySelectorAll('.period-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                document.querySelectorAll('.period-btn').forEach(b => {
+                    b.classList.remove('bg-white', 'shadow-sm', 'text-blue-600');
+                    b.classList.add('text-slate-500');
+                });
+                e.target.classList.add('bg-white', 'shadow-sm', 'text-blue-600');
+                e.target.classList.remove('text-slate-500');
+                currentAnalyticsPeriod = e.target.dataset.period;
+                loadAnalytics(currentAnalyticsPeriod);
+            });
+        });
+
+        window.loadAnalytics = async (period = currentAnalyticsPeriod) => {
             if (currentUserRole === 'manager') return;
             try {
                 const snap = await getDocs(collection(db, "orders"));
                 let totalRevenue = 0, totalBottles = 0;
                 let clientsPhones = {}; 
-                const now = new Date(); const thirtyDaysAgo = now.getTime() - (30 * 24 * 60 * 60 * 1000);
-                let dailySales = {};
+                
+                const now = new Date();
+                let startTime = 0;
+                
+                // Визначаємо період
+                if (period === 'day') {
+                    startTime = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime(); // З 00:00 сьогодні
+                    document.getElementById('chart-title').innerText = 'Динаміка сьогодні (По годинах)';
+                } else if (period === 'week') {
+                    startTime = now.getTime() - (7 * 24 * 60 * 60 * 1000);
+                    document.getElementById('chart-title').innerText = 'Динаміка за 7 днів';
+                } else if (period === 'month') {
+                    startTime = now.getTime() - (30 * 24 * 60 * 60 * 1000);
+                    document.getElementById('chart-title').innerText = 'Динаміка продажу бутлів (Місяць)';
+                } else if (period === 'year') {
+                    startTime = now.getTime() - (365 * 24 * 60 * 60 * 1000);
+                    document.getElementById('chart-title').innerText = 'Динаміка за рік (По місяцях)';
+                }
+
+                let salesData = {};
 
                 snap.forEach(docSnap => {
                     const o = docSnap.data();
                     const qty = parseInt(o.quantity) || 0; const price = parseFloat(o.totalPrice) || 0;
                     const phone = o.phone || o.source || 'Невідомий'; const time = o.timestamp || 0;
                     
-                    totalBottles += qty; totalRevenue += price;
-                    clientsPhones[phone] = (clientsPhones[phone] || 0) + 1;
+                    if(time >= startTime) {
+                        totalBottles += qty; totalRevenue += price;
+                        clientsPhones[phone] = (clientsPhones[phone] || 0) + 1;
 
-                    if(time >= thirtyDaysAgo) {
                         const dateObj = new Date(time);
-                        const dateStr = `${dateObj.getDate().toString().padStart(2, '0')}.${(dateObj.getMonth()+1).toString().padStart(2, '0')}`;
-                        dailySales[dateStr] = (dailySales[dateStr] || 0) + qty;
+                        let keyStr = '';
+                        
+                        if (period === 'day') {
+                            keyStr = `${dateObj.getHours()}:00`;
+                        } else if (period === 'week' || period === 'month') {
+                            keyStr = `${dateObj.getDate().toString().padStart(2, '0')}.${(dateObj.getMonth()+1).toString().padStart(2, '0')}`;
+                        } else if (period === 'year') {
+                            const months = ['Січ', 'Лют', 'Бер', 'Кві', 'Тра', 'Чер', 'Лип', 'Сер', 'Вер', 'Жов', 'Лис', 'Гру'];
+                            keyStr = `${months[dateObj.getMonth()]} ${dateObj.getFullYear().toString().slice(2)}`;
+                        }
+                        salesData[keyStr] = (salesData[keyStr] || 0) + qty;
                     }
                 });
 
@@ -412,9 +510,15 @@
                 document.getElementById('stat-regular-clients').innerText = regularClients;
                 document.getElementById('stat-new-clients').innerText = newClients;
 
-                const sortedDates = Object.keys(dailySales).sort((a, b) => {
-                    const [da, ma] = a.split('.'); const [db, mb] = b.split('.');
-                    return new Date(2026, ma-1, da) - new Date(2026, mb-1, db);
+                // Сортування ключів графіка
+                const sortedKeys = Object.keys(salesData).sort((a, b) => {
+                    if(period === 'day') {
+                        return parseInt(a) - parseInt(b);
+                    } else if (period === 'week' || period === 'month') {
+                        const [da, ma] = a.split('.'); const [db, mb] = b.split('.');
+                        return new Date(2026, ma-1, da) - new Date(2026, mb-1, db); // Використання безпечної дати
+                    }
+                    return 0; // Для року залишаємо як є, порядок створення
                 });
                 
                 const ctx = document.getElementById('salesChart').getContext('2d');
@@ -422,10 +526,19 @@
                 let gradient = ctx.createLinearGradient(0, 0, 0, 400);
                 gradient.addColorStop(0, 'rgba(37, 99, 235, 0.5)'); gradient.addColorStop(1, 'rgba(37, 99, 235, 0.0)');
 
+                if(sortedKeys.length === 0) {
+                     // Empty state
+                     analyticsChart = new Chart(ctx, {
+                        type: 'line', data: { labels: ['Немає даних'], datasets: [{ data: [0] }] },
+                        options: { maintainAspectRatio: false, plugins: { legend: { display: false } } }
+                     });
+                     return;
+                }
+
                 analyticsChart = new Chart(ctx, {
                     type: 'line',
-                    data: { labels: sortedDates, datasets: [{ label: 'Бутлів', data: sortedDates.map(d => dailySales[d]), borderColor: '#2563eb', backgroundColor: gradient, borderWidth: 3, fill: true, tension: 0.4 }] },
-                    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, grid: { color: '#f1f5f9', drawBorder: false } }, x: { grid: { display: false } } } }
+                    data: { labels: sortedKeys, datasets: [{ label: 'Бутлів', data: sortedKeys.map(k => salesData[k]), borderColor: '#2563eb', backgroundColor: gradient, borderWidth: 3, pointBackgroundColor: '#fff', pointBorderWidth: 2, pointRadius: 4, fill: true, tension: 0.4 }] },
+                    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, grid: { color: '#f1f5f9', drawBorder: false }, ticks:{ precision:0 } }, x: { grid: { display: false } } } }
                 });
             } catch (e) { showToast('Помилка аналітики', true); }
         };
@@ -448,7 +561,7 @@
             const list = document.getElementById('clients-list');
             const btnMore = document.getElementById('btn-load-more-clients');
             
-            if (!loadMore) { list.innerHTML = '<div class="p-6 text-slate-400 font-bold">Отримання даних...</div>'; lastVisibleClient = null; }
+            if (!loadMore) { list.innerHTML = '<div class="p-6 text-slate-400 font-bold animate-pulse">Отримання даних...</div>'; lastVisibleClient = null; }
             else { btnMore.innerText = 'Завантажуємо...'; }
 
             try {
@@ -473,17 +586,18 @@
                     const c = docSnap.data();
                     const docId = docSnap.id;
                     list.innerHTML += `
-                        <div class="p-4 bg-white border-b border-slate-100 hover:bg-slate-50 flex flex-col md:flex-row md:items-center justify-between gap-2 transition-colors">
-                            <div>
-                                <p class="font-black text-slate-800">${c.name || 'Без імені'} <span class="text-blue-600 font-mono ml-2">${c.phone || ''}</span></p>
-                                <p class="text-sm text-slate-500">📍 ${c.address || 'Не вказано'}</p>
+                        <div class="p-4 bg-white border-b border-slate-100 hover:bg-slate-50 flex flex-col md:flex-row md:items-center justify-between gap-3 transition-colors">
+                            <div class="flex-1">
+                                <p class="font-black text-slate-800 text-lg md:text-base">${c.name || 'Без імені'} <span class="text-blue-600 font-mono ml-2 tracking-tight">${c.phone || ''}</span></p>
+                                <p class="text-sm text-slate-500 mt-0.5">📍 ${c.address || 'Не вказано'}</p>
                             </div>
-                            <div class="flex items-center gap-3 self-start md:self-auto">
+                            <div class="flex items-center justify-between md:justify-end gap-4 w-full md:w-auto mt-2 md:mt-0">
                                 <div class="text-[10px] text-slate-400 font-bold uppercase tracking-widest bg-slate-100 px-3 py-1 rounded-lg">
                                     ${c.addedBy ? 'Ручне' : 'З додатку'}
                                 </div>
-                                <button onclick="deleteClient('${docId}')" class="p-2 text-red-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors" title="Видалити клієнта">
-                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                                <button onclick="deleteClient('${docId}')" class="p-2.5 text-red-400 hover:text-white hover:bg-red-500 bg-red-50 md:bg-transparent rounded-xl transition-colors shadow-sm md:shadow-none border border-red-100 md:border-transparent" title="Видалити клієнта">
+                                    <svg class="w-5 h-5 md:w-5 md:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                                    <span class="md:hidden ml-2 font-bold text-sm">Видалити</span>
                                 </button>
                             </div>
                         </div>`;
@@ -513,8 +627,10 @@
             } catch (e) { showToast('Помилка експорту', true); }
         };
 
-        // --- 3. ЗАМОВЛЕННЯ ТА ДОДАВАННЯ МАНУАЛЬНИХ ЗАМОВЛЕНЬ ---
+        // --- 3. ЗАМОВЛЕННЯ ТА ДОДАВАННЯ ОФЛАЙН ЗАМОВЛЕНЬ ---
         document.getElementById('btn-add-manual-order').onclick = async () => {
+            if(isSaving) return;
+            
             const addr = document.getElementById('manual-address').value.trim();
             const name = document.getElementById('manual-name').value.trim() || 'Клієнт';
             const phone = document.getElementById('manual-phone').value.trim();
@@ -522,21 +638,30 @@
             
             if(!addr || !phone) { showToast('Введіть адресу та телефон', true); return; }
             
-            const price = qty * 90; // Автоматичний розрахунок
+            isSaving = true;
+            document.getElementById('btn-add-manual-order').innerText = 'Збереження...';
+
+            const price = qty * 90; 
             const timestamp = Date.now();
 
             try {
                 await addDoc(collection(db, "orders"), { uid: 'manual_' + phone, name: name, phone: phone, address: addr, quantity: qty, totalPrice: price, status: 'processing', timestamp: timestamp, source: 'manual' });
+                // Створюємо або оновлюємо клієнта в базі
                 await setDoc(doc(db, "users", 'manual_' + phone), { name: name, phone: phone, address: addr, addedBy: 'admin', timestamp: timestamp }, { merge: true });
                 
                 document.getElementById('manual-address').value = ''; document.getElementById('manual-name').value = ''; document.getElementById('manual-phone').value = ''; document.getElementById('manual-qty').value = '1';
                 showToast('Замовлення успішно створено!');
-                loadOrders(); // Одразу оновлюємо список
-            } catch (e) { showToast('Помилка збереження', true); console.error(e); }
+                loadOrders(); 
+            } catch (e) { 
+                showToast('Помилка збереження', true); console.error(e); 
+            } finally {
+                isSaving = false;
+                document.getElementById('btn-add-manual-order').innerText = 'Додати';
+            }
         };
 
         window.copyToClipboard = (name, phone, addr) => {
-            navigator.clipboard.writeText(`Ім'я: ${name}\nТелефон: ${phone}\nАдреса: ${addr}`).then(() => showToast('Копіювання успішне!'));
+            navigator.clipboard.writeText(`Ім'я: ${name}\nТелефон: ${phone}\nАдреса: ${addr}`).then(() => showToast('Дані скопійовано!'));
         };
 
         window.updateOrderStatus = async (id, status) => {
@@ -560,6 +685,8 @@
                 ordersArr.sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
 
                 list.innerHTML = '';
+                if(ordersArr.length === 0) list.innerHTML = '<p class="text-center text-slate-500 py-10">Немає замовлень</p>';
+
                 ordersArr.forEach(o => {
                     const date = o.timestamp ? new Date(o.timestamp).toLocaleDateString('uk-UA', { day:'2-digit', month:'2-digit', hour:'2-digit', minute:'2-digit'}) : '--';
                     let statusBadge = '<span class="bg-blue-100 text-blue-700 px-2.5 py-1 rounded-md text-[10px] font-black uppercase tracking-widest">В обробці</span>';
@@ -569,22 +696,24 @@
                     
                     list.innerHTML += `
                     <div class="${bgCard} p-5 rounded-2xl border border-slate-200 shadow-sm flex flex-col md:flex-row justify-between items-start md:items-center gap-4 hover:shadow-md transition-shadow">
-                        <div class="flex-1">
-                            <div class="flex items-center gap-3 mb-1.5">${statusBadge}<span class="text-xs font-bold text-slate-400">${date}</span></div>
-                            <h3 class="text-xl font-black text-slate-900 leading-tight mb-1">${o.quantity} бут. • <span class="text-blue-600">${o.totalPrice} ₴</span></h3>
-                            <div class="flex items-center gap-2 text-sm font-medium text-slate-600">👤 ${o.name} • 📞 ${o.phone}</div>
-                            <div class="flex items-center gap-2 text-sm font-medium text-slate-600 mt-1">📍 <span class="truncate">${o.address}</span></div>
+                        <div class="flex-1 w-full">
+                            <div class="flex items-center gap-3 mb-2">${statusBadge}<span class="text-xs font-bold text-slate-400">${date}</span></div>
+                            <h3 class="text-xl md:text-2xl font-black text-slate-900 leading-tight mb-2">${o.quantity} бут. • <span class="text-blue-600">${o.totalPrice} ₴</span></h3>
+                            <div class="flex flex-col gap-1">
+                                <div class="flex items-center gap-2 text-sm font-medium text-slate-600"><span class="w-5 text-center">👤</span> ${o.name} • <span class="font-mono">${o.phone}</span></div>
+                                <div class="flex items-start gap-2 text-sm font-medium text-slate-600"><span class="w-5 text-center mt-0.5">📍</span> <span class="flex-1">${o.address}</span></div>
+                            </div>
                         </div>
-                        <div class="flex flex-row md:flex-col gap-2 w-full md:w-auto mt-2 md:mt-0">
-                            <button onclick="copyToClipboard('${o.name}', '${o.phone}', '${o.address}')" class="flex-1 md:flex-none flex items-center justify-center gap-2 px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-sm rounded-xl transition-colors">Копіювати</button>
+                        <div class="flex flex-row md:flex-col gap-2 w-full md:w-auto mt-2 md:mt-0 shrink-0">
+                            <button onclick="copyToClipboard('${o.name}', '${o.phone}', '${o.address}')" class="flex-1 md:flex-none flex items-center justify-center gap-2 px-4 py-3 md:py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-sm rounded-xl transition-colors">Копіювати</button>
                             <div class="flex gap-2 w-full">
-                                ${o.status !== 'archived' && o.status !== 'completed' ? `<button onclick="updateOrderStatus('${o.id}', 'archived')" class="flex-1 px-3 py-2 bg-green-50 hover:bg-green-100 text-green-600 font-bold text-sm rounded-xl text-center">✓ Готово</button>` : ''}
-                                <button onclick="deleteOrder('${o.id}')" class="flex-1 px-3 py-2 bg-red-50 hover:bg-red-100 text-red-600 font-bold text-sm rounded-xl text-center">✕ Видал.</button>
+                                ${o.status !== 'archived' && o.status !== 'completed' ? `<button onclick="updateOrderStatus('${o.id}', 'archived')" class="flex-1 px-3 py-3 md:py-2 bg-green-50 hover:bg-green-100 text-green-600 font-bold text-sm rounded-xl text-center">✓ Готово</button>` : ''}
+                                <button onclick="deleteOrder('${o.id}')" class="flex-1 px-3 py-3 md:py-2 bg-red-50 hover:bg-red-100 text-red-600 font-bold text-sm rounded-xl text-center">✕ Видал.</button>
                             </div>
                         </div>
                     </div>`;
                 });
-            } catch(e) { list.innerHTML = '<p class="text-red-500">Помилка завантаження</p>'; }
+            } catch(e) { list.innerHTML = '<p class="text-red-500 text-center py-10">Помилка завантаження</p>'; }
         }
         document.getElementById('btn-refresh-orders').onclick = loadOrders;
 
@@ -608,23 +737,25 @@
                 revArr.sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
 
                 list.innerHTML = '';
+                if(revArr.length === 0) list.innerHTML = '<p class="col-span-full text-center text-slate-500 py-10">Немає відгуків</p>';
+
                 revArr.forEach(r => {
                     const isApproved = r.approved === true;
                     list.innerHTML += `
-                    <div class="bg-white p-6 rounded-3xl border ${isApproved ? 'border-slate-100' : 'border-yellow-300 shadow-yellow-100'} shadow-sm relative flex flex-col h-full">
-                        ${!isApproved ? '<div class="absolute -top-3 -right-2 bg-yellow-400 text-slate-900 text-[10px] font-black uppercase tracking-widest px-4 py-1.5 rounded-full shadow-lg">Потребує перевірки</div>' : ''}
+                    <div class="bg-white p-5 md:p-6 rounded-3xl border ${isApproved ? 'border-slate-100' : 'border-yellow-300 shadow-yellow-100'} shadow-sm relative flex flex-col h-full">
+                        ${!isApproved ? '<div class="absolute -top-3 -right-2 bg-yellow-400 text-slate-900 text-[10px] font-black uppercase tracking-widest px-4 py-1.5 rounded-full shadow-lg z-10">Перевірка</div>' : ''}
                         <div class="flex justify-between items-center mb-3">
                             <span class="font-black text-lg text-slate-900">${r.name}</span>
                             <span class="text-yellow-400 font-black tracking-widest">${'★'.repeat(r.rating || 5)}</span>
                         </div>
                         <p class="text-slate-600 text-sm mb-6 flex-1 italic">«${r.text}»</p>
                         <div class="flex gap-2 mt-auto pt-4 border-t border-slate-50">
-                            ${!isApproved ? `<button onclick="approveReview('${r.id}')" class="flex-1 py-2.5 bg-green-50 text-green-600 font-bold text-sm rounded-xl">Схвалити</button>` : ''}
-                            <button onclick="deleteReview('${r.id}')" class="flex-1 py-2.5 bg-red-50 text-red-500 font-bold text-sm rounded-xl">Видалити</button>
+                            ${!isApproved ? `<button onclick="approveReview('${r.id}')" class="flex-1 py-3 bg-green-50 text-green-600 font-bold text-sm rounded-xl">Схвалити</button>` : ''}
+                            <button onclick="deleteReview('${r.id}')" class="flex-1 py-3 bg-red-50 text-red-500 font-bold text-sm rounded-xl">Видалити</button>
                         </div>
                     </div>`;
                 });
-            } catch(e) { list.innerHTML = '<p class="text-red-500 col-span-full">Помилка завантаження</p>'; }
+            } catch(e) { list.innerHTML = '<p class="text-red-500 col-span-full text-center py-10">Помилка завантаження</p>'; }
         }
 
         // --- 5. МЕНЕДЖЕРИ (КОМАНДА) ---
@@ -636,6 +767,7 @@
         };
 
         document.getElementById('btn-add-admin').onclick = async () => {
+            if(isSaving) return;
             const email = document.getElementById('input-new-admin').value.trim().toLowerCase();
             const role = document.getElementById('input-new-role').value;
             if(!email) return;
@@ -646,26 +778,34 @@
                 return;
             }
 
+            isSaving = true;
+            document.getElementById('btn-add-admin').innerText = 'Завантаження...';
+
             try {
                 await setDoc(doc(db, "admins", email), { email: email, role: role, addedAt: Date.now() });
                 document.getElementById('input-new-admin').value = '';
                 showToast('Успішно! Працівник має доступ.'); loadAdmins();
-            } catch(e) { showToast('Помилка БД. Перевірте права', true); }
+            } catch(e) { 
+                showToast('Помилка БД. Перевірте права', true); 
+            } finally {
+                isSaving = false;
+                document.getElementById('btn-add-admin').innerText = 'Надати';
+            }
         };
 
         async function loadAdmins() {
             if (currentUserRole === 'manager' || currentUserRole === 'admin') return;
             const list = document.getElementById('admins-list');
-            list.innerHTML = '<div class="p-6 text-slate-400 font-bold">Отримання даних...</div>';
+            list.innerHTML = '<div class="p-6 text-slate-400 font-bold animate-pulse text-center">Отримання даних...</div>';
             try {
                 const snap = await getDocs(collection(db, "admins"));
                 list.innerHTML = `
-                    <div class="p-5 flex justify-between items-center bg-blue-50/50 mt-4 rounded-t-2xl">
+                    <div class="p-4 md:p-5 flex flex-col md:flex-row md:justify-between md:items-center bg-blue-50/50 mt-4 rounded-t-2xl gap-3 md:gap-0 border-b border-slate-100">
                         <div class="flex items-center gap-3">
-                            <div class="w-8 h-8 rounded-full bg-blue-600 text-white flex items-center justify-center font-bold text-xs shadow-md shadow-blue-500/30">Вл</div>
-                            <span class="font-bold text-slate-900">${OWNER_EMAIL}</span>
+                            <div class="w-8 h-8 rounded-full bg-blue-600 text-white flex items-center justify-center font-bold text-xs shadow-md shadow-blue-500/30 shrink-0">Вл</div>
+                            <span class="font-bold text-slate-900 text-sm md:text-base break-all">${OWNER_EMAIL}</span>
                         </div>
-                        <span class="px-3 py-1 bg-blue-100 text-blue-700 text-[10px] font-black uppercase tracking-widest rounded-lg">Власник</span>
+                        <span class="px-3 py-1.5 bg-blue-100 text-blue-700 text-[10px] font-black uppercase tracking-widest rounded-lg self-start md:self-auto w-max">Власник</span>
                     </div>`;
                 
                 snap.forEach(docSnap => {
@@ -678,20 +818,20 @@
                     const roleInfo = roleMap[data.role] || roleMap['manager'];
                     
                     list.innerHTML += `
-                    <div class="p-5 flex justify-between items-center">
-                        <div class="flex items-center gap-3">
-                            <div class="w-8 h-8 rounded-full bg-${roleInfo.col}-100 text-${roleInfo.col}-600 flex items-center justify-center font-bold text-xs">
+                    <div class="p-4 md:p-5 flex flex-col md:flex-row md:justify-between md:items-center gap-4 border-b border-slate-100 hover:bg-slate-50 transition-colors">
+                        <div class="flex items-center gap-3 overflow-hidden">
+                            <div class="w-8 h-8 rounded-full bg-${roleInfo.col}-100 text-${roleInfo.col}-600 flex items-center justify-center font-bold text-xs shrink-0">
                                 ${roleInfo.name.substring(0,2)}
                             </div>
-                            <div>
-                                <span class="font-medium text-slate-800 block">${data.email}</span>
+                            <div class="min-w-0">
+                                <span class="font-medium text-slate-800 block text-sm md:text-base truncate">${data.email}</span>
                                 <span class="text-[10px] font-bold uppercase tracking-widest text-${roleInfo.col}-500">${roleInfo.name}</span>
                             </div>
                         </div>
-                        <button onclick="removeAdmin('${data.email}')" class="px-4 py-2 bg-white border border-red-200 text-red-500 hover:bg-red-50 font-bold text-xs rounded-xl transition-colors shadow-sm">Звільнити</button>
+                        <button onclick="removeAdmin('${data.email}')" class="w-full md:w-auto px-4 py-2.5 bg-white border border-red-200 text-red-500 hover:bg-red-50 font-bold text-xs md:text-sm rounded-xl transition-colors shadow-sm active:scale-95">Звільнити</button>
                     </div>`;
                 });
-            } catch(e) { list.innerHTML = '<div class="p-6 text-red-500">Помилка завантаження</div>'; }
+            } catch(e) { list.innerHTML = '<div class="p-6 text-red-500 text-center">Помилка завантаження</div>'; }
         }
     </script>
 </body>
