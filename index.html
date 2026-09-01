@@ -740,7 +740,7 @@ src="https://www.facebook.com/tr?id=1579626687172302&ev=PageView&noscript=1"
                 if(!n || p.length < 17 || !a) { showToast('Перевірте дані', 'error'); return; }
                 if(currentUser) {
                     try {
-                        await setDoc(doc(db, "users", currentUser.uid), { name: n, phone: p, address: a }, { merge: true });
+                        await setDoc(doc(db, "users", currentUser.uid), {name: n, phone: p, address: localStorage.getItem('app_address'), avatar: localStorage.getItem('app_avatar'), timestamp: Date.now() }, { merge: true });
                         localStorage.setItem('app_name', n); localStorage.setItem('app_phone', p); localStorage.setItem('app_address', a);
                         document.getElementById('display-user-name').innerText = n;
                         document.getElementById('settings-display-name').innerText = n;
