@@ -69,10 +69,12 @@
                 </button>
 
                 <!-- База клієнтів -->
-                <button class="nav-item w-full flex items-center gap-3 px-4 py-3.5 rounded-xl hover:bg-slate-800 font-bold transition-all" data-target="panel-clients">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
-                    База клієнтів
-                </button>
+                <div id="nav-wrapper-clients">
+                    <button class="nav-item w-full flex items-center gap-3 px-4 py-3.5 rounded-xl hover:bg-slate-800 font-bold transition-all" data-target="panel-clients">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
+                        База клієнтів
+                    </button>
+                </div>
 
                 <!-- Відгуки -->
                 <div id="nav-wrapper-reviews">
@@ -147,12 +149,12 @@
                 </div>
             </div>
 
-            <!-- 2. БАЗА КЛІЄНТІВ ТА ДОДАВАННЯ ЗАМОВЛЕНЬ -->
+            <!-- 2. БАЗА КЛІЄНТІВ -->
             <div id="panel-clients" class="hidden-view p-6 md:p-10 fade-in h-full">
                 <div class="flex justify-between items-center mb-8">
                     <div>
                         <h1 class="text-3xl font-black text-slate-900">База клієнтів</h1>
-                        <p class="text-slate-500 text-sm mt-1">Додавання замовлень та реєстр покупців</p>
+                        <p class="text-slate-500 text-sm mt-1">Реєстр всіх покупців</p>
                     </div>
                     <button onclick="exportClients()" class="px-5 py-2.5 bg-blue-50 text-blue-600 font-bold rounded-xl flex items-center gap-2 hover:bg-blue-100 transition-colors shadow-sm">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
@@ -160,13 +162,43 @@
                     </button>
                 </div>
 
+                <!-- Список клієнтів -->
+                <div class="bg-white rounded-3xl border border-slate-100 shadow-sm overflow-hidden mb-6">
+                    <div class="px-6 py-4 bg-slate-50 border-b border-slate-100 flex justify-between items-center">
+                        <span class="font-bold text-slate-600 text-sm">Всі клієнти</span>
+                        <button onclick="loadClients()" class="text-blue-500 hover:text-blue-700 text-sm font-bold flex items-center gap-1">Оновити</button>
+                    </div>
+                    <div id="clients-list" class="divide-y divide-slate-100"></div>
+                </div>
+                
+                <div class="text-center pb-10">
+                    <button id="btn-load-more-clients" onclick="loadClients(true)" class="hidden px-6 py-3 bg-white border border-slate-200 text-slate-600 font-bold rounded-xl shadow-sm hover:bg-slate-50 transition-colors">
+                        Завантажити ще 25
+                    </button>
+                </div>
+            </div>
+
+            <!-- 3. ЗАМОВЛЕННЯ ТА ДОДАВАННЯ ОФЛАЙН ЗАМОВЛЕНЬ -->
+            <div id="panel-orders" class="hidden-view p-6 md:p-10 fade-in h-full">
+                <div class="flex justify-between items-center mb-8">
+                    <div>
+                        <h1 class="text-3xl font-black text-slate-900">Обробка замовлень</h1>
+                        <p class="text-slate-500 text-sm mt-1">Керування замовленнями та додавання нових</p>
+                    </div>
+                    <button id="btn-refresh-orders" class="px-5 py-2.5 bg-white border border-slate-200 shadow-sm rounded-xl font-bold text-slate-600 hover:bg-slate-50 flex items-center gap-2 transition-colors">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
+                        Оновити
+                    </button>
+                </div>
+
                 <!-- Форма додавання -->
-                <div class="bg-white p-6 rounded-3xl border border-slate-100 shadow-sm mb-8">
-                    <h3 class="text-lg font-black text-slate-800 mb-1">Нове замовлення / Клієнт</h3>
-                    <p class="text-xs text-slate-500 mb-5">Замовлення, що надійшли через телефон або месенджери</p>
+                <div class="bg-white p-6 rounded-3xl border border-slate-200 shadow-sm mb-8 relative overflow-hidden">
+                    <div class="absolute top-0 right-0 w-32 h-32 bg-indigo-50 rounded-bl-full -z-10"></div>
+                    <h3 class="text-lg font-black text-slate-800 mb-1">Оформити нове замовлення</h3>
+                    <p class="text-xs text-slate-500 mb-5">Для клієнтів з телефону, Viber чи Telegram</p>
                     
-                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 items-end">
-                        <div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 items-end">
+                        <div class="lg:col-span-2">
                             <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1 pl-2">Адреса доставки</label>
                             <input type="text" id="manual-address" placeholder="Вулиця, Будинок..." class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:border-blue-500 font-medium text-sm">
                         </div>
@@ -181,43 +213,15 @@
                         <div>
                             <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1 pl-2">Бутлів</label>
                             <div class="flex gap-2">
-                                <input type="number" id="manual-qty" value="1" min="1" class="w-20 px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:border-blue-500 font-medium text-sm">
+                                <input type="number" id="manual-qty" value="1" min="1" class="w-16 px-3 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:border-blue-500 font-medium text-sm text-center">
                                 <button id="btn-add-manual-order" class="flex-1 py-3 bg-slate-900 hover:bg-slate-800 text-white font-bold rounded-xl active:scale-95 transition-all shadow-md">
-                                    Додати
+                                    В базу
                                 </button>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <!-- Список клієнтів -->
-                <div class="bg-white rounded-3xl border border-slate-100 shadow-sm overflow-hidden mb-6">
-                    <div class="px-6 py-4 bg-slate-50 border-b border-slate-100 flex justify-between items-center">
-                        <span class="font-bold text-slate-600 text-sm">Останні клієнти</span>
-                        <button onclick="loadClients()" class="text-blue-500 hover:text-blue-700 text-sm font-bold">Оновити</button>
-                    </div>
-                    <div id="clients-list" class="divide-y divide-slate-100"></div>
-                </div>
-                
-                <div class="text-center pb-10">
-                    <button id="btn-load-more-clients" onclick="loadClients(true)" class="hidden px-6 py-3 bg-white border border-slate-200 text-slate-600 font-bold rounded-xl shadow-sm hover:bg-slate-50 transition-colors">
-                        Завантажити ще 25
-                    </button>
-                </div>
-            </div>
-
-            <!-- 3. ЗАМОВЛЕННЯ -->
-            <div id="panel-orders" class="hidden-view p-6 md:p-10 fade-in h-full">
-                <div class="flex justify-between items-center mb-8">
-                    <div>
-                        <h1 class="text-3xl font-black text-slate-900">Обробка замовлень</h1>
-                        <p class="text-slate-500 text-sm mt-1">Організуйте доставку швидко та зручно</p>
-                    </div>
-                    <button id="btn-refresh-orders" class="px-5 py-2.5 bg-white border border-slate-200 shadow-sm rounded-xl font-bold text-slate-600 hover:bg-slate-50 flex items-center gap-2 transition-colors">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
-                        Оновити
-                    </button>
-                </div>
                 <div id="orders-list" class="flex flex-col gap-3 pb-10"></div>
             </div>
 
@@ -246,7 +250,7 @@
 
                         <button id="btn-add-admin" class="px-8 py-3.5 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl active:scale-95 transition-all shadow-md shadow-blue-600/20">Надати доступ</button>
                     </div>
-                    <p class="text-[10px] text-slate-400 mt-3 ml-1 leading-relaxed"><b>Менеджер:</b> замовлення та клієнти. <br><b>Адміністратор:</b> + аналітика і відгуки. <br><b>Помічник:</b> повний доступ (вкл. команду).</p>
+                    <p class="text-[10px] text-slate-400 mt-3 ml-1 leading-relaxed"><b>Менеджер:</b> тільки замовлення. <br><b>Адміністратор:</b> + аналітика і відгуки. <br><b>Помічник:</b> повний доступ (вкл. базу клієнтів і команду).</p>
                 </div>
                 
                 <h3 class="text-lg font-black text-slate-800 mb-4 pl-1">Активні доступи</h3>
@@ -327,15 +331,19 @@
 
             // ОБМЕЖЕННЯ ІНТЕРФЕЙСУ ЗАЛЕЖНО ВІД РОЛІ
             if (currentUserRole === 'manager') {
+                // Менеджер бачить тільки Замовлення
                 document.getElementById('nav-wrapper-analytics').classList.add('hidden');
                 document.getElementById('nav-wrapper-reviews').classList.add('hidden');
                 document.getElementById('nav-wrapper-admins').classList.add('hidden');
+                document.getElementById('nav-wrapper-clients').classList.add('hidden');
                 document.querySelector('[data-target="panel-orders"]').click();
             } else if (currentUserRole === 'admin') {
+                // Адмін бачить Аналітику, Замовлення, Відгуки
                 document.getElementById('nav-wrapper-admins').classList.add('hidden');
+                document.getElementById('nav-wrapper-clients').classList.add('hidden');
                 document.querySelector('[data-target="panel-analytics"]').click();
             } else {
-                // Owner & Assistant
+                // Власник та Помічник бачать все
                 document.querySelector('[data-target="panel-analytics"]').click();
             }
         }
@@ -345,11 +353,12 @@
             btn.addEventListener('click', () => {
                 const target = btn.dataset.target;
                 
-                if (currentUserRole === 'manager' && !['panel-orders', 'panel-clients'].includes(target)) {
+                // Жорсткий захист маршрутів
+                if (currentUserRole === 'manager' && target !== 'panel-orders') {
                     showToast('Недостатньо прав', true); return;
                 }
-                if (currentUserRole === 'admin' && target === 'panel-admins') {
-                    showToast('Тільки для власників', true); return;
+                if (currentUserRole === 'admin' && ['panel-admins', 'panel-clients'].includes(target)) {
+                    showToast('Тільки для Власника та Помічника', true); return;
                 }
 
                 document.querySelectorAll('.nav-item').forEach(b => {
@@ -421,10 +430,21 @@
             } catch (e) { showToast('Помилка аналітики', true); }
         };
 
-        // --- 2. БАЗА КЛІЄНТІВ ТА РУЧНІ ЗАМОВЛЕННЯ ---
+        // --- 2. БАЗА КЛІЄНТІВ ---
         let lastVisibleClient = null;
 
+        window.deleteClient = async (id) => {
+            if(confirm('Видалити клієнта з бази назавжди?')) {
+                try {
+                    await deleteDoc(doc(db, "users", id));
+                    showToast('Клієнта успішно видалено!');
+                    loadClients();
+                } catch(e) { showToast('Помилка видалення', true); console.error(e); }
+            }
+        };
+
         window.loadClients = async (loadMore = false) => {
+            if (currentUserRole === 'manager' || currentUserRole === 'admin') return;
             const list = document.getElementById('clients-list');
             const btnMore = document.getElementById('btn-load-more-clients');
             
@@ -451,14 +471,20 @@
 
                 snap.forEach(docSnap => {
                     const c = docSnap.data();
+                    const docId = docSnap.id;
                     list.innerHTML += `
                         <div class="p-4 bg-white border-b border-slate-100 hover:bg-slate-50 flex flex-col md:flex-row md:items-center justify-between gap-2 transition-colors">
                             <div>
                                 <p class="font-black text-slate-800">${c.name || 'Без імені'} <span class="text-blue-600 font-mono ml-2">${c.phone || ''}</span></p>
                                 <p class="text-sm text-slate-500">📍 ${c.address || 'Не вказано'}</p>
                             </div>
-                            <div class="text-[10px] text-slate-400 font-bold uppercase tracking-widest bg-slate-100 px-3 py-1 rounded-lg self-start md:self-auto">
-                                ${c.addedBy ? 'Ручне введення' : 'З додатку'}
+                            <div class="flex items-center gap-3 self-start md:self-auto">
+                                <div class="text-[10px] text-slate-400 font-bold uppercase tracking-widest bg-slate-100 px-3 py-1 rounded-lg">
+                                    ${c.addedBy ? 'Ручне' : 'З додатку'}
+                                </div>
+                                <button onclick="deleteClient('${docId}')" class="p-2 text-red-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors" title="Видалити клієнта">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                                </button>
                             </div>
                         </div>`;
                 });
@@ -487,6 +513,7 @@
             } catch (e) { showToast('Помилка експорту', true); }
         };
 
+        // --- 3. ЗАМОВЛЕННЯ ТА ДОДАВАННЯ МАНУАЛЬНИХ ЗАМОВЛЕНЬ ---
         document.getElementById('btn-add-manual-order').onclick = async () => {
             const addr = document.getElementById('manual-address').value.trim();
             const name = document.getElementById('manual-name').value.trim() || 'Клієнт';
@@ -495,22 +522,19 @@
             
             if(!addr || !phone) { showToast('Введіть адресу та телефон', true); return; }
             
-            const price = qty * 90; // Автоматичний розрахунок приблизної суми для статистики
+            const price = qty * 90; // Автоматичний розрахунок
             const timestamp = Date.now();
 
             try {
-                // Зберігаємо замовлення
                 await addDoc(collection(db, "orders"), { uid: 'manual_' + phone, name: name, phone: phone, address: addr, quantity: qty, totalPrice: price, status: 'processing', timestamp: timestamp, source: 'manual' });
-                // Створюємо або оновлюємо клієнта в базі
                 await setDoc(doc(db, "users", 'manual_' + phone), { name: name, phone: phone, address: addr, addedBy: 'admin', timestamp: timestamp }, { merge: true });
                 
                 document.getElementById('manual-address').value = ''; document.getElementById('manual-name').value = ''; document.getElementById('manual-phone').value = ''; document.getElementById('manual-qty').value = '1';
-                showToast('Замовлення та клієнта додано!');
-                loadClients();
+                showToast('Замовлення успішно створено!');
+                loadOrders(); // Одразу оновлюємо список
             } catch (e) { showToast('Помилка збереження', true); console.error(e); }
         };
 
-        // --- 3. ЗАМОВЛЕННЯ ---
         window.copyToClipboard = (name, phone, addr) => {
             navigator.clipboard.writeText(`Ім'я: ${name}\nТелефон: ${phone}\nАдреса: ${addr}`).then(() => showToast('Копіювання успішне!'));
         };
@@ -615,6 +639,13 @@
             const email = document.getElementById('input-new-admin').value.trim().toLowerCase();
             const role = document.getElementById('input-new-role').value;
             if(!email) return;
+            
+            // ЗАХИСТ ВІД ДУБЛЮВАННЯ ВЛАСНИКА
+            if(email === OWNER_EMAIL) {
+                showToast('Ця пошта є головним власником!', true);
+                return;
+            }
+
             try {
                 await setDoc(doc(db, "admins", email), { email: email, role: role, addedAt: Date.now() });
                 document.getElementById('input-new-admin').value = '';
@@ -639,6 +670,10 @@
                 
                 snap.forEach(docSnap => {
                     const data = docSnap.data();
+                    
+                    // ПРИХОВУЄМО ДУБЛІКАТ ВЛАСНИКА, ЯКЩО ВІН БУВ ДОДАНИЙ РАНІШЕ
+                    if(data.email === OWNER_EMAIL) return;
+
                     const roleMap = { 'manager': { name: 'Менеджер', col: 'green' }, 'admin': { name: 'Адмін', col: 'indigo' }, 'assistant': { name: 'Помічник', col: 'purple' } };
                     const roleInfo = roleMap[data.role] || roleMap['manager'];
                     
