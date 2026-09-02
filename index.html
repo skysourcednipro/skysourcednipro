@@ -3,11 +3,21 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <meta name="theme-color" content="#0f172a">
-    <title>SkySource - Доставка питної води</title>
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="theme-color" content="#1e3a8a">
+    <title>SkySource - Доставка питної води у Дніпрі</title>
     
-    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%232563eb'><path d='M12 2.69L5.64 9.76a8 8 0 1 0 12.72 0L12 2.69z'/></svg>">
-    
+    <!-- SEO & Social Meta Tags -->
+    <meta name="description" content="Швидка та зручна доставка питної води 19 літрів у місті Дніпро. Замовлення в один клік!">
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="SkySource — Доставка питної води у Дніпрі">
+    <meta property="og:description" content="Замовляйте якісну питну воду в один клік. Безкоштовна доставка від 1 бутля!">
+    <meta property="og:image" content="https://i.ibb.co/Y7jCqPDF/c660937a-9272-4146-82e4-074b94f35d73.png">
+
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%230080FF'><path d='M12 2.69L5.64 9.76a8 8 0 1 0 12.72 0L12 2.69z'/></svg>">
+
+    <!-- Підключення Tailwind та налаштування Dark Mode -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
@@ -99,10 +109,23 @@
             .modal-history-content.active { transform: scale(1); opacity: 1; }
         }
 
+        /* Анімація View Transitions для зміни теми */
+        ::view-transition-old(root), ::view-transition-new(root) { animation: none; mix-blend-mode: normal; }
+        ::view-transition-old(root) { z-index: 1; } ::view-transition-new(root) { z-index: 2; }
+        .dark::view-transition-old(root) { z-index: 2; } .dark::view-transition-new(root) { z-index: 1; }
+
+        @keyframes wave-pulse {
+            0% { box-shadow: 0 0 0 0 rgba(37, 99, 235, 0.7); }
+            70% { box-shadow: 0 0 0 15px rgba(37, 99, 235, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(37, 99, 235, 0); }
+        }
+        .animate-wave-pulse { animation: wave-pulse 1.5s infinite cubic-bezier(0.66, 0, 0, 1); }
+        .arrow-warning { color: #ef4444 !important; transform: scale(1.3) translateY(2px); }
+
         /* Анімації для Крос-сейлу (слайдер) */
-        .wizard-step { transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.4s ease; }
-        .wizard-hidden { opacity: 0; transform: translateX(50px) scale(0.95); pointer-events: none; position: absolute; top: 0; left: 0; right: 0; visibility: hidden; z-index: -1; }
-        .wizard-active { opacity: 1; transform: translateX(0) scale(1); position: relative; visibility: visible; z-index: 10; }
+        .wizard-step { transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1); }
+        .wizard-hidden { opacity: 0; transform: translateX(-50px) scale(0.95); pointer-events: none; position: absolute; top: 0; left: 0; right: 0; visibility: hidden; }
+        .wizard-active { opacity: 1; transform: translateX(0) scale(1); position: relative; visibility: visible; }
 
     </style>
 </head>
@@ -155,12 +178,11 @@
         </div>
     </div>
 
-    <!-- КРОС-СЕЙЛ МОДАЛКА (ВІДКРИВАЄТЬСЯ ПІСЛЯ ПІДТВЕРДЖЕННЯ ЗАМОВЛЕННЯ) -->
+    <!-- КРОС-СЕЙЛ МОДАЛКА -->
     <div id="modal-cross-sell" class="fixed inset-0 z-[90] flex flex-col justify-end md:justify-center md:items-center modal-overlay hidden-view">
         <div class="absolute inset-0 bg-slate-900/60 backdrop-blur-sm" id="modal-cross-sell-bg"></div>
         
         <div id="modal-cross-sell-content" class="bg-slate-50 dark:bg-slate-900 w-full md:max-w-md md:rounded-[2rem] rounded-t-[2rem] relative z-10 flex flex-col shadow-2xl modal-content p-6 pb-10 md:pb-6 overflow-hidden border border-white/50 dark:border-slate-700">
-            <!-- Header -->
             <div class="flex justify-between items-center mb-6 relative z-20">
                 <h3 class="text-xl font-black text-slate-900 dark:text-white">Доповнити замовлення</h3>
                 <button id="btn-close-cross-sell" class="bg-slate-200 dark:bg-slate-800 hover:bg-slate-300 text-slate-500 p-2 rounded-full transition-colors active:scale-90">
@@ -168,9 +190,7 @@
                 </button>
             </div>
 
-            <!-- Slider Container -->
-            <div class="relative w-full min-h-[360px] md:min-h-[340px]">
-                
+            <div class="relative w-full min-h-[360px]">
                 <!-- Крок 1: Бутель -->
                 <div id="step-tara" class="wizard-step wizard-active w-full h-full flex flex-col absolute top-0 left-0">
                     <div class="flex gap-4 mb-4">
@@ -183,15 +203,15 @@
                         </div>
                     </div>
                     <div class="bg-blue-50 dark:bg-blue-900/20 border border-blue-100 dark:border-blue-800/50 p-4 rounded-2xl mb-auto">
-                        <p class="text-[11px] md:text-xs text-blue-900 dark:text-blue-200 leading-relaxed font-medium">
-                            💡 <b class="font-black">У вас вже є пустий бутель?</b> Ми можемо безкоштовно обміняти його на повний (у гарному стані). Або ви можете залишити свій бутель нам під заставу без обміну <span class="bg-blue-200 dark:bg-blue-800 px-1 rounded text-[9px] uppercase font-black tracking-widest text-blue-900 dark:text-blue-100">(найчастіший вибір)</span>.
+                        <p class="text-xs text-blue-900 dark:text-blue-200 leading-relaxed font-medium">
+                            💡 <b class="font-black">У вас вже є пустий бутель?</b> Ми можемо безкоштовно обміняти його на повний (у гарному стані). Або ви можете залишити свій бутель нам під заставу без обміну <span class="bg-blue-200 dark:bg-blue-800 px-1 rounded text-[10px] uppercase font-black tracking-widest">(найчастіший вибір)</span>.
                         </p>
                     </div>
-                    <div class="flex flex-col gap-2 mt-4">
-                        <button id="btn-add-tara" class="w-full py-3.5 bg-blue-600 hover:bg-blue-700 text-white font-black text-lg rounded-2xl active:scale-95 transition-transform shadow-lg shadow-blue-600/30 flex items-center justify-center gap-2">
+                    <div class="flex flex-col gap-2 mt-5">
+                        <button id="btn-add-tara" class="w-full py-4 bg-blue-600 hover:bg-blue-700 text-white font-black text-lg rounded-2xl active:scale-95 transition-transform shadow-lg shadow-blue-600/30 flex items-center justify-center gap-2">
                             ➕ Купити бутель
                         </button>
-                        <button id="btn-skip-tara" class="w-full py-3.5 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 font-bold rounded-2xl active:scale-95 transition-transform hover:bg-slate-50 flex items-center justify-center gap-2">
+                        <button id="btn-skip-tara" class="w-full py-4 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 font-bold rounded-2xl active:scale-95 transition-transform hover:bg-slate-50 flex items-center justify-center gap-2">
                             В мене є на обмін <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M9 5l7 7-7 7"></path></svg>
                         </button>
                     </div>
@@ -202,7 +222,6 @@
                     <h4 class="text-xl font-black text-slate-900 dark:text-white mb-4">Оберіть помпу для зручності</h4>
                     
                     <div class="space-y-3 mb-auto">
-                        <!-- Механіка -->
                         <div class="flex items-center justify-between p-3 border border-slate-200 dark:border-slate-700 rounded-2xl bg-white dark:bg-slate-800">
                             <div class="flex items-center gap-4">
                                 <div class="w-14 h-14 bg-slate-100 dark:bg-slate-700 rounded-xl flex items-center justify-center text-3xl">🕹️</div>
@@ -211,9 +230,8 @@
                                     <p class="text-blue-600 dark:text-blue-400 font-black text-sm">150 ₴</p>
                                 </div>
                             </div>
-                            <button id="btn-add-mech-pump" class="px-4 py-2 bg-slate-100 dark:bg-slate-700 hover:bg-blue-50 text-blue-600 dark:text-blue-400 font-bold rounded-xl active:scale-95 transition-colors text-sm">Додати</button>
+                            <button id="btn-add-mech-pump" class="px-5 py-2.5 bg-slate-100 dark:bg-slate-700 hover:bg-blue-50 text-blue-600 dark:text-blue-400 font-bold rounded-xl active:scale-95 transition-colors text-sm">Додати</button>
                         </div>
-                        <!-- Електрика -->
                         <div class="flex items-center justify-between p-3 border-2 border-blue-500 rounded-2xl bg-blue-50/50 dark:bg-blue-900/20 relative overflow-hidden shadow-sm">
                             <div class="absolute -right-6 top-2 text-[9px] bg-blue-500 text-white font-black px-8 py-0.5 rotate-45 shadow-sm">ТОП</div>
                             <div class="flex items-center gap-4 relative z-10">
@@ -223,21 +241,19 @@
                                     <p class="text-blue-600 dark:text-blue-400 font-black text-sm">350 ₴</p>
                                 </div>
                             </div>
-                            <button id="btn-add-elec-pump" class="px-4 py-2 bg-blue-600 text-white font-bold rounded-xl active:scale-95 transition-colors text-sm relative z-10 shadow-md shadow-blue-600/30">Додати</button>
+                            <button id="btn-add-elec-pump" class="px-5 py-2.5 bg-blue-600 text-white font-bold rounded-xl active:scale-95 transition-colors text-sm relative z-10 shadow-md shadow-blue-600/30">Додати</button>
                         </div>
                     </div>
 
-                    <div class="mt-4 pt-4">
+                    <div class="mt-6 pt-4">
                         <button id="btn-finish-cross-sell" class="w-full py-4 bg-slate-900 dark:bg-slate-700 hover:bg-slate-800 text-white font-black rounded-2xl active:scale-95 transition-all shadow-xl flex items-center justify-center gap-2 text-lg">
-                            Оформити замовлення <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>
+                            <span>Оформити замовлення</span> <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>
                         </button>
                     </div>
                 </div>
-
             </div>
         </div>
     </div>
-
 
     <div class="app-wrapper">
 
@@ -466,7 +482,6 @@
     const provider = new GoogleAuthProvider();
 
     let currentUser = null;
-    let hasUnsavedChanges = false;
     let currentTabId = 'tab-home';
 
     document.addEventListener('DOMContentLoaded', () => {
@@ -676,7 +691,7 @@
             
             if(currentUser) {
                 try {
-                    await setDoc(doc(db, "users", currentUser.uid), { name: n, phone: p, address: a, timestamp: Date.now() }, { merge: true });
+                    await setDoc(doc(db, "users", currentUser.uid), { name: n, phone: p, address: a }, { merge: true });
                     localStorage.setItem('app_name', n); localStorage.setItem('app_phone', p); localStorage.setItem('app_address', a);
                     document.getElementById('display-user-name').innerText = n;
                     showToast('Налаштування збережено', 'success');
@@ -686,23 +701,24 @@
             }
         };
 
-        // --- ЗАКАЗ ВОДЫ + КРОС-СЕЙЛ ---
         let orderState = 'idle', orderQty = 1;
         const ui = { water: document.getElementById('water'), hint: document.getElementById('bottle-hint'), select: document.getElementById('bottle-select-ui'), qty: document.getElementById('display-qty'), price: document.getElementById('display-price'), btnInit: document.getElementById('order-status'), actionPanel: document.getElementById('action-panel') };
 
         let crossSellExtras = [];
         let crossSellTotal = 0;
+        let isOrdering = false;
 
         function updatePrice() { ui.qty.innerText = orderQty; ui.price.innerText = (orderQty === 1 ? 100 : orderQty * 90) + ' ₴'; }
 
         function resetBottle() {
-            orderState = 'idle'; orderQty = 1; updatePrice();
+            orderState = 'idle'; orderQty = 1; updatePrice(); isOrdering = false;
             ui.water.style.height = '15%'; ui.hint.style.opacity = '1';
             ui.select.classList.add('hidden'); ui.select.classList.remove('flex');
             ui.actionPanel.classList.add('opacity-0', 'pointer-events-none');
             ui.btnInit.classList.remove('opacity-0', 'pointer-events-none');
             document.getElementById('action-container').classList.add('h-0', 'mt-0'); 
             document.getElementById('action-container').classList.remove('h-[56px]', 'mt-6');
+            document.getElementById('btn-finish-cross-sell').innerHTML = `<span>Оформити замовлення</span> <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>`;
         }
 
         function startOrder() {
@@ -723,7 +739,6 @@
         document.getElementById('btn-qty-minus').onclick = (e) => { e.stopPropagation(); if(orderQty > 1) { orderQty--; updatePrice(); } };
         document.getElementById('btn-cancel-order').onclick = (e) => { e.stopPropagation(); resetBottle(); };
         
-        // ВІДКРИТТЯ КРОС-СЕЙЛ МОДАЛКИ
         document.getElementById('btn-confirm-order').onclick = (e) => {
             e.stopPropagation();
             if(orderState === 'selecting' && currentUser) {
@@ -731,17 +746,16 @@
                 crossSellTotal = 0;
                 
                 document.getElementById('step-tara').className = 'wizard-step wizard-active w-full h-full flex flex-col absolute top-0 left-0';
-                document.getElementById('step-pump').className = 'wizard-step wizard-hidden w-full h-full flex flex-col absolute top-0 left-0';
+                document.getElementById('step-pump').className = 'wizard-step wizard-hidden w-full h-full flex flex-col';
                 
                 document.getElementById('modal-cross-sell').classList.remove('hidden-view');
                 document.getElementById('modal-cross-sell').classList.add('active');
             }
         };
 
-        // ЛОГІКА КРОС-СЕЙЛУ
         const nextStep = () => {
             document.getElementById('step-tara').className = 'wizard-step wizard-hidden w-full h-full flex flex-col absolute top-0 left-0';
-            document.getElementById('step-pump').className = 'wizard-step wizard-active w-full h-full flex flex-col absolute top-0 left-0';
+            document.getElementById('step-pump').className = 'wizard-step wizard-active w-full h-full flex flex-col';
         };
 
         const closeCrossSell = () => {
@@ -762,22 +776,26 @@
         document.getElementById('btn-skip-tara').onclick = nextStep;
 
         document.getElementById('btn-add-mech-pump').onclick = () => {
+            if(isOrdering) return;
             crossSellExtras.push('+ Мех. помпа');
             crossSellTotal += 150;
             showToast('Помпу додано!', 'success');
             finalizeOrder();
         };
         document.getElementById('btn-add-elec-pump').onclick = () => {
+            if(isOrdering) return;
             crossSellExtras.push('+ Електр. помпа');
             crossSellTotal += 350;
             showToast('Помпу додано!', 'success');
             finalizeOrder();
         };
         document.getElementById('btn-finish-cross-sell').onclick = () => {
-            finalizeOrder();
+            if(!isOrdering) finalizeOrder();
         };
 
         async function finalizeOrder() {
+            isOrdering = true;
+            document.getElementById('btn-finish-cross-sell').innerHTML = 'Відправка...';
             document.getElementById('modal-cross-sell').classList.remove('active');
             setTimeout(() => document.getElementById('modal-cross-sell').classList.add('hidden-view'), 300);
             
