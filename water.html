@@ -6,18 +6,22 @@
     <meta name="theme-color" content="#1e3a8a">
     <title>Доставка воды Днепр | Sky Source</title>
 
-    <!-- Meta Pixel Code -->
+<!-- Meta Pixel Code -->
 <script>
-!function(f,b,e,v,n,t,s)
-{if(f.fbq)return;n=f.fbq=function(){n.callMethod?
-n.callMethod.apply(n,arguments):n.queue.push(arguments)};
-if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
-n.queue=[];t=b.createElement(e);t.async=!0;
-t.src=v;s=b.getElementsByTagName(e)[0];
-s.parentNode.insertBefore(t,s)}(window, document,'script',
-'https://connect.facebook.net/en_US/fbevents.js');
-fbq('init', '1659498598858519');
-fbq('track', 'PageView');
+if (!window._fbPixelInitialized) {
+  window._fbPixelInitialized = true;
+  !function(f,b,e,v,n,t,s)
+  {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+  n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+  if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+  n.queue=[];t=b.createElement(e);t.async=!0;
+  t.src=v;s=b.getElementsByTagName(e)[0];
+  s.parentNode.insertBefore(t,s)}(window, document,'script',
+  'https://connect.facebook.net/en_US/fbevents.js');
+
+  fbq('init', '1659498598858519');
+  fbq('track', 'PageView');
+}
 </script>
 <noscript><img height="1" width="1" style="display:none"
 src="https://www.facebook.com/tr?id=1659498598858519&ev=PageView&noscript=1"
@@ -213,7 +217,7 @@ src="https://www.facebook.com/tr?id=1659498598858519&ev=PageView&noscript=1"
             }
         });
 
-        // --- ОБРАБОТКА ЗАЯВКИ ---
+        // --- ОБРАБОТКА ЗАЯВКИ И ОТПРАВКА СОБЫТИЙ В META PIXEL ---
         document.getElementById('btn-submit-lead').addEventListener('click', () => {
             const name = document.getElementById('lead-name').value;
             const phone = document.getElementById('lead-phone').value;
@@ -223,6 +227,12 @@ src="https://www.facebook.com/tr?id=1659498598858519&ev=PageView&noscript=1"
             if(!name || phone.length < 17 || !street || !house) {
                 alert('Пожалуйста, заполните все поля.');
                 return;
+            }
+
+            // Отправка событий Lead и SubmitApplication при успешном заполнении формы
+            if (typeof fbq === 'function') {
+                fbq('track', 'Lead');
+                fbq('track', 'SubmitApplication');
             }
 
             const fullAddress = `г. Днепр, ул. ${street}, д. ${house}`;
@@ -250,9 +260,21 @@ src="https://www.facebook.com/tr?id=1659498598858519&ev=PageView&noscript=1"
             }, 3500);
         });
 
-        // Редирект в ЛК
+        // --- СОБЫТИЕ ПРИ КЛИКЕ НА ЛИЧНЫЙ КАБИНЕТ ---
         document.getElementById('btn-login').addEventListener('click', () => {
+            if (typeof fbq === 'function') {
+                fbq('track', 'CompleteRegistration');
+            }
             window.location.href = 'index.html'; 
+        });
+
+        // --- СОБЫТИЕ ПРИ КЛИКЕ НА ТЕЛЕФОННЫЕ НОМЕРА (КОНТАКТЫ) ---
+        document.querySelectorAll('a[href^="tel:"]').forEach(link => {
+            link.addEventListener('click', () => {
+                if (typeof fbq === 'function') {
+                    fbq('track', 'Contact');
+                }
+            });
         });
     </script>
 </body>
