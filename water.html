@@ -8,7 +8,32 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="theme-color" content="#ffffff">
+    
+    <!-- Основні SEO теги -->
     <title>Sky Source | Безкоштовна доставка питної води в Дніпрі</title>
+    <meta name="description" content="Швидка та безкоштовна доставка чистої питної води в Дніпрі додому та в офіс. Замовляйте артезіанську воду 18.9л від Sky Source. Якість у кожній краплі!">
+    <meta name="keywords" content="доставка води Дніпро, замовити воду 19 літрів, питна вода Дніпро, вода додому, Sky Source, артезіанська вода, вода в офіс, бутельована вода">
+    <meta name="author" content="Sky Source">
+    <link rel="canonical" href="https://skysource.com.ua/">
+
+    <!-- Open Graph (для Facebook, Instagram, Telegram, Viber) -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://skysource.com.ua/">
+    <meta property="og:site_name" content="Sky Source">
+    <meta property="og:locale" content="uk_UA">
+    <meta property="og:title" content="Sky Source | Безкоштовна доставка питної води в Дніпрі">
+    <meta property="og:description" content="Чиста питна вода з доставкою до дверей. Оформіть замовлення за 30 секунд — привеземо у зручний для вас час!">
+    <!-- ВАЖНО: Для соцсетей лучше всего сделать специальный баннер размером 1200x630px и вставить ссылку на него ниже. Пока стоит ваш логотип. -->
+    <meta property="og:image" content="https://i.ibb.co/Y7jCqPDF/c660937a-9272-4146-82e4-074b94f35d73.png"> 
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:url" content="https://skysource.com.ua/">
+    <meta name="twitter:title" content="Sky Source | Доставка води в Дніпрі">
+    <meta name="twitter:description" content="Швидка доставка артезіанської води 18.9л додому та в офіс по Дніпру.">
+    <meta name="twitter:image" content="https://i.ibb.co/Y7jCqPDF/c660937a-9272-4146-82e4-074b94f35d73.png">
+
+    <!-- Favicon -->
     <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%230080FF'><path d='M12 2.69L5.64 9.76a8 8 0 1 0 12.72 0L12 2.69z'/></svg>">
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -197,7 +222,6 @@
     <script>
         const UNIT_PRICE = 100;
         let currentQty = 2;
-        // Замените на ваш реальный URL вебхука, если он нужен
         const WEBHOOK_URL = 'https://your-webhook-or-api-url.com/endpoint';
 
         const displayQty = document.getElementById('display-qty');
@@ -269,14 +293,11 @@
             btn.innerHTML = `<svg class="w-5 h-5 animate-spin" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg> Обробка...`;
 
             try {
-                // Если отправка данных на сторонний сервер (CRM/Telegram) не нужна, 
-                // эту конструкцию fetch можно полностью удалить.
                 const response = await fetch(WEBHOOK_URL, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(orderData)
                 });
-
                 showSuccessState(btn);
             } catch (error) {
                 showSuccessState(btn); 
