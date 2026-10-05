@@ -171,28 +171,27 @@
         </div>
 
         <!-- Переваги -->
-<div>
-    <div class="w-28 h-28 sm:w-32 sm:h-32 mx-auto mb-3 rounded-full overflow-hidden shadow-md border-2 border-slate-100 bg-white flex items-center justify-center">
-        <img src="https://i.ibb.co/HpD2DfZf/1.jpg" alt="Доставка вчасно" class="w-full h-full object-cover">
-    </div>
-    <h4 class="font-bold text-brand-dark mb-1">Доставка вчасно (9:00 - 18:00)</h4>
-    <p class="text-xs text-slate-500">Привеземо воду чітко в узгоджений з вами час.</p>
-</div> 
-      
-      
-<div>
-    <div class="w-28 h-28 sm:w-32 sm:h-32 mx-auto mb-3 rounded-full overflow-hidden shadow-md border-2 border-slate-100 bg-white flex items-center justify-center">
-        <img src="https://i.ibb.co/KpP2Cy21/2.jpg" alt="Гарантія якості води" class="w-full h-full object-cover">
-    </div>
+        <div class="mt-12 grid grid-cols-1 sm:grid-cols-3 gap-8 max-w-3xl w-full text-center">
+            <div>
+                <div class="w-28 h-28 sm:w-32 sm:h-32 mx-auto mb-3 rounded-full overflow-hidden shadow-md border-2 border-slate-100 bg-white flex items-center justify-center">
+                    <img src="https://i.ibb.co/HpD2DfZf/1.jpg" alt="Доставка вчасно" class="w-full h-full object-cover">
+                </div>
+                <h4 class="font-bold text-brand-dark mb-1">Доставка вчасно (9:00 - 18:00)</h4>
+                <p class="text-xs text-slate-500">Привеземо воду чітко в узгоджений з вами час.</p>
+            </div> 
+                  
+            <div>
+                <div class="w-28 h-28 sm:w-32 sm:h-32 mx-auto mb-3 rounded-full overflow-hidden shadow-md border-2 border-slate-100 bg-white flex items-center justify-center">
+                    <img src="https://i.ibb.co/KpP2Cy21/2.jpg" alt="Гарантія якості води" class="w-full h-full object-cover">
+                </div>
                 <h4 class="font-bold text-brand-dark mb-1">Гарантія якості води</h4>
                 <p class="text-xs text-slate-500">Ідеально збалансований склад без накипу.</p>
-</div>
-      
-      
+            </div>
+                  
             <div>
-    <div class="w-28 h-28 sm:w-32 sm:h-32 mx-auto mb-3 rounded-full overflow-hidden shadow-md border-2 border-slate-100 bg-white flex items-center justify-center">
-        <img src="https://i.ibb.co/pvQRK273/3.jpg" alt="Зручна оплата при отриманні" class="w-full h-full object-cover">
-    </div>
+                <div class="w-28 h-28 sm:w-32 sm:h-32 mx-auto mb-3 rounded-full overflow-hidden shadow-md border-2 border-slate-100 bg-white flex items-center justify-center">
+                    <img src="https://i.ibb.co/pvQRK273/3.jpg" alt="Зручна оплата при отриманні" class="w-full h-full object-cover">
+                </div>
                 <h4 class="font-bold text-brand-dark mb-1">Зручна оплата при отриманні</h4>
                 <p class="text-xs text-slate-500">Готівкою при отриманні або переказ на картку.</p>
             </div>
@@ -272,7 +271,11 @@
             e.preventDefault();
             const btn = document.getElementById('btn-submit');
 
+            // 1. Генерация уникального ID события для дедупликации Meta CAPI / GTM
+            const uniqueEventId = 'lead_' + new Date().getTime() + '_' + Math.floor(Math.random() * 10000);
+
             const orderData = {
+                eventId: uniqueEventId,
                 name: document.getElementById('name').value,
                 phone: phoneInput.value,
                 street: document.getElementById('street').value,
@@ -286,14 +289,36 @@
             btn.disabled = true;
             btn.innerHTML = `<svg class="w-5 h-5 animate-spin" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg> Обробка...`;
 
+            // Функция отправки в dataLayer
+            const trackAnalytics = () => {
+                window.dataLayer = window.dataLayer || [];
+                window.dataLayer.push({
+                    'event': 'lead_generated', // Настройте в GTM триггер "Пользовательское событие" = lead_generated
+                    'event_id': uniqueEventId, // Передайте этот параметр в тег Meta Pixel (Event ID)
+                    'ecommerce': {
+                        'currency': 'UAH',
+                        'value': orderData.totalPrice,
+                        'items': [{
+                            'item_name': 'Вода питна 18.9 л',
+                            'quantity': orderData.quantity,
+                            'price': orderData.unitPrice
+                        }]
+                    }
+                });
+            };
+
             try {
                 const response = await fetch(WEBHOOK_URL, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(orderData)
                 });
+
+                trackAnalytics();
                 showSuccessState(btn);
             } catch (error) {
+                // В случае ошибки вебхука всё равно фиксируем действие пользователю для UX и отправляем аналитику
+                trackAnalytics();
                 showSuccessState(btn); 
             }
         }
