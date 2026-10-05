@@ -22,8 +22,8 @@
                     fontFamily: { sans: ['Montserrat', 'sans-serif'], },
                     colors: {
                         brand: {
-                            dark: '#0a2342', // Глибокий синій із логотипа
-                            light: '#42c4f5', // Яскраво-голубий із логотипа
+                            dark: '#0a2342',
+                            light: '#42c4f5',
                             accent: '#1890ff'
                         }
                     },
@@ -52,25 +52,21 @@
         input[type=number]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
     </style>
 </head>
-<body class="text-slate-800 antialiased relative min-h-screen flex flex-col bg-pattern">
+<body class="text-slate-800 antialiased relative min-h-screen flex flex-col bg-pattern overflow-x-hidden">
     
     <!-- Google Tag Manager (noscript) -->
     <noscript><iframe src="https://ztykeqkw.skysource.com.ua/ns.html?id=GTM-WKQT6RL4" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     <!-- End Google Tag Manager (noscript) -->
 
-    <!-- Фонові елементи -->
     <div class="absolute top-[-10%] left-[-10%] w-[50vw] h-[50vw] rounded-full bg-brand-light/10 blur-[100px] -z-10 pointer-events-none"></div>
     <div class="absolute top-[20%] right-[-5%] w-[40vw] h-[40vw] rounded-full bg-blue-400/5 blur-[80px] -z-10 pointer-events-none"></div>
 
-    <!-- Шапка -->
     <header class="w-full py-4 px-4 sm:px-6 lg:px-8 bg-white/80 backdrop-blur-md sticky top-0 z-50 border-b border-slate-100">
         <div class="max-w-5xl mx-auto flex items-center justify-between">
-            <!-- Логотип без тексту поруч -->
             <a href="#" class="block hover:opacity-90 transition-opacity">
                 <img src="https://i.ibb.co/Y7jCqPDF/c660937a-9272-4146-82e4-074b94f35d73.png" alt="Sky Source Logo" class="h-10 sm:h-12 w-auto object-contain">
             </a>
             
-            <!-- Контакти -->
             <div class="flex flex-col sm:flex-row items-end sm:items-center gap-1 sm:gap-6">
                 <a href="tel:+380966974664" class="text-sm sm:text-base font-bold text-brand-dark hover:text-brand-light transition-colors">
                     +38 (096) 697-46-64
@@ -82,12 +78,9 @@
         </div>
     </header>
 
-    <!-- Головний екран -->
-    <main class="flex-grow flex flex-col items-center justify-center py-12 px-4 sm:px-6 relative z-10">
+    <main class="flex-grow flex flex-col items-center justify-center py-12 px-4 sm:px-6 relative z-10 w-full">
         
-        <!-- Заголовок по центру -->
         <div class="text-center max-w-3xl mx-auto mb-10">
-            <!-- Бейдж без обводки -->
             <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-blue-50 text-brand-accent text-xs sm:text-sm font-bold uppercase tracking-wider mb-4">
                 <span class="w-2 h-2 rounded-full bg-brand-accent animate-pulse"></span>
                 Швидко доставимо до дверей
@@ -101,13 +94,10 @@
             </p>
         </div>
 
-        <!-- Центральна картка замовлення -->
         <div class="w-full max-w-md bg-white rounded-[2rem] shadow-soft border border-slate-100 p-6 sm:p-8 relative overflow-hidden">
             <div class="absolute top-0 left-0 w-full h-1.5 bg-gradient-to-r from-brand-dark to-brand-light"></div>
             
             <form id="order-form" onsubmit="handleFormSubmit(event)">
-                
-                <!-- Калькулятор кількості -->
                 <div class="text-center mb-8 pb-8 border-b border-slate-100">
                     <label class="block text-sm font-bold text-slate-400 uppercase tracking-wider mb-4">Оберіть кількість (18.9 л)</label>
                     
@@ -135,7 +125,6 @@
                     </div>
                 </div>
 
-                <!-- Поля форми -->
                 <div class="space-y-4">
                     <div class="input-field border-2 border-slate-100 rounded-2xl px-4 py-3 bg-white flex items-center gap-3">
                         <svg class="w-5 h-5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
@@ -163,42 +152,39 @@
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
                 </button>
                 
-                <!-- Політика конфіденційності під кнопкою -->
                 <p class="text-center text-[11px] text-slate-400 mt-4 leading-relaxed">
                     Натискаючи кнопку, ви погоджуєтеся з <a href="https://skysource.com.ua/privacy.html" target="_blank" class="text-brand-accent hover:underline font-semibold">Політикою конфіденційності</a>
                 </p>
             </form>
         </div>
 
-        <!-- Переваги -->
-        <div class="mt-12 grid grid-cols-1 sm:grid-cols-3 gap-8 max-w-3xl w-full text-center">
-            <div>
-                <div class="w-28 h-28 sm:w-32 sm:h-32 mx-auto mb-3 rounded-full overflow-hidden shadow-md border-2 border-slate-100 bg-white flex items-center justify-center">
+        <div class="mt-16 w-full max-w-5xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-10 md:gap-8 px-4 text-center">
+            <div class="flex flex-col items-center">
+                <div class="w-28 h-28 sm:w-32 sm:h-32 mb-4 rounded-full overflow-hidden shadow-md border-2 border-slate-100 bg-white flex items-center justify-center shrink-0">
                     <img src="https://i.ibb.co/HpD2DfZf/1.jpg" alt="Доставка вчасно" class="w-full h-full object-cover">
                 </div>
-                <h4 class="font-bold text-brand-dark mb-1">Доставка вчасно (9:00 - 18:00)</h4>
-                <p class="text-xs text-slate-500">Привеземо воду чітко в узгоджений з вами час.</p>
+                <h4 class="font-bold text-brand-dark text-lg mb-2">Доставка вчасно <br class="hidden md:block">(9:00 - 18:00)</h4>
+                <p class="text-sm text-slate-500">Привеземо воду чітко в узгоджений з вами час.</p>
             </div> 
                   
-            <div>
-                <div class="w-28 h-28 sm:w-32 sm:h-32 mx-auto mb-3 rounded-full overflow-hidden shadow-md border-2 border-slate-100 bg-white flex items-center justify-center">
+            <div class="flex flex-col items-center">
+                <div class="w-28 h-28 sm:w-32 sm:h-32 mb-4 rounded-full overflow-hidden shadow-md border-2 border-slate-100 bg-white flex items-center justify-center shrink-0">
                     <img src="https://i.ibb.co/KpP2Cy21/2.jpg" alt="Гарантія якості води" class="w-full h-full object-cover">
                 </div>
-                <h4 class="font-bold text-brand-dark mb-1">Гарантія якості води</h4>
-                <p class="text-xs text-slate-500">Ідеально збалансований склад без накипу.</p>
+                <h4 class="font-bold text-brand-dark text-lg mb-2">Гарантія якості <br class="hidden md:block">води</h4>
+                <p class="text-sm text-slate-500">Ідеально збалансований склад без накипу.</p>
             </div>
                   
-            <div>
-                <div class="w-28 h-28 sm:w-32 sm:h-32 mx-auto mb-3 rounded-full overflow-hidden shadow-md border-2 border-slate-100 bg-white flex items-center justify-center">
+            <div class="flex flex-col items-center">
+                <div class="w-28 h-28 sm:w-32 sm:h-32 mb-4 rounded-full overflow-hidden shadow-md border-2 border-slate-100 bg-white flex items-center justify-center shrink-0">
                     <img src="https://i.ibb.co/pvQRK273/3.jpg" alt="Зручна оплата при отриманні" class="w-full h-full object-cover">
                 </div>
-                <h4 class="font-bold text-brand-dark mb-1">Зручна оплата при отриманні</h4>
-                <p class="text-xs text-slate-500">Готівкою при отриманні або переказ на картку.</p>
+                <h4 class="font-bold text-brand-dark text-lg mb-2">Зручна оплата <br class="hidden md:block">при отриманні</h4>
+                <p class="text-sm text-slate-500">Готівкою при отриманні або переказ на картку.</p>
             </div>
         </div>
     </main>
 
-    <!-- Підвал -->
     <footer class="w-full py-6 text-center border-t border-slate-200 mt-auto bg-white">
         <div class="max-w-5xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-3">
             <p class="text-sm text-slate-400 font-medium">© 2026 Sky Source Дніпро. Всі права захищені.</p>
@@ -208,11 +194,11 @@
         </div>
     </footer>
 
-    <!-- Скрипти калькулятора та відправки -->
     <script>
-        const UNIT_PRICE = 100; // Ціна за 1 бутль = 100 ₴
-        let currentQty = 2; // Кількість за замовчуванням
-        const WEBHOOK_URL = 'https://your-webhook-or-api-url.com/endpoint'; // URL вашої бази/CRM
+        const UNIT_PRICE = 100;
+        let currentQty = 2;
+        // Замените на ваш реальный URL вебхука, если он нужен
+        const WEBHOOK_URL = 'https://your-webhook-or-api-url.com/endpoint';
 
         const displayQty = document.getElementById('display-qty');
         const qtyLabel = document.getElementById('qty-label');
@@ -239,7 +225,6 @@
             displayQty.innerText = currentQty;
             totalPrice.innerText = currentQty * UNIT_PRICE;
             
-            // Українське відмінювання слова "бутль" / "бутель"
             const lastDigit = currentQty % 10;
             const lastTwoDigits = currentQty % 100;
 
@@ -254,7 +239,6 @@
             }
         }
 
-        // Маска для телефону
         phoneInput.addEventListener('input', function (e) {
             let val = e.target.value.replace(/\D/g, ''); 
             if (val.startsWith('38')) val = val.slice(2);
@@ -266,16 +250,11 @@
             e.target.value = formatted;
         });
 
-        // Відправка форми
         async function handleFormSubmit(e) {
             e.preventDefault();
             const btn = document.getElementById('btn-submit');
 
-            // 1. Генерация уникального ID события для дедупликации Meta CAPI / GTM
-            const uniqueEventId = 'lead_' + new Date().getTime() + '_' + Math.floor(Math.random() * 10000);
-
             const orderData = {
-                eventId: uniqueEventId,
                 name: document.getElementById('name').value,
                 phone: phoneInput.value,
                 street: document.getElementById('street').value,
@@ -289,36 +268,17 @@
             btn.disabled = true;
             btn.innerHTML = `<svg class="w-5 h-5 animate-spin" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg> Обробка...`;
 
-            // Функция отправки в dataLayer
-            const trackAnalytics = () => {
-                window.dataLayer = window.dataLayer || [];
-                window.dataLayer.push({
-                    'event': 'lead_generated', // Настройте в GTM триггер "Пользовательское событие" = lead_generated
-                    'event_id': uniqueEventId, // Передайте этот параметр в тег Meta Pixel (Event ID)
-                    'ecommerce': {
-                        'currency': 'UAH',
-                        'value': orderData.totalPrice,
-                        'items': [{
-                            'item_name': 'Вода питна 18.9 л',
-                            'quantity': orderData.quantity,
-                            'price': orderData.unitPrice
-                        }]
-                    }
-                });
-            };
-
             try {
+                // Если отправка данных на сторонний сервер (CRM/Telegram) не нужна, 
+                // эту конструкцию fetch можно полностью удалить.
                 const response = await fetch(WEBHOOK_URL, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(orderData)
                 });
 
-                trackAnalytics();
                 showSuccessState(btn);
             } catch (error) {
-                // В случае ошибки вебхука всё равно фиксируем действие пользователю для UX и отправляем аналитику
-                trackAnalytics();
                 showSuccessState(btn); 
             }
         }
