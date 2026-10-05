@@ -219,107 +219,137 @@
         </div>
     </footer>
 
-    <script>
-        const UNIT_PRICE = 100;
-        let currentQty = 1;
-        const WEBHOOK_URL = 'https://your-webhook-or-api-url.com/endpoint';
+    <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
+    import { getFirestore, collection, addDoc, setDoc, doc } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
 
-        const displayQty = document.getElementById('display-qty');
-        const qtyLabel = document.getElementById('qty-label');
-        const totalPrice = document.getElementById('total-price');
-        const phoneInput = document.getElementById('phone');
+    // Настройки Firebase из вашей системы
+    const firebaseConfig = {
+        apiKey: "AIzaSyAutXr0WYq-5CkkJUESpOpIsOrZXKpULjs",
+        authDomain: "skysource.firebaseapp.com",
+        projectId: "skysource",
+        storageBucket: "skysource.firebasestorage.app",
+        messagingSenderId: "1033630811129",
+        appId: "1:1033630811129:web:0388eb20c87250b28ab328"
+    };
 
-        updateUI();
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
 
-        function increaseQty() {
-            if (currentQty < 50) {
-                currentQty++;
-                updateUI();
-            }
+    const UNIT_PRICE = 100;
+    let currentQty = 1;
+
+    const displayQty = document.getElementById('display-qty');
+    const qtyLabel = document.getElementById('qty-label');
+    const totalPrice = document.getElementById('total-price');
+    const phoneInput = document.getElementById('phone');
+
+    // Делаем функции глобальными, так как type="module" изолирует область видимости, 
+    // а у вас в HTML используются атрибуты onclick
+    window.increaseQty = function() {
+        if (currentQty < 50) {
+            currentQty++;
+            updateUI();
         }
+    }
 
-        function decreaseQty() {
-            if (currentQty > 1) {
-                currentQty--;
-                updateUI();
-            }
+    window.decreaseQty = function() {
+        if (currentQty > 1) {
+            currentQty--;
+            updateUI();
         }
+    }
 
-        function updateUI() {
-            displayQty.innerText = currentQty;
-            totalPrice.innerText = currentQty * UNIT_PRICE;
+    function updateUI() {
+        displayQty.innerText = currentQty;
+        totalPrice.innerText = currentQty === 1 ? 100 : currentQty * 90; // логика скидки от количества, как в приложении
+        
+        const lastDigit = currentQty % 10;
+        const lastTwoDigits = currentQty % 100;
+
+        if (lastTwoDigits >= 11 && lastTwoDigits <= 14) {
+            qtyLabel.innerText = "бутелів";
+        } else if (lastDigit === 1) {
+            qtyLabel.innerText = "бутль";
+        } else if (lastDigit >= 2 && lastDigit <= 4) {
+            qtyLabel.innerText = "бутелі";
+        } else {
+            qtyLabel.innerText = "бутелів";
+        }
+    }
+
+    phoneInput.addEventListener('input', function (e) {
+        let val = e.target.value.replace(/\D/g, ''); 
+        if (val.startsWith('38')) val = val.slice(2);
+        let formatted = '+38 ';
+        if (val.length > 0) formatted += '(' + val.substring(0, 3);
+        if (val.length >= 4) formatted += ') ' + val.substring(3, 6);
+        if (val.length >= 7) formatted += '-' + val.substring(6, 8);
+        if (val.length >= 9) formatted += '-' + val.substring(8, 10);
+        e.target.value = formatted;
+    });
+
+    window.handleFormSubmit = async function(e) {
+        e.preventDefault();
+        const btn = document.getElementById('btn-submit');
+        const phoneVal = phoneInput.value;
+        const nameVal = document.getElementById('name').value;
+        const addressVal = document.getElementById('street').value + ', ' + document.getElementById('house').value;
+        const currentTimestamp = Date.now();
+
+        const orderData = {
+            name: nameVal,
+            phone: phoneVal,
+            address: addressVal,
+            quantity: currentQty,
+            totalPrice: currentQty === 1 ? 100 : currentQty * 90,
+            status: 'processing',
+            timestamp: currentTimestamp,
+            source: 'landing_page'
+        };
+
+        btn.disabled = true;
+        btn.innerHTML = `<svg class="w-5 h-5 animate-spin" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg> Обробка...`;
+
+        try {
+            // Запись заказа в коллекцию orders
+            await addDoc(collection(db, "orders"), orderData);
             
-            const lastDigit = currentQty % 10;
-            const lastTwoDigits = currentQty % 100;
+            // Также добавляем/обновляем клиента в базу, чтобы он отображался во вкладке "База клієнтів"
+            await setDoc(doc(db, "users", 'landing_' + phoneVal.replace(/\D/g, '')), { 
+                name: nameVal, 
+                phone: phoneVal, 
+                address: addressVal, 
+                addedBy: 'landing', 
+                timestamp: currentTimestamp 
+            }, { merge: true });
 
-            if (lastTwoDigits >= 11 && lastTwoDigits <= 14) {
-                qtyLabel.innerText = "бутелів";
-            } else if (lastDigit === 1) {
-                qtyLabel.innerText = "бутль";
-            } else if (lastDigit >= 2 && lastDigit <= 4) {
-                qtyLabel.innerText = "бутелі";
-            } else {
-                qtyLabel.innerText = "бутелів";
-            }
+            showSuccessState(btn);
+        } catch (error) {
+            console.error(error);
+            btn.disabled = false;
+            btn.innerHTML = `Помилка. Спробуйте ще раз`;
         }
+    }
 
-        phoneInput.addEventListener('input', function (e) {
-            let val = e.target.value.replace(/\D/g, ''); 
-            if (val.startsWith('38')) val = val.slice(2);
-            let formatted = '+38 ';
-            if (val.length > 0) formatted += '(' + val.substring(0, 3);
-            if (val.length >= 4) formatted += ') ' + val.substring(3, 6);
-            if (val.length >= 7) formatted += '-' + val.substring(6, 8);
-            if (val.length >= 9) formatted += '-' + val.substring(8, 10);
-            e.target.value = formatted;
-        });
-
-        async function handleFormSubmit(e) {
-            e.preventDefault();
-            const btn = document.getElementById('btn-submit');
-
-            const orderData = {
-                name: document.getElementById('name').value,
-                phone: phoneInput.value,
-                street: document.getElementById('street').value,
-                house: document.getElementById('house').value,
-                quantity: currentQty,
-                unitPrice: UNIT_PRICE,
-                totalPrice: currentQty * UNIT_PRICE,
-                timestamp: new Date().toISOString()
-            };
-
-            btn.disabled = true;
-            btn.innerHTML = `<svg class="w-5 h-5 animate-spin" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg> Обробка...`;
-
-            try {
-                const response = await fetch(WEBHOOK_URL, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(orderData)
-                });
-                showSuccessState(btn);
-            } catch (error) {
-                showSuccessState(btn); 
-            }
-        }
-
-        function showSuccessState(btn) {
-            btn.classList.remove('bg-brand-dark', 'hover:bg-slate-800');
-            btn.classList.add('bg-green-500', 'hover:bg-green-600');
-            btn.innerHTML = `<svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg> Замовлення прийнято!`;
+    function showSuccessState(btn) {
+        btn.classList.remove('bg-brand-dark', 'hover:bg-slate-800');
+        btn.classList.add('bg-green-500', 'hover:bg-green-600');
+        btn.innerHTML = `<svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg> Замовлення прийнято!`;
+        
+        setTimeout(() => {
+            document.getElementById('order-form').reset();
+            currentQty = 2;
+            updateUI();
             
-            setTimeout(() => {
-                document.getElementById('order-form').reset();
-                currentQty = 2;
-                updateUI();
-                
-                btn.disabled = false;
-                btn.classList.remove('bg-green-500', 'hover:bg-green-600');
-                btn.classList.add('bg-brand-dark', 'hover:bg-slate-800');
-                btn.innerHTML = `Оформити замовлення <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>`;
-            }, 3000);
-        }
-    </script>
+            btn.disabled = false;
+            btn.classList.remove('bg-green-500', 'hover:bg-green-600');
+            btn.classList.add('bg-brand-dark', 'hover:bg-slate-800');
+            btn.innerHTML = `Оформити замовлення <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>`;
+        }, 3000);
+    }
+
+    updateUI();
+</script>
 </body>
 </html>
