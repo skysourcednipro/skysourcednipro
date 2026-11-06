@@ -1,0 +1,1043 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="theme-color" content="#0f172a">
+    <meta name="robots" content="noindex, nofollow">
+    <title>SkySource CRM</title>
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%232563eb'><path d='M12 2.69L5.64 9.76a8 8 0 1 0 12.72 0L12 2.69z'/></svg>">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Inter', 'Segoe UI', sans-serif; -webkit-tap-highlight-color: transparent; }
+        .hidden-view { display: none !important; }
+        .fade-in { animation: fadeIn .25s ease-out both; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+        .no-scrollbar::-webkit-scrollbar { display: none; } .no-scrollbar { scrollbar-width: none; }
+        #toast { transition: all .25s; }
+        #toast.show { opacity: 1; transform: translate(-50%, 0); pointer-events: auto; }
+        .sheet-bg { opacity: 0; pointer-events: none; transition: opacity .2s; }
+        .sheet-bg.open { opacity: 1; pointer-events: auto; }
+        .sheet { transform: translateY(100%); transition: transform .3s cubic-bezier(.2,.9,.3,1), opacity .2s, visibility 0s linear .3s; pointer-events: none; visibility: hidden; }
+        .sheet.open { transform: none; pointer-events: auto; visibility: visible; transition-delay: 0s; }
+        @media (min-width: 768px) {
+            .sheet { transform: translate(-50%, -46%) scale(.97); opacity: 0; }
+            .sheet.open { transform: translate(-50%, -50%) scale(1); opacity: 1; }
+            .drawer { transform: translateX(100%); }
+            .drawer.open { transform: none; }
+        }
+        .pb-safe { padding-bottom: max(env(safe-area-inset-bottom), 0px); }
+        .seg button.on { background: #fff; color: #1d4ed8; box-shadow: 0 1px 2px rgba(15,23,42,.08); }
+        .nav-btn.on { background: rgba(37,99,235,.14); color: #93c5fd; }
+        .mnav-btn.on { color: #2563eb; }
+        .mnav-btn.on .mnav-ico { background: #eff6ff; }
+    </style>
+</head>
+<body class="bg-slate-100 text-slate-800 min-h-screen">
+
+    <!-- Сповіщення -->
+    <div id="toast" class="fixed top-4 left-1/2 z-[200] px-5 py-3 rounded-2xl shadow-2xl opacity-0 pointer-events-none font-bold text-sm max-w-[90vw] text-center" style="transform: translate(-50%, -20px)"></div>
+
+    <!-- ЕКРАН ВХОДУ -->
+    <div id="auth-screen" class="fixed inset-0 bg-slate-900 z-[150] flex items-center justify-center p-4">
+        <div class="bg-white p-8 rounded-3xl shadow-2xl max-w-sm w-full text-center">
+            <div class="w-14 h-14 bg-blue-600 rounded-2xl mx-auto flex items-center justify-center mb-4 shadow-lg shadow-blue-600/30">
+                <svg class="w-7 h-7 text-white" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.69L5.64 9.76a8 8 0 1 0 12.72 0L12 2.69z"/></svg>
+            </div>
+            <h1 class="text-2xl font-black text-slate-900">SkySource CRM</h1>
+            <p class="text-slate-500 text-sm mt-1 mb-7">Вхід лише для співробітників</p>
+            <button id="btn-login" class="w-full py-3.5 rounded-2xl bg-blue-600 hover:bg-blue-700 text-white font-bold active:scale-[.98] transition flex items-center justify-center gap-3">
+                <svg class="w-5 h-5" viewBox="0 0 48 48"><path fill="#fff" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#fff" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#fff" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#fff" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg>
+                Увійти через Google
+            </button>
+            <p id="auth-error" class="text-red-500 mt-4 text-sm font-bold hidden">Цей акаунт не має доступу. Зверніться до власника.</p>
+        </div>
+    </div>
+
+    <!-- ОСНОВНИЙ ІНТЕРФЕЙС -->
+    <div id="app" class="hidden-view md:flex min-h-screen">
+
+        <!-- Сайдбар (ПК) -->
+        <aside class="hidden md:flex w-64 shrink-0 bg-slate-900 text-slate-400 flex-col h-screen sticky top-0">
+            <div class="px-6 py-6 flex items-center gap-3 text-white">
+                <div class="w-9 h-9 bg-blue-600 rounded-xl flex items-center justify-center"><svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.69L5.64 9.76a8 8 0 1 0 12.72 0L12 2.69z"/></svg></div>
+                <span class="text-xl font-black tracking-tight">SkySource</span>
+            </div>
+            <nav id="side-nav" class="flex-1 px-3 space-y-1"></nav>
+            <div class="p-4 border-t border-slate-800">
+                <p class="text-white text-sm font-bold truncate" data-me-email></p>
+                <p class="text-blue-400 text-[11px] font-black uppercase tracking-wider mb-3" data-me-role></p>
+                <button data-logout class="w-full py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 text-sm font-bold">Вийти</button>
+            </div>
+        </aside>
+
+        <!-- Робоча зона -->
+        <main class="flex-1 min-w-0 pb-24 md:pb-0">
+
+            <!-- Мобільна шапка -->
+            <header class="md:hidden sticky top-0 z-40 bg-slate-900 text-white px-4 py-3 flex items-center justify-between">
+                <div class="flex items-center gap-2">
+                    <div class="w-7 h-7 bg-blue-600 rounded-lg flex items-center justify-center"><svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.69L5.64 9.76a8 8 0 1 0 12.72 0L12 2.69z"/></svg></div>
+                    <span class="font-black">SkySource</span>
+                </div>
+                <button id="btn-me" class="text-right leading-tight">
+                    <span class="block text-[11px] text-slate-400 truncate max-w-[180px]" data-me-email></span>
+                    <span class="block text-[10px] text-blue-400 font-black uppercase" data-me-role></span>
+                </button>
+            </header>
+
+            <!-- ============ ЗАМОВЛЕННЯ ============ -->
+            <section id="panel-orders" class="panel hidden-view p-4 md:p-8 max-w-5xl">
+                <div class="flex items-start justify-between gap-3 mb-4">
+                    <div>
+                        <h1 class="text-2xl md:text-3xl font-black text-slate-900">Замовлення</h1>
+                        <p id="orders-summary" class="text-slate-500 text-sm mt-0.5">Завантаження…</p>
+                    </div>
+                    <button data-new-order class="shrink-0 px-4 py-3 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-2xl shadow-lg shadow-blue-600/25 active:scale-95 transition flex items-center gap-2">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" d="M12 5v14M5 12h14"/></svg>
+                        <span class="hidden sm:inline">Нове замовлення</span><span class="sm:hidden">Нове</span>
+                    </button>
+                </div>
+
+                <div class="flex flex-col sm:flex-row gap-2 mb-4">
+                    <div class="seg flex bg-slate-200/80 p-1 rounded-xl text-sm font-bold text-slate-500 whitespace-nowrap" id="orders-seg">
+                        <button data-f="active" class="on flex-1 sm:flex-none px-4 py-2 rounded-lg">Активні <span id="cnt-active" class="ml-1 bg-blue-600 text-white rounded-full px-2 text-[11px]">0</span></button>
+                        <button data-f="done" class="flex-1 sm:flex-none px-4 py-2 rounded-lg">Виконані</button>
+                        <button data-f="all" class="flex-1 sm:flex-none px-4 py-2 rounded-lg">Всі</button>
+                    </div>
+                    <div class="relative flex-1">
+                        <svg class="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path stroke-linecap="round" d="M20 20l-3.5-3.5"/></svg>
+                        <input id="orders-search" type="search" placeholder="Пошук: ім'я, телефон, адреса" class="w-full pl-10 pr-3 py-2.5 bg-white border border-slate-200 rounded-xl text-sm font-medium focus:outline-none focus:border-blue-500">
+                    </div>
+                    <button id="btn-copy-route" class="px-4 py-2.5 bg-white border border-slate-200 rounded-xl text-sm font-bold text-slate-600 hover:bg-slate-50 whitespace-nowrap" title="Скопіювати всі активні замовлення одним списком">📋 Список для кур'єра</button>
+                </div>
+
+                <div id="orders-list" class="space-y-6"></div>
+            </section>
+
+            <!-- ============ КЛІЄНТИ ============ -->
+            <section id="panel-clients" class="panel hidden-view p-4 md:p-8 max-w-5xl">
+                <div class="flex items-start justify-between gap-3 mb-4">
+                    <div>
+                        <h1 class="text-2xl md:text-3xl font-black text-slate-900">Клієнти</h1>
+                        <p id="clients-summary" class="text-slate-500 text-sm mt-0.5"></p>
+                    </div>
+                    <div class="flex gap-2 shrink-0">
+                        <button id="btn-export-csv" class="px-3 py-2.5 bg-white border border-slate-200 rounded-xl text-sm font-bold text-slate-600 hover:bg-slate-50" title="Відкривається в Excel / Google Таблицях">⬇ Excel</button>
+                        <button id="btn-export-txt" class="px-3 py-2.5 bg-white border border-slate-200 rounded-xl text-sm font-bold text-slate-600 hover:bg-slate-50">⬇ TXT</button>
+                    </div>
+                </div>
+                <div class="flex flex-col sm:flex-row gap-2 mb-4">
+                    <div class="seg flex bg-slate-200/80 p-1 rounded-xl text-sm font-bold text-slate-500 overflow-x-auto no-scrollbar" id="clients-seg">
+                        <button data-f="all" class="on px-3 py-2 rounded-lg whitespace-nowrap">Всі</button>
+                        <button data-f="regular" class="px-3 py-2 rounded-lg whitespace-nowrap">Постійні</button>
+                        <button data-f="sleeping" class="px-3 py-2 rounded-lg whitespace-nowrap" title="Не замовляли понад 30 днів">Давно не замовляли</button>
+                        <button data-f="none" class="px-3 py-2 rounded-lg whitespace-nowrap">Без замовлень</button>
+                    </div>
+                    <div class="relative flex-1">
+                        <svg class="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path stroke-linecap="round" d="M20 20l-3.5-3.5"/></svg>
+                        <input id="clients-search" type="search" placeholder="Пошук клієнта" class="w-full pl-10 pr-3 py-2.5 bg-white border border-slate-200 rounded-xl text-sm font-medium focus:outline-none focus:border-blue-500">
+                    </div>
+                </div>
+                <div id="clients-list" class="bg-white rounded-2xl border border-slate-200 divide-y divide-slate-100 overflow-hidden"></div>
+            </section>
+
+            <!-- ============ АНАЛІТИКА ============ -->
+            <section id="panel-analytics" class="panel hidden-view p-4 md:p-8 max-w-5xl">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-5">
+                    <h1 class="text-2xl md:text-3xl font-black text-slate-900">Аналітика</h1>
+                    <div class="seg flex bg-slate-200/80 p-1 rounded-xl text-sm font-bold text-slate-500 whitespace-nowrap" id="period-seg">
+                        <button data-p="day" class="flex-1 px-4 py-2 rounded-lg">Сьогодні</button>
+                        <button data-p="week" class="flex-1 px-4 py-2 rounded-lg">7 днів</button>
+                        <button data-p="month" class="on flex-1 px-4 py-2 rounded-lg">30 днів</button>
+                        <button data-p="year" class="flex-1 px-4 py-2 rounded-lg">Рік</button>
+                    </div>
+                </div>
+                <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-4" id="kpis"></div>
+                <div class="bg-white p-4 md:p-6 rounded-2xl border border-slate-200 mb-4">
+                    <h3 id="chart-title" class="font-black text-slate-800 mb-3">Продано бутлів</h3>
+                    <div class="relative h-56 md:h-72"><canvas id="salesChart"></canvas></div>
+                </div>
+                <div class="grid md:grid-cols-2 gap-4">
+                    <div class="bg-white p-4 md:p-6 rounded-2xl border border-slate-200">
+                        <h3 class="font-black text-slate-800 mb-3">Найактивніші клієнти за період</h3>
+                        <div id="top-clients" class="divide-y divide-slate-100"></div>
+                    </div>
+                    <div class="bg-white p-4 md:p-6 rounded-2xl border border-slate-200">
+                        <h3 class="font-black text-slate-800 mb-3">Як рахуються показники</h3>
+                        <ul class="text-sm text-slate-500 space-y-2 leading-relaxed">
+                            <li><b class="text-slate-700">Нові</b> — перше замовлення клієнта припало на цей період.</li>
+                            <li><b class="text-slate-700">Повторні</b> — клієнт уже замовляв раніше.</li>
+                            <li><b class="text-slate-700">Середній чек</b> — дохід ÷ кількість замовлень.</li>
+                            <li>Клієнт визначається за номером телефону.</li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ============ ВІДГУКИ ============ -->
+            <section id="panel-reviews" class="panel hidden-view p-4 md:p-8 max-w-5xl">
+                <h1 class="text-2xl md:text-3xl font-black text-slate-900">Відгуки</h1>
+                <p class="text-slate-500 text-sm mt-0.5 mb-4">Нові відгуки з'являються на сайті тільки після того, як ви їх опублікуєте.</p>
+                <div class="seg inline-flex bg-slate-200/80 p-1 rounded-xl text-sm font-bold text-slate-500 mb-4" id="reviews-seg">
+                    <button data-f="pending" class="on px-4 py-2 rounded-lg">На перевірці <span id="cnt-pending" class="ml-1 bg-amber-400 text-slate-900 rounded-full px-2 text-[11px]">0</span></button>
+                    <button data-f="published" class="px-4 py-2 rounded-lg">Опубліковані</button>
+                </div>
+                <div id="reviews-list" class="grid gap-3 md:grid-cols-2"></div>
+            </section>
+
+            <!-- ============ КОМАНДА ============ -->
+            <section id="panel-admins" class="panel hidden-view p-4 md:p-8 max-w-3xl">
+                <h1 class="text-2xl md:text-3xl font-black text-slate-900">Команда</h1>
+                <p class="text-slate-500 text-sm mt-0.5 mb-5">Хто має доступ до CRM і що може робити.</p>
+                <div class="bg-white p-4 md:p-6 rounded-2xl border border-slate-200 mb-5">
+                    <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Додати співробітника</label>
+                    <div class="flex flex-col sm:flex-row gap-2">
+                        <input type="email" id="input-new-admin" placeholder="name@gmail.com" class="flex-1 px-4 py-3 bg-slate-50 rounded-xl border border-slate-200 focus:outline-none focus:border-blue-500 text-sm font-medium">
+                        <select id="input-new-role" class="px-4 py-3 bg-slate-50 rounded-xl border border-slate-200 text-sm font-bold text-slate-700"></select>
+                        <button id="btn-add-admin" class="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl">Додати</button>
+                    </div>
+                    <div class="grid sm:grid-cols-3 gap-2 mt-4 text-xs text-slate-500" id="roles-help"></div>
+                </div>
+                <div id="admins-list" class="bg-white rounded-2xl border border-slate-200 divide-y divide-slate-100 overflow-hidden"></div>
+            </section>
+        </main>
+
+        <!-- Нижня навігація (мобільна) -->
+        <nav id="mobile-nav" class="md:hidden fixed bottom-0 inset-x-0 z-40 bg-white border-t border-slate-200 flex justify-around pt-1.5 pb-safe"></nav>
+    </div>
+
+    <!-- ===== ВІКНО: НОВЕ ЗАМОВЛЕННЯ ===== -->
+    <div id="sheet-order-bg" class="sheet-bg fixed inset-0 bg-slate-900/50 backdrop-blur-[2px] z-[90]" data-close-sheet></div>
+    <div id="sheet-order" class="sheet fixed z-[95] bottom-0 inset-x-0 md:inset-x-auto md:left-1/2 md:top-1/2 md:bottom-auto md:w-[520px] bg-white rounded-t-3xl md:rounded-3xl shadow-2xl max-h-[92vh] overflow-y-auto">
+        <div class="p-5 md:p-6">
+            <div class="flex items-center justify-between mb-4">
+                <h2 class="text-xl font-black text-slate-900">Нове замовлення</h2>
+                <button data-close-sheet class="w-9 h-9 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-500 flex items-center justify-center">✕</button>
+            </div>
+            <p class="text-xs text-slate-500 -mt-2 mb-4">Для замовлень з телефону, Viber чи Telegram. Почніть вводити телефон або ім'я — знайдемо клієнта в базі.</p>
+
+            <div class="space-y-3">
+                <div>
+                    <label class="block text-xs font-bold text-slate-500 mb-1">Телефон *</label>
+                    <input id="mo-phone" type="tel" inputmode="tel" autocomplete="off" placeholder="096 123 45 67" class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:border-blue-500 font-semibold">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-500 mb-1">Ім'я</label>
+                    <input id="mo-name" type="text" autocomplete="off" placeholder="Ім'я клієнта" class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:border-blue-500 font-semibold">
+                </div>
+                <div id="mo-suggest" class="hidden space-y-1.5"></div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-500 mb-1">Адреса доставки *</label>
+                    <input id="mo-address" type="text" autocomplete="off" placeholder="Вулиця, будинок, під'їзд, квартира" class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:border-blue-500 font-semibold">
+                </div>
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-500 mb-1">Бутлів</label>
+                        <div class="flex items-center bg-slate-50 border border-slate-200 rounded-xl">
+                            <button type="button" id="mo-minus" class="w-12 h-12 text-2xl font-black text-slate-500">−</button>
+                            <input id="mo-qty" type="number" min="1" value="1" class="w-full text-center bg-transparent font-black text-lg focus:outline-none">
+                            <button type="button" id="mo-plus" class="w-12 h-12 text-2xl font-black text-blue-600">+</button>
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-500 mb-1">Сума, ₴</label>
+                        <input id="mo-price" type="number" min="0" class="w-full px-4 h-12 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:border-blue-500 font-black text-lg">
+                    </div>
+                </div>
+                <p class="text-[11px] text-slate-400">Ціна як на сайті: 1 бутель — 100 ₴, від 2 — 90 ₴ за бутель. Суму можна змінити вручну.</p>
+            </div>
+            <button id="mo-submit" class="mt-5 w-full py-4 bg-blue-600 hover:bg-blue-700 text-white font-black rounded-2xl shadow-lg shadow-blue-600/25 active:scale-[.98] transition">Створити замовлення</button>
+        </div>
+    </div>
+
+    <!-- ===== ПАНЕЛЬ: КАРТКА КЛІЄНТА ===== -->
+    <div id="drawer-bg" class="sheet-bg fixed inset-0 bg-slate-900/50 z-[80]" data-close-drawer></div>
+    <div id="drawer" class="sheet drawer fixed z-[85] bottom-0 inset-x-0 md:inset-x-auto md:right-0 md:top-0 md:bottom-0 md:w-[440px] bg-slate-50 rounded-t-3xl md:rounded-none shadow-2xl max-h-[92vh] md:max-h-none overflow-y-auto" style="opacity:1"></div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
+import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
+import { getFirestore, collection, getDocs, doc, setDoc, deleteDoc, updateDoc, getDoc, addDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
+
+const firebaseConfig = {
+    apiKey: "AIzaSyAutXr0WYq-5CkkJUESpOpIsOrZXKpULjs",
+    authDomain: "skysource.firebaseapp.com",
+    projectId: "skysource",
+    storageBucket: "skysource.firebasestorage.app",
+    messagingSenderId: "1033630811129",
+    appId: "1:1033630811129:web:0388eb20c87250b28ab328"
+};
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+const provider = new GoogleAuthProvider();
+
+const OWNER_EMAIL = 'skysourcednipro@gmail.com';
+
+/* ---------- Ролі (як і раніше) ----------
+   manager   — тільки замовлення
+   admin     — + аналітика і відгуки
+   assistant — повний доступ (клієнти, команда)
+   owner     — повний доступ                      */
+const ROLE_NAMES = { owner: 'Власник', assistant: 'Помічник власника', admin: 'Адміністратор', manager: 'Менеджер' };
+const ROLE_PANELS = {
+    manager:   ['orders'],
+    admin:     ['orders', 'analytics', 'reviews'],
+    assistant: ['orders', 'clients', 'analytics', 'reviews', 'admins'],
+    owner:     ['orders', 'clients', 'analytics', 'reviews', 'admins'],
+};
+const PANELS = {
+    orders:    { label: 'Замовлення', icon: '<path stroke-linecap="round" stroke-linejoin="round" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/>' },
+    clients:   { label: 'Клієнти',    icon: '<path stroke-linecap="round" stroke-linejoin="round" d="M17 20h5v-1a4 4 0 00-5.6-3.7M17 20H7m10 0v-1c0-.7-.1-1.3-.4-1.9M7 20H2v-1a4 4 0 015.6-3.7M7 20v-1c0-.7.1-1.3.4-1.9m0 0a5 5 0 019.2 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/>' },
+    analytics: { label: 'Аналітика',  icon: '<path stroke-linecap="round" stroke-linejoin="round" d="M4 20V10m6 10V4m6 16v-7m4 7H2"/>' },
+    reviews:   { label: 'Відгуки',    icon: '<path stroke-linecap="round" stroke-linejoin="round" d="M11.05 2.93c.3-.92 1.6-.92 1.9 0l1.52 4.67a1 1 0 00.95.69h4.91c.97 0 1.37 1.24.59 1.81l-3.98 2.89a1 1 0 00-.36 1.12l1.52 4.67c.3.92-.76 1.69-1.54 1.12l-3.98-2.89a1 1 0 00-1.17 0l-3.98 2.89c-.78.57-1.84-.2-1.54-1.12l1.52-4.67a1 1 0 00-.36-1.12L2.07 10.1c-.78-.57-.38-1.81.59-1.81h4.91a1 1 0 00.95-.69l1.53-4.67z"/>' },
+    admins:    { label: 'Команда',    icon: '<path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m5.6-4A12 12 0 0112 2.94 12 12 0 013.4 6 12 12 0 003 9c0 5.6 3.8 10.3 9 11.6 5.2-1.3 9-6 9-11.6 0-1-.1-2-.4-3z"/>' },
+};
+
+let role = 'none';
+let me = '';
+let currentPanel = 'orders';
+const state = {
+    orders: [], ordersLoaded: false,
+    users: [], usersLoaded: false,
+    reviews: [],
+    admins: [],
+    orderFilter: 'active', orderSearch: '',
+    clientFilter: 'all', clientSearch: '',
+    reviewFilter: 'pending',
+    period: 'month',
+};
+let chart = null;
+let busy = false;
+
+/* ---------- Утиліти ---------- */
+const $ = (s, r = document) => r.querySelector(s);
+const $$ = (s, r = document) => [...r.querySelectorAll(s)];
+const esc = v => String(v ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const digits = p => String(p || '').replace(/\D/g, '');
+const phoneKey = p => digits(p).slice(-10);
+const telHref = p => { const d = digits(p); if (!d) return ''; if (d.length === 10 && d[0] === '0') return 'tel:+38' + d; if (d.startsWith('380')) return 'tel:+' + d; return 'tel:' + d; };
+const plural = (n, f) => { const a = Math.abs(n) % 100, b = a % 10; if (a > 10 && a < 20) return f[2]; if (b > 1 && b < 5) return f[1]; if (b === 1) return f[0]; return f[2]; };
+const bottles = n => `${n} ${plural(n, ['бутель', 'бутлі', 'бутлів'])}`;
+const money = n => `${Math.round(Number(n) || 0).toLocaleString('uk-UA')} ₴`;
+const isDone = o => o.status === 'archived' || o.status === 'completed';
+const priceFor = q => (q === 1 ? 100 : q * 90);   // те саме правило, що на сайті
+const DAY = 86400000;
+
+function startOfDay(t) { const d = new Date(t); d.setHours(0, 0, 0, 0); return d.getTime(); }
+function dayLabel(t) {
+    const today = startOfDay(Date.now());
+    const d = startOfDay(t);
+    if (d === today) return 'Сьогодні';
+    if (d === today - DAY) return 'Вчора';
+    return new Date(t).toLocaleDateString('uk-UA', { weekday: 'long', day: 'numeric', month: 'long' });
+}
+function timeStr(t) { return t ? new Date(t).toLocaleTimeString('uk-UA', { hour: '2-digit', minute: '2-digit' }) : '--:--'; }
+function ago(t) {
+    if (!t) return '';
+    const m = Math.floor((Date.now() - t) / 60000);
+    if (m < 1) return 'щойно';
+    if (m < 60) return `${m} хв тому`;
+    if (m < 1440) return `${Math.floor(m / 60)} год тому`;
+    const d = Math.floor(m / 1440);
+    return `${d} ${plural(d, ['день', 'дні', 'днів'])} тому`;
+}
+function mapsLink(addr) {
+    const a = String(addr || '');
+    const q = /дніпр|днепр|dnipro/i.test(a) ? a : `Дніпро, ${a}`;
+    return 'https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(q);
+}
+
+let toastT;
+function toast(msg, err = false) {
+    const t = $('#toast');
+    clearTimeout(toastT);
+    t.textContent = msg;
+    t.className = `fixed top-4 left-1/2 z-[200] px-5 py-3 rounded-2xl shadow-2xl font-bold text-sm max-w-[90vw] text-center show ${err ? 'bg-red-600 text-white' : 'bg-slate-900 text-white'}`;
+    toastT = setTimeout(() => t.classList.remove('show'), 2800);
+}
+async function copy(text, msg = 'Скопійовано') {
+    try { await navigator.clipboard.writeText(text); toast(msg); }
+    catch { const ta = document.createElement('textarea'); ta.value = text; document.body.appendChild(ta); ta.select(); document.execCommand('copy'); ta.remove(); toast(msg); }
+}
+const can = p => (ROLE_PANELS[role] || []).includes(p);
+
+/* ---------- Авторизація ---------- */
+onAuthStateChanged(auth, async (user) => {
+    if (!user) { $('#auth-screen').classList.remove('hidden-view'); $('#app').classList.add('hidden-view'); return; }
+    try {
+        if (user.email === OWNER_EMAIL) role = 'owner';
+        else {
+            const snap = await getDoc(doc(db, 'admins', user.email));
+            if (!snap.exists()) throw new Error('no access');
+            role = snap.data().role || 'manager';
+            if (!ROLE_PANELS[role]) role = 'manager';
+        }
+        me = user.email;
+        start();
+    } catch (e) {
+        $('#auth-error').classList.remove('hidden');
+        signOut(auth);
+    }
+});
+$('#btn-login').onclick = () => signInWithPopup(auth, provider).catch(() => toast('Не вдалося відкрити вікно входу. Дозвольте спливаючі вікна.', true));
+$$('[data-logout]').forEach(b => b.onclick = () => { signOut(auth); location.reload(); });
+$('#btn-me').onclick = () => { if (confirm('Вийти з акаунта?')) { signOut(auth); location.reload(); } };
+
+function start() {
+    $('#auth-screen').classList.add('hidden-view');
+    $('#app').classList.remove('hidden-view');
+    $$('[data-me-email]').forEach(e => e.textContent = me);
+    $$('[data-me-role]').forEach(e => e.textContent = ROLE_NAMES[role] || '');
+    buildNav();
+    subscribeOrders();
+    if (can('clients')) loadUsers();
+    if (can('reviews')) loadReviews(false);
+    const hash = location.hash.slice(1);
+    go(can(hash) ? hash : 'orders');
+}
+
+/* ---------- Навігація ---------- */
+function buildNav() {
+    const items = ROLE_PANELS[role];
+    $('#side-nav').innerHTML = items.map(p => `
+        <button data-go="${p}" class="nav-btn w-full flex items-center gap-3 px-4 py-3 rounded-xl font-bold text-sm hover:bg-slate-800 hover:text-white transition">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">${PANELS[p].icon}</svg>
+            <span class="flex-1 text-left">${PANELS[p].label}</span>
+            <span data-badge="${p}" class="hidden text-[11px] font-black rounded-full px-2 py-0.5"></span>
+        </button>`).join('');
+    $('#mobile-nav').innerHTML = items.map(p => `
+        <button data-go="${p}" class="mnav-btn relative flex-1 flex flex-col items-center gap-0.5 py-1 text-slate-400 text-[10px] font-bold">
+            <span class="mnav-ico w-12 h-8 rounded-full flex items-center justify-center"><svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">${PANELS[p].icon}</svg></span>
+            ${PANELS[p].label}
+            <span data-badge="${p}" class="hidden absolute top-0 left-1/2 ml-2 text-[10px] font-black rounded-full px-1.5 min-w-[18px] text-center"></span>
+        </button>`).join('');
+    $$('[data-go]').forEach(b => b.onclick = () => go(b.dataset.go));
+    // Якщо доступний лише один розділ (менеджер) — нижнє меню не потрібне
+    if (items.length < 2) { $('#mobile-nav').classList.add('hidden'); $('main').classList.remove('pb-24'); }
+}
+function setBadge(p, n, color) {
+    $$(`[data-badge="${p}"]`).forEach(b => {
+        if (!b.dataset.base) b.dataset.base = b.className.replace(/\bhidden\b/, '').trim();
+        b.textContent = n;
+        b.className = b.dataset.base + (n > 0 ? ` ${color}` : ' hidden');
+    });
+}
+function go(p) {
+    if (!can(p)) { toast('Недостатньо прав', true); return; }
+    currentPanel = p;
+    history.replaceState(null, '', '#' + p);
+    $$('.panel').forEach(s => s.classList.add('hidden-view'));
+    const el = $('#panel-' + p); el.classList.remove('hidden-view'); el.classList.add('fade-in');
+    $$('[data-go]').forEach(b => b.classList.toggle('on', b.dataset.go === p));
+    window.scrollTo(0, 0);
+    if (p === 'orders') renderOrders();
+    if (p === 'clients') { renderClients(); loadUsers(); }
+    if (p === 'analytics') renderAnalytics();
+    if (p === 'reviews') loadReviews(true);
+    if (p === 'admins') loadAdmins();
+}
+
+function bindSeg(id, onPick) {
+    $$(`#${id} button`).forEach(b => b.onclick = () => {
+        $$(`#${id} button`).forEach(x => x.classList.remove('on'));
+        b.classList.add('on');
+        onPick(b.dataset);
+    });
+}
+
+/* =========================================================
+   ЗАМОВЛЕННЯ (оновлюються наживо)
+========================================================= */
+let knownOrderIds = null;
+function subscribeOrders() {
+    onSnapshot(collection(db, 'orders'), snap => {
+        const list = [];
+        snap.forEach(d => list.push({ id: d.id, ...d.data() }));
+        list.sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
+
+        // Сигнал про нове замовлення з сайту
+        if (knownOrderIds) {
+            const fresh = list.filter(o => !knownOrderIds.has(o.id) && o.source !== 'manual' && !isDone(o));
+            if (fresh.length) { toast(`🔔 Нове замовлення: ${fresh[0].name || 'клієнт'} — ${bottles(parseInt(fresh[0].quantity) || 0)}`); beep(); }
+        }
+        knownOrderIds = new Set(list.map(o => o.id));
+
+        state.orders = list; state.ordersLoaded = true;
+        const active = list.filter(o => !isDone(o)).length;
+        $('#cnt-active').textContent = active;
+        setBadge('orders', active, 'bg-blue-600 text-white');
+        document.title = (active ? `(${active}) ` : '') + 'SkySource CRM';
+        if (currentPanel === 'orders') renderOrders();
+        if (currentPanel === 'clients') renderClients();
+        if (currentPanel === 'analytics') renderAnalytics();
+    }, err => {
+        console.error(err);
+        $('#orders-list').innerHTML = `<div class="bg-red-50 text-red-600 p-6 rounded-2xl text-center font-bold">Не вдалося завантажити замовлення. Перевірте інтернет або права доступу.</div>`;
+    });
+}
+function beep() {
+    try {
+        const ctx = new (window.AudioContext || window.webkitAudioContext)();
+        [0, .18].forEach(d => {
+            const o = ctx.createOscillator(), g = ctx.createGain();
+            o.frequency.value = 880; o.connect(g); g.connect(ctx.destination);
+            g.gain.setValueAtTime(.12, ctx.currentTime + d); g.gain.exponentialRampToValueAtTime(.001, ctx.currentTime + d + .15);
+            o.start(ctx.currentTime + d); o.stop(ctx.currentTime + d + .16);
+        });
+    } catch { /* без звуку */ }
+}
+
+// Скільки разів клієнт замовляв (за телефоном)
+function orderCountsByClient() {
+    const m = new Map();
+    for (const o of state.orders) { const k = phoneKey(o.phone) || o.uid; m.set(k, (m.get(k) || 0) + 1); }
+    return m;
+}
+function matchesSearch(o, q) {
+    if (!q) return true;
+    const qd = digits(q);
+    return [o.name, o.address].some(v => String(v || '').toLowerCase().includes(q)) || (qd.length >= 3 && digits(o.phone).includes(qd));
+}
+
+function renderOrders() {
+    if (!state.ordersLoaded) { $('#orders-list').innerHTML = skeleton(3); return; }
+    const q = state.orderSearch.trim().toLowerCase();
+    const f = state.orderFilter;
+    const list = state.orders.filter(o => (f === 'all' || (f === 'active' ? !isDone(o) : isDone(o))) && matchesSearch(o, q));
+    const counts = orderCountsByClient();
+
+    const today = startOfDay(Date.now());
+    const tOrders = state.orders.filter(o => (o.timestamp || 0) >= today);
+    const tBottles = tOrders.reduce((s, o) => s + (parseInt(o.quantity) || 0), 0);
+    $('#orders-summary').textContent = `Сьогодні: ${tOrders.length} ${plural(tOrders.length, ['замовлення', 'замовлення', 'замовлень'])} · ${bottles(tBottles)}`;
+
+    if (!list.length) {
+        const msg = q ? 'Нічого не знайдено' : f === 'active' ? 'Активних замовлень немає 🎉' : 'Замовлень немає';
+        $('#orders-list').innerHTML = `<div class="text-center text-slate-400 font-bold py-16">${msg}</div>`;
+        return;
+    }
+    const limit = f === 'active' ? list.length : Math.min(list.length, state.orderLimit || 60);
+    const groups = [];
+    for (const o of list.slice(0, limit)) {
+        const label = o.timestamp ? dayLabel(o.timestamp) : 'Без дати';
+        let g = groups[groups.length - 1];
+        if (!g || g.label !== label) { g = { label, items: [] }; groups.push(g); }
+        g.items.push(o);
+    }
+    $('#orders-list').innerHTML = groups.map(g => {
+        const b = g.items.reduce((s, o) => s + (parseInt(o.quantity) || 0), 0);
+        return `<div>
+            <div class="flex items-baseline justify-between px-1 mb-2">
+                <h2 class="text-sm font-black text-slate-500 uppercase tracking-wider first-letter:uppercase">${esc(g.label)}</h2>
+                <span class="text-xs font-bold text-slate-400">${g.items.length} зам. · ${bottles(b)}</span>
+            </div>
+            <div class="space-y-2">${g.items.map(o => orderCard(o, counts)).join('')}</div>
+        </div>`;
+    }).join('') + (limit < list.length ? `<button id="btn-more" class="w-full py-3 bg-white border border-slate-200 rounded-xl font-bold text-slate-600">Показати ще (${list.length - limit})</button>` : '');
+    const more = $('#btn-more'); if (more) more.onclick = () => { state.orderLimit = (state.orderLimit || 60) + 60; renderOrders(); };
+}
+
+function orderCard(o, counts) {
+    const done = isDone(o);
+    const qty = parseInt(o.quantity) || 0;
+    const n = counts.get(phoneKey(o.phone) || o.uid) || 1;
+    const waitingH = !done && o.timestamp ? (Date.now() - o.timestamp) / 3600000 : 0;
+    const tel = telHref(o.phone);
+    const tags = [];
+    if (o.source === 'manual') tags.push('<span class="bg-purple-100 text-purple-700 px-2 py-0.5 rounded-md">Вручну</span>');
+    else tags.push('<span class="bg-sky-100 text-sky-700 px-2 py-0.5 rounded-md">Сайт</span>');
+    tags.push(n > 1 ? `<span class="bg-emerald-100 text-emerald-700 px-2 py-0.5 rounded-md">${n}-е замовлення</span>` : '<span class="bg-amber-100 text-amber-700 px-2 py-0.5 rounded-md">Новий клієнт</span>');
+    if (waitingH >= 3) tags.push(`<span class="bg-red-100 text-red-700 px-2 py-0.5 rounded-md">Чекає ${Math.floor(waitingH)} год</span>`);
+
+    return `<article class="bg-white rounded-2xl border ${done ? 'border-slate-200 opacity-70' : 'border-slate-200 shadow-sm'} overflow-hidden flex">
+        <div class="w-1.5 shrink-0 ${done ? 'bg-slate-300' : 'bg-blue-500'}"></div>
+        <div class="flex-1 min-w-0 p-4">
+            <div class="flex items-start justify-between gap-3">
+                <div class="min-w-0">
+                    <div class="flex flex-wrap items-center gap-1.5 text-[11px] font-bold mb-1.5">
+                        <span class="text-slate-500">${timeStr(o.timestamp)}</span>
+                        ${!done ? `<span class="text-slate-400">· ${ago(o.timestamp)}</span>` : '<span class="bg-slate-100 text-slate-500 px-2 py-0.5 rounded-md">✓ Виконано</span>'}
+                        ${tags.join('')}
+                    </div>
+                    <p class="text-lg font-black text-slate-900 leading-tight">${esc(bottles(qty))} <span class="text-blue-600">· ${money(o.totalPrice)}</span></p>
+                </div>
+                ${!done
+                    ? `<button data-act="done" data-id="${esc(o.id)}" class="shrink-0 px-4 py-2.5 bg-emerald-500 hover:bg-emerald-600 text-white font-black text-sm rounded-xl active:scale-95 transition">✓ Виконано</button>`
+                    : `<button data-act="reopen" data-id="${esc(o.id)}" class="shrink-0 px-3 py-2 bg-slate-100 hover:bg-slate-200 text-slate-600 font-bold text-xs rounded-xl">↺ Повернути</button>`}
+            </div>
+            <div class="mt-2 space-y-1 text-sm">
+                <p class="font-bold text-slate-800">${esc(o.name || 'Без імені')} ${o.phone ? `· <a href="${tel}" class="font-mono text-blue-600 hover:underline">${esc(o.phone)}</a>` : ''}</p>
+                <p class="text-slate-600">📍 ${esc(o.address || '—')}</p>
+            </div>
+            <div class="flex flex-wrap gap-1.5 mt-3">
+                ${tel ? `<a href="${tel}" class="px-3 py-2 bg-slate-100 hover:bg-slate-200 rounded-lg text-xs font-bold text-slate-700">📞 Дзвінок</a>` : ''}
+                <button data-act="copy" data-id="${esc(o.id)}" class="px-3 py-2 bg-slate-100 hover:bg-slate-200 rounded-lg text-xs font-bold text-slate-700">📋 Копіювати</button>
+                ${o.address ? `<a href="${mapsLink(o.address)}" target="_blank" rel="noopener" class="px-3 py-2 bg-slate-100 hover:bg-slate-200 rounded-lg text-xs font-bold text-slate-700">🗺 Карта</a>` : ''}
+                <button data-act="repeat" data-id="${esc(o.id)}" class="px-3 py-2 bg-slate-100 hover:bg-slate-200 rounded-lg text-xs font-bold text-slate-700">➕ Повторити</button>
+                <button data-act="delete" data-id="${esc(o.id)}" class="ml-auto px-3 py-2 text-red-500 hover:bg-red-50 rounded-lg text-xs font-bold" title="Видалити назавжди">Видалити</button>
+            </div>
+        </div>
+    </article>`;
+}
+const orderText = o => `Ім'я: ${o.name || '-'}\nТелефон: ${o.phone || '-'}\nАдреса: ${o.address || '-'}\nБутлів: ${o.quantity} (${money(o.totalPrice)})`;
+
+$('#orders-list').addEventListener('click', async e => {
+    const b = e.target.closest('[data-act]'); if (!b) return;
+    const o = state.orders.find(x => x.id === b.dataset.id); if (!o) return;
+    const act = b.dataset.act;
+    if (act === 'copy') return copy(orderText(o), 'Дані для кур\'єра скопійовано');
+    if (act === 'repeat') return openOrderSheet({ name: o.name, phone: o.phone, address: o.address, quantity: parseInt(o.quantity) || 1 });
+    if (act === 'done' || act === 'reopen') {
+        b.disabled = true;
+        try { await updateDoc(doc(db, 'orders', o.id), { status: act === 'done' ? 'archived' : 'processing' }); toast(act === 'done' ? 'Замовлення виконано ✓' : 'Повернуто в роботу'); }
+        catch { b.disabled = false; toast('Помилка збереження', true); }
+        return;
+    }
+    if (act === 'delete') {
+        if (!confirm(`Видалити замовлення ${o.name || ''} (${bottles(parseInt(o.quantity) || 0)}) назавжди?`)) return;
+        try { await deleteDoc(doc(db, 'orders', o.id)); toast('Замовлення видалено'); } catch { toast('Помилка видалення', true); }
+    }
+});
+bindSeg('orders-seg', d => { state.orderFilter = d.f; state.orderLimit = 60; renderOrders(); });
+$('#orders-search').addEventListener('input', e => { state.orderSearch = e.target.value; renderOrders(); });
+$('#btn-copy-route').onclick = () => {
+    const act = state.orders.filter(o => !isDone(o)).slice().reverse();
+    if (!act.length) return toast('Активних замовлень немає');
+    const text = act.map((o, i) => `${i + 1}. ${o.address || '-'}\n   ${o.name || '-'}, ${o.phone || '-'}\n   ${bottles(parseInt(o.quantity) || 0)} — ${money(o.totalPrice)}`).join('\n\n');
+    const total = act.reduce((s, o) => s + (parseInt(o.quantity) || 0), 0);
+    copy(`Доставки (${act.length}), всього ${bottles(total)}:\n\n${text}`, `Скопійовано ${act.length} адрес для кур'єра`);
+};
+
+/* ---------- Нове замовлення ---------- */
+let priceTouched = false;
+function openOrderSheet(pre = {}) {
+    $('#mo-phone').value = pre.phone || '';
+    $('#mo-name').value = pre.name || '';
+    $('#mo-address').value = pre.address || '';
+    $('#mo-qty').value = pre.quantity || 1;
+    priceTouched = false; syncPrice();
+    $('#mo-suggest').classList.add('hidden');
+    $('#sheet-order-bg').classList.add('open'); $('#sheet-order').classList.add('open');
+    setTimeout(() => (pre.phone ? $('#mo-qty') : $('#mo-phone')).focus(), 250);
+}
+function closeOrderSheet() { $('#sheet-order-bg').classList.remove('open'); $('#sheet-order').classList.remove('open'); }
+$$('[data-new-order]').forEach(b => b.onclick = () => openOrderSheet());
+$$('[data-close-sheet]').forEach(b => b.onclick = closeOrderSheet);
+function syncPrice() { const q = Math.max(1, parseInt($('#mo-qty').value) || 1); if (!priceTouched) $('#mo-price').value = priceFor(q); }
+$('#mo-qty').addEventListener('input', syncPrice);
+$('#mo-price').addEventListener('input', () => { priceTouched = true; });
+$('#mo-minus').onclick = () => { $('#mo-qty').value = Math.max(1, (parseInt($('#mo-qty').value) || 1) - 1); syncPrice(); };
+$('#mo-plus').onclick = () => { $('#mo-qty').value = (parseInt($('#mo-qty').value) || 0) + 1; syncPrice(); };
+
+// Довідник відомих клієнтів: з бази клієнтів (якщо є доступ) + з історії замовлень
+function knownClients() {
+    const m = new Map();
+    for (const o of state.orders) {
+        const k = phoneKey(o.phone); if (!k) continue;
+        const c = m.get(k) || { phone: o.phone, name: o.name, address: o.address, count: 0, last: 0 };
+        c.count++;
+        if ((o.timestamp || 0) > c.last) Object.assign(c, { last: o.timestamp || 0, phone: o.phone, name: o.name || c.name, address: o.address || c.address });
+        m.set(k, c);
+    }
+    for (const u of state.users) {
+        const k = phoneKey(u.phone); if (!k) continue;
+        const c = m.get(k) || { phone: u.phone, count: 0, last: 0 };
+        c.name = c.name || u.name; c.address = c.address || u.address;
+        m.set(k, c);
+    }
+    return [...m.values()];
+}
+function suggest() {
+    const pd = digits($('#mo-phone').value);
+    const nq = $('#mo-name').value.trim().toLowerCase();
+    const box = $('#mo-suggest');
+    if (pd.length < 3 && nq.length < 2) { box.classList.add('hidden'); return; }
+    const res = knownClients().filter(c => (pd.length >= 3 && digits(c.phone).includes(pd)) || (nq.length >= 2 && String(c.name || '').toLowerCase().includes(nq)))
+        .sort((a, b) => b.last - a.last).slice(0, 4);
+    if (!res.length) { box.classList.add('hidden'); return; }
+    box.innerHTML = `<p class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Знайдено в базі — натисніть, щоб підставити</p>` + res.map((c, i) => `
+        <button type="button" data-sug="${i}" class="w-full text-left p-3 bg-blue-50 hover:bg-blue-100 border border-blue-100 rounded-xl">
+            <span class="block text-sm font-black text-slate-800">${esc(c.name || 'Без імені')} <span class="font-mono font-bold text-blue-600">${esc(c.phone)}</span></span>
+            <span class="block text-xs text-slate-500 truncate">📍 ${esc(c.address || '—')}${c.count ? ` · ${c.count} зам.` : ''}</span>
+        </button>`).join('');
+    box.classList.remove('hidden');
+    $$('[data-sug]', box).forEach(b => b.onclick = () => {
+        const c = res[+b.dataset.sug];
+        $('#mo-phone').value = c.phone || ''; $('#mo-name').value = c.name || ''; $('#mo-address').value = c.address || '';
+        box.classList.add('hidden'); $('#mo-qty').focus();
+    });
+}
+$('#mo-phone').addEventListener('input', suggest);
+$('#mo-name').addEventListener('input', suggest);
+
+$('#mo-submit').onclick = async () => {
+    if (busy) return;
+    const phone = $('#mo-phone').value.trim();
+    const name = $('#mo-name').value.trim() || 'Клієнт';
+    const address = $('#mo-address').value.trim();
+    const quantity = Math.max(1, parseInt($('#mo-qty').value) || 1);
+    const totalPrice = Math.max(0, parseInt($('#mo-price').value) || priceFor(quantity));
+    if (digits(phone).length < 9) { toast('Вкажіть телефон клієнта', true); $('#mo-phone').focus(); return; }
+    if (address.length < 3) { toast('Вкажіть адресу доставки', true); $('#mo-address').focus(); return; }
+
+    busy = true; $('#mo-submit').textContent = 'Збереження…';
+    const timestamp = Date.now();
+    // Якщо такий «ручний» клієнт уже є — оновлюємо його ж документ, щоб не плодити дублікати
+    const existing = state.users.find(u => u.id.startsWith('manual_') && phoneKey(u.phone) === phoneKey(phone));
+    const userId = existing ? existing.id : 'manual_' + phone;
+    try {
+        await addDoc(collection(db, 'orders'), { uid: userId, name, phone, address, quantity, totalPrice, status: 'processing', timestamp, source: 'manual' });
+        try { await setDoc(doc(db, 'users', userId), { name, phone, address, addedBy: 'admin', timestamp }, { merge: true }); } catch (e) { console.warn('users write skipped', e); }
+        toast('Замовлення створено ✓');
+        closeOrderSheet();
+        if (can('clients')) loadUsers();
+        if (currentPanel !== 'orders') go('orders');
+    } catch (e) { console.error(e); toast('Помилка збереження', true); }
+    finally { busy = false; $('#mo-submit').textContent = 'Створити замовлення'; }
+};
+
+/* =========================================================
+   КЛІЄНТИ
+========================================================= */
+async function loadUsers() {
+    if (!can('clients')) return;
+    try {
+        const snap = await getDocs(collection(db, 'users'));
+        state.users = []; snap.forEach(d => state.users.push({ id: d.id, ...d.data() }));
+        state.usersLoaded = true;
+        if (currentPanel === 'clients') renderClients();
+    } catch (e) {
+        console.error(e);
+        if (currentPanel === 'clients') $('#clients-list').innerHTML = '<div class="p-6 text-red-500 text-center font-bold">Не вдалося завантажити клієнтів</div>';
+    }
+}
+function clientStats(u) {
+    const k = phoneKey(u.phone);
+    const orders = state.orders.filter(o => o.uid === u.id || (k && phoneKey(o.phone) === k));
+    const last = orders.reduce((m, o) => Math.max(m, o.timestamp || 0), 0);
+    return {
+        orders,
+        count: orders.length,
+        bottles: orders.reduce((s, o) => s + (parseInt(o.quantity) || 0), 0),
+        spent: orders.reduce((s, o) => s + (parseFloat(o.totalPrice) || 0), 0),
+        last,
+    };
+}
+function clientRows() {
+    return state.users.map(u => ({ u, s: clientStats(u) }));
+}
+function renderClients() {
+    if (!state.usersLoaded) { $('#clients-list').innerHTML = skeleton(4, true); return; }
+    const rows = clientRows();
+    const q = state.clientSearch.trim().toLowerCase();
+    const now = Date.now();
+    const f = state.clientFilter;
+    const filtered = rows.filter(({ u, s }) => {
+        if (f === 'regular' && s.count < 2) return false;
+        if (f === 'sleeping' && !(s.count > 0 && now - s.last > 30 * DAY)) return false;
+        if (f === 'none' && s.count > 0) return false;
+        if (!q) return true;
+        const qd = digits(q);
+        return [u.name, u.address].some(v => String(v || '').toLowerCase().includes(q)) || (qd.length >= 3 && digits(u.phone).includes(qd));
+    }).sort((a, b) => (b.s.last || b.u.timestamp || 0) - (a.s.last || a.u.timestamp || 0));
+
+    const regular = rows.filter(r => r.s.count >= 2).length;
+    $('#clients-summary').textContent = `${rows.length} ${plural(rows.length, ['клієнт', 'клієнти', 'клієнтів'])} · постійних: ${regular}`;
+
+    if (!filtered.length) { $('#clients-list').innerHTML = `<div class="p-10 text-center text-slate-400 font-bold">${q ? 'Нічого не знайдено' : 'Список порожній'}</div>`; return; }
+    $('#clients-list').innerHTML = filtered.map(({ u, s }) => {
+        const avatar = u.avatar ? `<img src="${esc(u.avatar)}" alt="" class="w-full h-full object-cover" loading="lazy">` : `<span class="font-black text-slate-400">${esc((u.name || 'К').charAt(0).toUpperCase())}</span>`;
+        const sleeping = s.count > 0 && now - s.last > 30 * DAY;
+        return `<button data-client="${esc(u.id)}" class="w-full text-left p-4 hover:bg-slate-50 flex items-center gap-3">
+            <div class="w-11 h-11 rounded-full bg-slate-100 border border-slate-200 overflow-hidden shrink-0 flex items-center justify-center">${avatar}</div>
+            <div class="flex-1 min-w-0">
+                <p class="font-black text-slate-800 truncate">${esc(u.name || 'Без імені')} <span class="font-mono text-sm font-bold text-blue-600">${esc(u.phone || '')}</span></p>
+                <p class="text-xs text-slate-500 truncate">📍 ${esc(u.address || 'Адреса не вказана')}</p>
+            </div>
+            <div class="text-right shrink-0">
+                <p class="text-sm font-black text-slate-800">${s.count ? `${s.count} зам.` : '—'}</p>
+                <p class="text-[11px] font-bold ${sleeping ? 'text-amber-600' : 'text-slate-400'}">${s.last ? ago(s.last) : (u.id.startsWith('manual_') ? 'вручну' : 'з сайту')}</p>
+            </div>
+        </button>`;
+    }).join('');
+}
+$('#clients-list').addEventListener('click', e => { const b = e.target.closest('[data-client]'); if (b) openClient(b.dataset.client); });
+bindSeg('clients-seg', d => { state.clientFilter = d.f; renderClients(); });
+$('#clients-search').addEventListener('input', e => { state.clientSearch = e.target.value; renderClients(); });
+
+function openClient(id) {
+    const u = state.users.find(x => x.id === id); if (!u) return;
+    const s = clientStats(u);
+    const tel = telHref(u.phone);
+    const hist = s.orders.slice().sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
+    $('#drawer').innerHTML = `
+        <div class="sticky top-0 bg-slate-50/95 backdrop-blur p-5 pb-3 flex items-start justify-between gap-3 border-b border-slate-200">
+            <div class="min-w-0">
+                <h2 class="text-xl font-black text-slate-900 truncate">${esc(u.name || 'Без імені')}</h2>
+                <p class="text-xs text-slate-500">${u.id.startsWith('manual_') ? 'Додано вручну' : 'Зареєстрований на сайті'}${u.timestamp ? ' · ' + new Date(u.timestamp).toLocaleDateString('uk-UA') : ''}</p>
+            </div>
+            <button data-close-drawer class="w-9 h-9 shrink-0 rounded-full bg-slate-200 hover:bg-slate-300 text-slate-600">✕</button>
+        </div>
+        <div class="p-5 space-y-4">
+            <div class="bg-white rounded-2xl border border-slate-200 p-4 space-y-2 text-sm">
+                <p>📞 ${tel ? `<a href="${tel}" class="font-mono font-bold text-blue-600">${esc(u.phone)}</a>` : '—'}</p>
+                <p>📍 ${esc(u.address || '—')} ${u.address ? `<a href="${mapsLink(u.address)}" target="_blank" rel="noopener" class="text-blue-600 font-bold text-xs ml-1">карта</a>` : ''}</p>
+            </div>
+            <div class="grid grid-cols-3 gap-2 text-center">
+                <div class="bg-white rounded-2xl border border-slate-200 p-3"><p class="text-lg font-black">${s.count}</p><p class="text-[10px] font-bold text-slate-400 uppercase">замовлень</p></div>
+                <div class="bg-white rounded-2xl border border-slate-200 p-3"><p class="text-lg font-black">${s.bottles}</p><p class="text-[10px] font-bold text-slate-400 uppercase">бутлів</p></div>
+                <div class="bg-white rounded-2xl border border-slate-200 p-3"><p class="text-lg font-black">${money(s.spent)}</p><p class="text-[10px] font-bold text-slate-400 uppercase">сума</p></div>
+            </div>
+            <div class="grid grid-cols-2 gap-2">
+                <button data-d="order" class="py-3 bg-blue-600 hover:bg-blue-700 text-white font-black rounded-xl">➕ Нове замовлення</button>
+                ${tel ? `<a href="${tel}" class="py-3 bg-white border border-slate-200 text-center font-bold rounded-xl">📞 Подзвонити</a>` : '<span></span>'}
+                <button data-d="copy" class="py-3 bg-white border border-slate-200 font-bold rounded-xl">📋 Копіювати</button>
+                <button data-d="delete" class="py-3 bg-white border border-red-200 text-red-500 font-bold rounded-xl">Видалити клієнта</button>
+            </div>
+            <div>
+                <h3 class="text-sm font-black text-slate-500 uppercase tracking-wider mb-2">Історія замовлень</h3>
+                <div class="bg-white rounded-2xl border border-slate-200 divide-y divide-slate-100">
+                    ${hist.length ? hist.map(o => `<div class="p-3 flex justify-between gap-3 text-sm">
+                        <div><p class="font-bold">${esc(bottles(parseInt(o.quantity) || 0))} · ${money(o.totalPrice)}</p><p class="text-xs text-slate-400">${o.timestamp ? new Date(o.timestamp).toLocaleString('uk-UA', { day: '2-digit', month: '2-digit', year: '2-digit', hour: '2-digit', minute: '2-digit' }) : '—'}</p></div>
+                        <span class="self-center text-[11px] font-black px-2 py-1 rounded-md ${isDone(o) ? 'bg-slate-100 text-slate-500' : 'bg-blue-100 text-blue-700'}">${isDone(o) ? 'Виконано' : 'Активне'}</span>
+                    </div>`).join('') : '<p class="p-4 text-sm text-slate-400 text-center">Замовлень ще не було</p>'}
+                </div>
+            </div>
+        </div>`;
+    $('#drawer-bg').classList.add('open'); $('#drawer').classList.add('open');
+    $$('[data-close-drawer]').forEach(b => b.onclick = closeDrawer);
+    $('[data-d="order"]').onclick = () => { closeDrawer(); openOrderSheet({ name: u.name, phone: u.phone, address: u.address, quantity: parseInt(hist[0]?.quantity) || 1 }); };
+    $('[data-d="copy"]').onclick = () => copy(`Ім'я: ${u.name || '-'}\nТелефон: ${u.phone || '-'}\nАдреса: ${u.address || '-'}`);
+    $('[data-d="delete"]').onclick = async () => {
+        if (!confirm(`Видалити клієнта «${u.name || u.phone}» з бази? Його замовлення залишаться.`)) return;
+        try { await deleteDoc(doc(db, 'users', u.id)); toast('Клієнта видалено'); closeDrawer(); loadUsers(); } catch { toast('Помилка видалення', true); }
+    };
+}
+function closeDrawer() { $('#drawer-bg').classList.remove('open'); $('#drawer').classList.remove('open'); }
+$('#drawer-bg').onclick = closeDrawer;
+document.addEventListener('keydown', e => { if (e.key === 'Escape') { closeDrawer(); closeOrderSheet(); } });
+
+function download(name, content, type) {
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(new Blob([content], { type }));
+    a.download = name; document.body.appendChild(a); a.click(); a.remove();
+}
+const dateTag = () => new Date().toLocaleDateString('uk-UA');
+$('#btn-export-txt').onclick = () => {
+    const arr = state.users.slice().sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
+    let t = "Адреса | Ім'я | Телефон\n----------------------------------------\n";
+    arr.forEach(c => t += `${c.address || '-'} | ${c.name || '-'} | ${c.phone || '-'}\n`);
+    download(`clients_skysource_${dateTag()}.txt`, t, 'text/plain;charset=utf-8');
+};
+$('#btn-export-csv').onclick = () => {
+    const q = v => `"${String(v ?? '').replace(/"/g, '""')}"`;
+    const lines = [['Ім\'я', 'Телефон', 'Адреса', 'Замовлень', 'Бутлів', 'Сума, грн', 'Останнє замовлення', 'Джерело'].map(q).join(';')];
+    clientRows().sort((a, b) => b.s.last - a.s.last).forEach(({ u, s }) => lines.push([
+        u.name, u.phone, u.address, s.count, s.bottles, Math.round(s.spent),
+        s.last ? new Date(s.last).toLocaleDateString('uk-UA') : '', u.id.startsWith('manual_') ? 'вручну' : 'сайт'
+    ].map(q).join(';')));
+    download(`clients_skysource_${dateTag()}.csv`, '﻿' + lines.join('\r\n'), 'text/csv;charset=utf-8');
+};
+
+/* =========================================================
+   АНАЛІТИКА
+========================================================= */
+bindSeg('period-seg', d => { state.period = d.p; renderAnalytics(); });
+
+function buckets(period) {
+    const now = new Date();
+    const out = [];
+    if (period === 'day') {
+        const s = startOfDay(now);
+        for (let h = 0; h <= now.getHours(); h++) out.push({ from: s + h * 3600000, to: s + (h + 1) * 3600000, label: `${h}:00` });
+    } else if (period === 'week' || period === 'month') {
+        const n = period === 'week' ? 7 : 30;
+        const s = startOfDay(now);
+        for (let i = n - 1; i >= 0; i--) { const f = s - i * DAY; const d = new Date(f); out.push({ from: f, to: f + DAY, label: `${String(d.getDate()).padStart(2, '0')}.${String(d.getMonth() + 1).padStart(2, '0')}` }); }
+    } else {
+        const M = ['Січ', 'Лют', 'Бер', 'Кві', 'Тра', 'Чер', 'Лип', 'Сер', 'Вер', 'Жов', 'Лис', 'Гру'];
+        for (let i = 11; i >= 0; i--) {
+            const f = new Date(now.getFullYear(), now.getMonth() - i, 1), t = new Date(now.getFullYear(), now.getMonth() - i + 1, 1);
+            out.push({ from: f.getTime(), to: t.getTime(), label: `${M[f.getMonth()]} ${String(f.getFullYear()).slice(2)}` });
+        }
+    }
+    return out;
+}
+function renderAnalytics() {
+    if (!can('analytics')) return;
+    const b = buckets(state.period);
+    const from = b[0].from, prevFrom = from - (Date.now() - from);
+    const inP = state.orders.filter(o => (o.timestamp || 0) >= from);
+    const prevP = state.orders.filter(o => (o.timestamp || 0) >= prevFrom && (o.timestamp || 0) < from);
+    const sum = (arr, f) => arr.reduce((s, o) => s + f(o), 0);
+    const rev = sum(inP, o => parseFloat(o.totalPrice) || 0), revPrev = sum(prevP, o => parseFloat(o.totalPrice) || 0);
+    const bot = sum(inP, o => parseInt(o.quantity) || 0), botPrev = sum(prevP, o => parseInt(o.quantity) || 0);
+
+    // Перше замовлення кожного клієнта за всю історію
+    const first = new Map();
+    for (const o of state.orders) { const k = phoneKey(o.phone) || o.uid; const t = o.timestamp || 0; if (!first.has(k) || t < first.get(k)) first.set(k, t); }
+    const inClients = new Set(inP.map(o => phoneKey(o.phone) || o.uid));
+    let fresh = 0, back = 0;
+    inClients.forEach(k => (first.get(k) >= from ? fresh++ : back++));
+    const avg = inP.length ? rev / inP.length : 0;
+
+    const delta = (a, p) => { if (!p) return ''; const d = Math.round((a - p) / p * 100); return `<span class="text-[11px] font-black ${d >= 0 ? 'text-emerald-600' : 'text-red-500'}">${d >= 0 ? '▲' : '▼'} ${Math.abs(d)}%</span>`; };
+    const kpi = (label, val, extra = '', cls = 'text-slate-900') => `<div class="bg-white p-4 rounded-2xl border border-slate-200"><p class="text-[11px] font-bold text-slate-500 uppercase tracking-wider">${label}</p><p class="text-2xl font-black ${cls} mt-1">${val}</p><div class="h-4">${extra}</div></div>`;
+    $('#kpis').innerHTML =
+        kpi('Дохід', money(rev), delta(rev, revPrev) + '<span class="text-[11px] text-slate-400 ml-1">до попер. періоду</span>') +
+        kpi('Продано бутлів', bot, delta(bot, botPrev), 'text-blue-600') +
+        kpi('Замовлень', inP.length, `<span class="text-[11px] text-slate-400">середній чек ${money(avg)}</span>`) +
+        kpi('Клієнтів', inClients.size, `<span class="text-[11px] text-slate-400">нових ${fresh} · повторних ${back}</span>`);
+
+    $('#chart-title').textContent = { day: 'Бутлі сьогодні по годинах', week: 'Бутлі за 7 днів', month: 'Бутлі за 30 днів', year: 'Бутлі по місяцях' }[state.period];
+    const data = b.map(x => sum(inP.filter(o => o.timestamp >= x.from && o.timestamp < x.to), o => parseInt(o.quantity) || 0));
+    const ctx = $('#salesChart').getContext('2d');
+    if (chart) chart.destroy();
+    if (window.Chart) {
+        chart = new Chart(ctx, {
+            type: 'bar',
+            data: { labels: b.map(x => x.label), datasets: [{ label: 'Бутлів', data, backgroundColor: '#3b82f6', hoverBackgroundColor: '#1d4ed8', borderRadius: 6, maxBarThickness: 36 }] },
+            options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } },
+                scales: { y: { beginAtZero: true, ticks: { precision: 0 }, grid: { color: '#f1f5f9' } }, x: { grid: { display: false }, ticks: { maxRotation: 0, autoSkip: true } } } }
+        });
+    }
+
+    // Топ клієнтів
+    const top = new Map();
+    for (const o of inP) {
+        const k = phoneKey(o.phone) || o.uid;
+        const c = top.get(k) || { name: o.name, phone: o.phone, b: 0, n: 0 };
+        c.b += parseInt(o.quantity) || 0; c.n++; top.set(k, c);
+    }
+    const arr = [...top.values()].sort((a, b) => b.b - a.b).slice(0, 5);
+    $('#top-clients').innerHTML = arr.length ? arr.map((c, i) => `<div class="py-2.5 flex items-center gap-3 text-sm">
+        <span class="w-6 h-6 rounded-full bg-slate-100 text-slate-500 text-xs font-black flex items-center justify-center">${i + 1}</span>
+        <span class="flex-1 min-w-0 truncate font-bold">${esc(c.name || 'Без імені')} <span class="font-mono text-xs text-slate-400">${esc(c.phone || '')}</span></span>
+        <span class="font-black">${esc(bottles(c.b))}</span></div>`).join('') : '<p class="text-sm text-slate-400 py-4 text-center">За цей період замовлень немає</p>';
+}
+
+/* =========================================================
+   ВІДГУКИ
+   approved === false → на перевірці (не видно на сайті)
+   інакше             → опубліковано
+========================================================= */
+async function loadReviews(render) {
+    if (!can('reviews')) return;
+    if (render) $('#reviews-list').innerHTML = skeleton(2);
+    try {
+        const snap = await getDocs(collection(db, 'reviews'));
+        state.reviews = []; snap.forEach(d => state.reviews.push({ id: d.id, ...d.data() }));
+        state.reviews.sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
+        const pending = state.reviews.filter(r => r.approved === false).length;
+        $('#cnt-pending').textContent = pending;
+        setBadge('reviews', pending, 'bg-amber-400 text-slate-900');
+        if (currentPanel === 'reviews') renderReviews();
+    } catch (e) { console.error(e); if (render) $('#reviews-list').innerHTML = '<p class="col-span-full text-red-500 text-center py-10 font-bold">Помилка завантаження</p>'; }
+}
+function renderReviews() {
+    const pend = state.reviewFilter === 'pending';
+    const list = state.reviews.filter(r => pend ? r.approved === false : r.approved !== false);
+    if (!list.length) { $('#reviews-list').innerHTML = `<p class="col-span-full text-center text-slate-400 font-bold py-14">${pend ? 'Нових відгуків на перевірку немає' : 'Опублікованих відгуків немає'}</p>`; return; }
+    $('#reviews-list').innerHTML = list.map(r => {
+        const rating = Math.max(1, Math.min(5, parseInt(r.rating) || 5));
+        return `<div class="bg-white p-4 rounded-2xl border ${pend ? 'border-amber-300' : 'border-slate-200'} flex flex-col">
+            <div class="flex justify-between items-start gap-2 mb-2">
+                <div><p class="font-black text-slate-900">${esc(r.name || 'Користувач')}</p><p class="text-[11px] text-slate-400 font-bold">${r.timestamp ? new Date(r.timestamp).toLocaleDateString('uk-UA') : ''}</p></div>
+                <span class="text-amber-400 tracking-wider">${'★'.repeat(rating)}<span class="text-slate-200">${'★'.repeat(5 - rating)}</span></span>
+            </div>
+            <p class="text-sm text-slate-600 flex-1 whitespace-pre-line">${esc(r.text)}</p>
+            <div class="flex gap-2 mt-3 pt-3 border-t border-slate-100">
+                ${pend ? `<button data-r="publish" data-id="${esc(r.id)}" class="flex-1 py-2.5 bg-emerald-500 hover:bg-emerald-600 text-white font-bold text-sm rounded-xl">Опублікувати</button>`
+                       : `<button data-r="hide" data-id="${esc(r.id)}" class="flex-1 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-600 font-bold text-sm rounded-xl">Сховати з сайту</button>`}
+                <button data-r="delete" data-id="${esc(r.id)}" class="px-4 py-2.5 text-red-500 hover:bg-red-50 font-bold text-sm rounded-xl">Видалити</button>
+            </div>
+        </div>`;
+    }).join('');
+}
+$('#reviews-list').addEventListener('click', async e => {
+    const b = e.target.closest('[data-r]'); if (!b) return;
+    const id = b.dataset.id;
+    try {
+        if (b.dataset.r === 'publish') { await updateDoc(doc(db, 'reviews', id), { approved: true }); toast('Відгук опубліковано'); }
+        if (b.dataset.r === 'hide') { await updateDoc(doc(db, 'reviews', id), { approved: false }); toast('Відгук приховано з сайту'); }
+        if (b.dataset.r === 'delete') { if (!confirm('Видалити відгук назавжди?')) return; await deleteDoc(doc(db, 'reviews', id)); toast('Відгук видалено'); }
+        loadReviews(false);
+    } catch { toast('Помилка збереження', true); }
+});
+bindSeg('reviews-seg', d => { state.reviewFilter = d.f; renderReviews(); });
+
+/* =========================================================
+   КОМАНДА
+========================================================= */
+const ROLE_OPTS = [
+    { v: 'manager', name: 'Менеджер', desc: 'Тільки замовлення' },
+    { v: 'admin', name: 'Адміністратор', desc: 'Замовлення, аналітика, відгуки' },
+    { v: 'assistant', name: 'Помічник власника', desc: 'Повний доступ, включно з клієнтами і командою' },
+];
+$('#input-new-role').innerHTML = ROLE_OPTS.map(r => `<option value="${r.v}">${r.name}</option>`).join('');
+$('#roles-help').innerHTML = ROLE_OPTS.map(r => `<div class="bg-slate-50 rounded-xl p-3"><b class="text-slate-700 block">${r.name}</b>${r.desc}</div>`).join('');
+
+async function loadAdmins() {
+    if (!can('admins')) return;
+    $('#admins-list').innerHTML = skeleton(2, true);
+    try {
+        const snap = await getDocs(collection(db, 'admins'));
+        state.admins = []; snap.forEach(d => { const x = d.data(); if (x.email !== OWNER_EMAIL) state.admins.push({ id: d.id, ...x }); });
+        state.admins.sort((a, b) => (a.addedAt || 0) - (b.addedAt || 0));
+        $('#admins-list').innerHTML = `
+            <div class="p-4 flex items-center gap-3 bg-blue-50/60">
+                <div class="w-9 h-9 rounded-full bg-blue-600 text-white flex items-center justify-center font-black text-xs shrink-0">Вл</div>
+                <div class="flex-1 min-w-0"><p class="font-bold text-slate-900 truncate">${esc(OWNER_EMAIL)}</p><p class="text-[11px] font-black text-blue-600 uppercase">Власник</p></div>
+            </div>` + (state.admins.length ? state.admins.map(a => `
+            <div class="p-4 flex flex-col sm:flex-row sm:items-center gap-3">
+                <div class="flex-1 min-w-0"><p class="font-bold text-slate-800 truncate">${esc(a.email || a.id)}</p>${a.addedAt ? `<p class="text-[11px] text-slate-400">додано ${new Date(a.addedAt).toLocaleDateString('uk-UA')}</p>` : ''}</div>
+                <div class="flex gap-2">
+                    <select data-role="${esc(a.id)}" class="flex-1 sm:flex-none px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm font-bold text-slate-700">
+                        ${ROLE_OPTS.map(r => `<option value="${r.v}" ${(a.role || 'manager') === r.v ? 'selected' : ''}>${r.name}</option>`).join('')}
+                    </select>
+                    <button data-remove="${esc(a.id)}" class="px-4 py-2 border border-red-200 text-red-500 hover:bg-red-50 font-bold text-sm rounded-xl">Забрати доступ</button>
+                </div>
+            </div>`).join('') : '<p class="p-5 text-sm text-slate-400 text-center">Співробітників ще не додано</p>');
+    } catch (e) { console.error(e); $('#admins-list').innerHTML = '<div class="p-6 text-red-500 text-center font-bold">Помилка завантаження</div>'; }
+}
+$('#admins-list').addEventListener('change', async e => {
+    const s = e.target.closest('[data-role]'); if (!s) return;
+    try { await updateDoc(doc(db, 'admins', s.dataset.role), { role: s.value }); toast('Роль змінено'); }
+    catch { toast('Помилка збереження', true); loadAdmins(); }
+});
+$('#admins-list').addEventListener('click', async e => {
+    const b = e.target.closest('[data-remove]'); if (!b) return;
+    const email = b.dataset.remove;
+    if (email === OWNER_EMAIL) return toast('Власника не можна видалити', true);
+    if (!confirm(`Забрати доступ у ${email}?`)) return;
+    try { await deleteDoc(doc(db, 'admins', email)); toast('Доступ забрано'); loadAdmins(); } catch { toast('Помилка', true); }
+});
+$('#btn-add-admin').onclick = async () => {
+    if (busy) return;
+    const email = $('#input-new-admin').value.trim().toLowerCase();
+    const r = $('#input-new-role').value;
+    if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) return toast('Введіть коректну пошту', true);
+    if (email === OWNER_EMAIL) return toast('Це пошта власника', true);
+    busy = true; $('#btn-add-admin').textContent = '…';
+    try { await setDoc(doc(db, 'admins', email), { email, role: r, addedAt: Date.now() }); $('#input-new-admin').value = ''; toast('Доступ надано'); loadAdmins(); }
+    catch { toast('Помилка БД. Перевірте права', true); }
+    finally { busy = false; $('#btn-add-admin').textContent = 'Додати'; }
+};
+
+/* ---------- Заглушка завантаження ---------- */
+function skeleton(n, rows = false) {
+    return Array.from({ length: n }, () => rows
+        ? '<div class="p-4 flex gap-3 animate-pulse"><div class="w-11 h-11 rounded-full bg-slate-200"></div><div class="flex-1 space-y-2 py-1"><div class="h-3 bg-slate-200 rounded w-1/2"></div><div class="h-3 bg-slate-100 rounded w-3/4"></div></div></div>'
+        : '<div class="bg-white rounded-2xl border border-slate-200 p-4 animate-pulse space-y-2"><div class="h-3 bg-slate-200 rounded w-1/3"></div><div class="h-5 bg-slate-200 rounded w-1/2"></div><div class="h-3 bg-slate-100 rounded w-3/4"></div></div>').join('');
+}
+
+// Оновлювати «хв тому» щохвилини
+setInterval(() => { if (currentPanel === 'orders' && state.ordersLoaded) renderOrders(); }, 60000);
+</script>
+</body>
+</html>
