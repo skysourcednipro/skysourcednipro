@@ -507,6 +507,16 @@
 .lk-history-status { padding: 4px 8px; border-radius: 8px; font-size: 12px; font-weight: 740; color: var(--lk-amber); background: var(--lk-amber-bg); }
 .lk-history-status.is-delivered { color: var(--lk-green); background: var(--lk-green-bg); }
 
+@media (min-width: 768px) {
+    #main-app .order-flow { width: min(100%, 460px); gap: 16px; }
+    #main-app .order-flow-step { gap: 3px; font-size: 14px; }
+    #main-app .order-flow-step img { width: 76px; width: clamp(58px, 12svh, 76px); }
+    #main-app .order-flow-arrow {
+        inset-inline-end: -16px;
+        top: clamp(18px, calc(6svh - 11px), 27px);
+        width: 16px;
+    }
+}
 @media (max-width: 920px) {
     #main-app .lk-sidebar { width: 193px; padding-inline: 13px; }
     #main-app .lk-home { padding-inline: 20px; }
