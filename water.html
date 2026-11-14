@@ -75,20 +75,52 @@
         }
         input[type=number]::-webkit-inner-spin-button, 
         input[type=number]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
-        #saved-order-actions[hidden], #history-empty[hidden], #more-reviews[hidden], #order-notice[hidden], #refill-status[hidden] { display: none; }
+        #saved-order-actions[hidden], #history-empty[hidden], #more-reviews[hidden], #refill-status[hidden] { display: none; }
         #order-card { scroll-margin-top: 6rem; }
-        #order-notice {
-            top: calc(5.75rem + env(safe-area-inset-top, 0px));
-            right: 1rem;
-            width: min(21rem, calc(100% - 2rem));
-            animation: notice-in 180ms ease-out;
+        #order-confirmation {
+            position: fixed;
+            inset: 0;
+            margin: auto;
+            width: min(34rem, calc(100% - 2rem));
+            max-height: calc(100vh - 2rem);
+            max-height: calc(100dvh - 2rem);
+            overscroll-behavior: contain;
+            overflow-y: auto;
+            padding: 0;
+            border: 0;
+            border-radius: 1.75rem;
+            background: #fff;
+            color: #0a2342;
+            box-shadow: 0 24px 72px rgba(6, 30, 56, .24);
         }
-        @keyframes notice-in {
-            from { opacity: 0; transform: translateY(-6px); }
-            to { opacity: 1; transform: translateY(0); }
+        html:has(#order-confirmation[open]) { overflow: hidden; }
+        #order-confirmation::backdrop { background: rgba(10, 35, 66, .56); }
+        #order-confirmation[open] { animation: confirmation-in 180ms ease-out; }
+        .confirmation-heading {
+            background: radial-gradient(ellipse at top right, #cceeff 0%, transparent 64%), #f2f9ff;
+        }
+        .confirmation-schedule {
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) minmax(0, 1.45fr);
+            gap: .65rem;
+        }
+        .confirmation-app {
+            background: radial-gradient(ellipse at top right, #174f83 0%, transparent 75%), #0a2342;
+        }
+        .confirmation-app-link { transition: background-color 160ms ease, transform 160ms ease; }
+        .confirmation-app-link:hover { background: #e0f2fe; }
+        .confirmation-app-link:active { transform: translateY(1px); }
+        @media (max-width: 359px) {
+            .confirmation-schedule { grid-template-columns: minmax(0, 1fr); }
+        }
+        @keyframes confirmation-in {
+            from { opacity: 0; transform: translateY(10px) scale(.985); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
         }
         @media (prefers-reduced-motion: reduce) {
-            #order-notice { animation: none; }
+            #order-confirmation[open] { animation: none; }
+            .confirmation-app-link { transition: none; }
+            .confirmation-app-link:active { transform: none; }
         }
     </style>
 </head>
@@ -134,7 +166,7 @@
             </p>
         </div>
 
-        <div id="order-card" class="w-full max-w-md bg-white rounded-[2rem] shadow-soft border border-slate-100 p-6 sm:p-8 relative overflow-hidden">
+        <div id="order-card" tabindex="-1" class="w-full max-w-md bg-white rounded-[2rem] shadow-soft border border-slate-100 p-6 sm:p-8 relative overflow-hidden">
             <div class="absolute top-0 left-0 w-full h-1.5 bg-gradient-to-r from-brand-dark to-brand-light"></div>
             
             <form id="order-form" onsubmit="handleFormSubmit(event)">
@@ -214,8 +246,8 @@
                 <div class="w-28 h-28 sm:w-32 sm:h-32 mb-4 rounded-full overflow-hidden shadow-md border-2 border-slate-100 bg-white flex items-center justify-center shrink-0">
                     <img src="https://i.ibb.co/HpD2DfZf/1.jpg" alt="Доставка вчасно" class="w-full h-full object-cover">
                 </div>
-                <h4 class="font-bold text-brand-dark text-lg mb-2">Доставка вчасно <br class="hidden md:block">(9:00 - 18:00)</h4>
-                <p class="text-sm text-slate-500">Привеземо воду чітко в узгоджений з вами час.</p>
+                <h4 class="font-bold text-brand-dark text-lg mb-2">Доставка по Дніпру</h4>
+                <p class="text-sm text-slate-500">Розвозимо воду по всьому місту в будні, з 9:00 до 18:00.</p>
             </div> 
                   
             <div class="flex flex-col items-center">
@@ -306,14 +338,58 @@
         </div>
     </footer>
 
-    <div id="order-notice" hidden class="fixed z-[60] flex items-start gap-3 rounded-2xl border border-blue-100 bg-white p-3 shadow-xl" aria-label="Підтвердження вашого замовлення">
-        <span aria-hidden="true" class="mt-1.5 h-2.5 w-2.5 shrink-0 rounded-full bg-emerald-500"></span>
-        <div role="status" aria-atomic="true" class="min-w-0 flex-1">
-            <p class="text-xs font-bold text-slate-500">Ваше замовлення прийнято</p>
-            <p id="notice-text" class="break-words text-sm font-bold text-brand-dark"></p>
+    <dialog id="order-confirmation" aria-labelledby="confirmation-title" aria-describedby="confirmation-next-step">
+        <div class="confirmation-heading px-5 pt-6 pb-5 sm:px-8 sm:pt-8 sm:pb-6 text-center">
+            <div aria-hidden="true" class="mx-auto mb-3 grid h-12 w-12 place-items-center rounded-2xl bg-white text-emerald-700 shadow-sm">
+                <span class="text-2xl font-black leading-none">✓</span>
+            </div>
+            <h2 id="confirmation-title" tabindex="-1" autofocus class="text-2xl sm:text-3xl font-black leading-tight">Замовлення прийнято!</h2>
+            <p id="confirmation-next-step" class="mx-auto mt-2 max-w-sm text-sm leading-relaxed text-slate-700">
+                Менеджери Sky Source уже обробляють ваше замовлення. Незабаром зателефонуємо, щоб узгодити час доставки.
+            </p>
         </div>
-        <button type="button" id="dismiss-notice" aria-label="Закрити сповіщення" class="shrink-0 rounded-lg px-2 py-1 text-slate-500 hover:bg-slate-100">×</button>
-    </div>
+
+        <div class="px-5 pt-4 pb-5 sm:px-8 sm:pt-5 sm:pb-7">
+            <p id="confirmation-summary" class="rounded-xl bg-slate-50 px-3 py-2.5 text-center text-sm font-bold text-brand-dark"></p>
+
+            <dl class="confirmation-schedule mt-3">
+                <div class="rounded-2xl border border-sky-100 bg-sky-50 p-3 sm:p-4">
+                    <dt class="text-xs font-semibold text-sky-900">Приймаємо заявки</dt>
+                    <dd class="mt-1 text-3xl font-black tracking-tight leading-none text-brand-dark">24/7</dd>
+                    <dd class="mt-1.5 text-xs text-slate-600">Цілодобово, щодня</dd>
+                </div>
+                <div class="rounded-2xl border border-slate-200 bg-white p-3 sm:p-4">
+                    <dt class="text-xs font-semibold text-slate-700">Доставляємо воду</dt>
+                    <dd class="mt-1 text-lg sm:text-xl font-extrabold tracking-tight leading-tight">Пн–Пт, <span class="whitespace-nowrap">9:00–18:00</span></dd>
+                    <dd class="mt-1.5 text-xs text-slate-600">Кур’єри їздять по всьому Дніпру</dd>
+                </div>
+            </dl>
+
+            <p class="my-4 text-center text-sm text-slate-600">Дякуємо, що обираєте Sky Source!</p>
+
+            <section class="confirmation-app rounded-2xl p-4 text-center text-white sm:p-5" aria-labelledby="confirmation-app-title">
+                <h3 id="confirmation-app-title" class="text-base font-extrabold">Sky Source у вашому телефоні</h3>
+                <p id="confirmation-app-description" class="mx-auto mt-1 max-w-xs text-sm leading-relaxed text-sky-100">
+                    Перевіряйте статус доставки й плануйте наступне замовлення в додатку.
+                </p>
+                <a href="https://skysource.com.ua/#btn-google-login" aria-describedby="confirmation-app-description" class="confirmation-app-link mt-3 inline-flex min-h-[48px] w-full items-center justify-center gap-2 rounded-xl bg-white px-4 py-2.5 text-sm font-extrabold text-brand-dark focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white">
+                    У ДОДАТОК <span aria-hidden="true">→</span>
+                </a>
+                <p class="mt-3 text-xs leading-relaxed text-sky-100">Приєднуйтеся до Sky Source і запрошуйте друзів!</p>
+                <button id="confirmation-share" type="button" class="mt-1 min-h-[44px] rounded-lg px-3 text-sm font-semibold text-white underline decoration-sky-300 underline-offset-4 hover:bg-white/10 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white">
+                    Поділитися посиланням
+                </button>
+                <p id="confirmation-share-status" role="status" class="text-xs leading-relaxed text-sky-100"></p>
+                <input id="confirmation-share-url" hidden readonly type="url" aria-label="Посилання на Sky Source для копіювання" value="https://skysource.com.ua/water.html" class="mt-2 w-full rounded-lg bg-white px-3 py-2 text-sm text-brand-dark">
+            </section>
+
+            <form method="dialog" class="mt-2">
+                <button type="submit" class="w-full min-h-[44px] rounded-xl px-5 py-2.5 text-sm font-bold text-brand-dark transition-colors hover:bg-slate-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600">
+                    Зрозуміло
+                </button>
+            </form>
+        </div>
+    </dialog>
 
     <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
@@ -345,6 +421,7 @@
     const nameInput = document.getElementById('name');
     const streetInput = document.getElementById('street');
     const houseInput = document.getElementById('house');
+    const orderCard = document.getElementById('order-card');
     const orderForm = document.getElementById('order-form');
     const submitButton = document.getElementById('btn-submit');
     const rememberOrders = document.getElementById('remember-orders');
@@ -356,12 +433,15 @@
     const historyCount = document.getElementById('history-count');
     const forgetOrders = document.getElementById('forget-orders');
     const refillStatus = document.getElementById('refill-status');
-    const notice = document.getElementById('order-notice');
-    const noticeText = document.getElementById('notice-text');
+    const confirmation = document.getElementById('order-confirmation');
+    const confirmationSummary = document.getElementById('confirmation-summary');
+    const shareButton = document.getElementById('confirmation-share');
+    const shareStatus = document.getElementById('confirmation-share-status');
+    const shareUrl = document.getElementById('confirmation-share-url');
+    const uahFormat = new Intl.NumberFormat('uk-UA');
     const dateFormat = new Intl.DateTimeFormat('uk-UA', { dateStyle: 'medium', timeZone: 'Europe/Kyiv' });
     let history = loadHistory();
     let usingSavedDetails = false;
-    let noticeTimer;
 
     // Делаем функции глобальными, так как type="module" изолирует область видимости, 
     // а у вас в HTML используются атрибуты onclick
@@ -476,7 +556,7 @@
         currentQty = entry.quantity;
         updateUI();
         setRefillStatus('Дані підставлено. Перевірте адресу та суму перед оформленням.');
-        document.getElementById('order-card').scrollIntoView({ block: 'start' });
+        orderCard.scrollIntoView({ block: 'start' });
         submitButton.focus({ preventScroll: true });
     }
 
@@ -578,7 +658,7 @@
             setRefillStatus('Замовлення прийнято. Браузер не дозволив зберегти історію.');
         }
         showSuccessState(submitButton);
-        showOrderNotice(order);
+        showOrderConfirmation(order);
     }
 
     function showSuccessState(btn) {
@@ -602,19 +682,42 @@
         }, 3000);
     }
 
-    function showOrderNotice(order) {
-        notice.hidden = false;
-        noticeText.textContent = order.quantity + ' ' + bottleLabel(order.quantity) + ' води · ' + order.totalPrice + ' ₴';
-        clearTimeout(noticeTimer);
-        noticeTimer = setTimeout(hideOrderNotice, 6000);
+    function showOrderConfirmation(order) {
+        confirmationSummary.textContent = order.quantity + ' ' + bottleLabel(order.quantity)
+            + ' води · ' + uahFormat.format(order.totalPrice) + ' грн';
+        shareStatus.textContent = '';
+        shareUrl.hidden = true;
+        confirmation.showModal();
+        confirmation.scrollTop = 0;
     }
 
-    function hideOrderNotice() {
-        clearTimeout(noticeTimer);
-        notice.hidden = true;
-    }
+    shareButton.addEventListener('click', async () => {
+        shareStatus.textContent = '';
+        shareUrl.hidden = true;
+        if (navigator.share) {
+            try {
+                await navigator.share({ title: 'Sky Source — доставка води у Дніпрі', url: shareUrl.value });
+                return;
+            } catch (error) {
+                if (error.name === 'AbortError') return;
+            }
+        }
+        try {
+            await navigator.clipboard.writeText(shareUrl.value);
+            if (confirmation.open) shareStatus.textContent = 'Посилання скопійовано.';
+        } catch {
+            if (!confirmation.open) return;
+            shareStatus.textContent = 'Скопіюйте посилання з поля нижче.';
+            shareUrl.hidden = false;
+            shareUrl.focus();
+            shareUrl.select();
+        }
+    });
 
-    document.getElementById('dismiss-notice').addEventListener('click', hideOrderNotice);
+    confirmation.addEventListener('close', () => {
+        const nextFocus = submitButton.disabled ? orderCard : submitButton;
+        nextFocus.focus({ preventScroll: true });
+    });
 
     rememberOrders.checked = history.length > 0;
     renderHistory();
