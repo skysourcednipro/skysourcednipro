@@ -88,12 +88,6 @@
         .fade-in { animation: fadeIn 0.3s ease-out forwards; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* Модалка (загальна) */
-        .modal-overlay { opacity: 0; pointer-events: none; transition: opacity 0.3s ease; }
-        .modal-overlay.active { opacity: 1; pointer-events: auto; }
-        .modal-content { transform: translateY(100%); transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1); }
-        .modal-content.active { transform: translateY(0); }
-
         /* =======================================
            НОВІ АНІМАЦІЇ: Хвилі для збереження
         ======================================== */
@@ -357,22 +351,6 @@
     --lk-amber-bg: #fff2db;
     color: var(--lk-text);
 }
-.dark #main-app, .dark #modal-history {
-    --lk-text: #edf5ff;
-    --lk-muted: #b5c8da;
-    --lk-link: #a2ccff;
-    --lk-line: #354863;
-    --lk-card: #152337;
-    --lk-base: #0e192a;
-    --lk-tint: #20354e;
-    --lk-blue: #1869d5;
-    --lk-blue-hover: #2477e8;
-    --lk-error: #ffadb5;
-    --lk-green: #a7efd0;
-    --lk-green-bg: #184633;
-    --lk-amber: #ffdc99;
-    --lk-amber-bg: #4b371b;
-}
 #main-app { background: var(--lk-base); }
 #main-app .lk-sidebar { width: 225px; padding: 25px 18px; background: var(--lk-card); border-color: var(--lk-line); overflow-y: auto; }
 #main-app .lk-brand { width: 144px; height: auto; max-width: 100%; }
@@ -410,7 +388,6 @@
 #main-app .lk-label { font-weight: 750; font-size: 15px; }
 #main-app .lk-detail { margin-top: 4px; color: var(--lk-muted); font-size: 14px; line-height: 1.4; overflow-wrap: anywhere; }
 #main-app .lk-address { margin-top: 17px; padding-top: 15px; border-top: 1px solid var(--lk-line); }
-#main-app .lk-rate { margin-top: 16px; color: var(--lk-muted); font-size: 12px; }
 #main-app .lk-stepper {
     display: grid; grid-template-columns: 44px minmax(30px, auto) 44px;
     flex: none; align-items: center; text-align: center;
@@ -440,12 +417,51 @@
 #main-app .lk-fields input:focus-visible { outline-offset: 2px; border-radius: 4px; }
 #main-app .lk-reviews-toolbar { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 13px; }
 #main-app .lk-reviews-toolbar button { margin-inline-start: auto; }
-#modal-history {
-    position: fixed; inset: 0; margin: auto; padding: 0; border: 1px solid var(--lk-line); border-radius: 22px;
-    width: min(calc(100% - 32px), 520px); max-width: none; overflow: hidden;
-    height: min(600px, 84vh); height: min(600px, 84dvh); max-height: none; background: var(--lk-card);
+/* Спільний рух панелей дзвінка та історії */
+.lk-sheet {
+    position: fixed;
+    inset: auto 0 0;
+    width: min(100%, 520px);
+    max-width: none;
+    max-height: 88vh;
+    max-height: 88dvh;
+    margin: 0 auto;
+    padding: 0;
+    border: 0;
+    border-radius: 22px 22px 0 0;
+    transform: translateY(100%);
+    transition: transform .4s cubic-bezier(.34, 1.56, .64, 1),
+                display .4s allow-discrete, overlay .4s allow-discrete;
 }
-#modal-history::backdrop { background: #0c1c35a6; }
+.lk-sheet[open] { transform: translateY(0); }
+.lk-sheet::backdrop {
+    background: rgb(15 23 42 / .4);
+    backdrop-filter: blur(4px);
+    opacity: 0;
+    transition: opacity .3s ease, display .4s allow-discrete, overlay .4s allow-discrete;
+}
+.lk-sheet[open]::backdrop { opacity: 1; }
+.lk-sheet:not([open]), .lk-sheet:not([open])::backdrop { pointer-events: none; }
+@starting-style {
+    .lk-sheet[open] { transform: translateY(100%); }
+    .lk-sheet[open]::backdrop { opacity: 0; }
+}
+#modal-history {
+    height: min(600px, 84vh);
+    height: min(600px, 84dvh);
+    overflow: hidden;
+    border: 1px solid var(--lk-line);
+    background: var(--lk-card);
+}
+#modal-call { overflow-y: auto; overscroll-behavior: contain; }
+@media (min-width: 768px) {
+    #modal-history {
+        inset: 0;
+        width: min(calc(100% - 32px), 520px);
+        margin: auto;
+        border-radius: 22px;
+    }
+}
 .lk-history-panel { display: flex; flex-direction: column; height: 100%; }
 .lk-history-head { display: flex; flex: none; justify-content: space-between; align-items: center; padding: 16px 20px; border-bottom: 1px solid var(--lk-line); }
 .lk-history-head h2 { font-size: 24px; font-weight: 800; letter-spacing: -.035em; }
@@ -474,7 +490,6 @@
     #main-app .lk-intro p { margin-top: 5px; font-size: 14px; }
     #main-app .lk-details, #main-app .lk-summary { padding: 13px; }
     #main-app .lk-address { margin-top: 10px; padding-top: 8px; }
-    #main-app .lk-rate { margin-top: 8px; }
     #main-app .lk-total { margin-bottom: 8px; }
     #main-app .lk-total output { font-size: 26px; }
     #main-app .lk-stepper { grid-template-columns: 44px minmax(26px, auto) 44px; }
@@ -483,8 +498,46 @@
     #main-app #display-user-name { max-width: 88px; }
     #main-app .lk-dock { gap: 3px; bottom: max(12px, env(safe-area-inset-bottom)); }
     #main-app .lk-dock button { flex: 1 1 0; min-width: 0; padding-inline: 2px; }
-    #modal-history { inset: auto 0 0; width: 100%; margin: 0; border-radius: 20px 20px 0 0; }
     .lk-history-head, .lk-history-list { padding-inline: 14px; }
+}
+/* Відгук на дії у формі замовлення */
+#main-app .lk-stepper button, #main-app .lk-primary, #main-app .lk-link,
+.lk-history-head button {
+    transition: background-color 140ms ease, transform 120ms ease;
+}
+#main-app .lk-stepper button:not(:disabled):active { transform: scale(.92); }
+#main-app .lk-primary:not(:disabled):active, #main-app .lk-link:active,
+.lk-history-head button:active { transform: translateY(1px); }
+#main-app .lk-total output { font-variant-numeric: tabular-nums; }
+#main-app #btn-confirm-order {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+#main-app #btn-confirm-order[aria-busy="true"]::before {
+    content: '';
+    width: 15px;
+    height: 15px;
+    flex: none;
+    border: 2px solid rgb(255 255 255 / .42);
+    border-top-color: #fff;
+    border-radius: 50%;
+    animation: lk-spinner .7s linear infinite;
+}
+#main-app .lk-complete:not([hidden]) { animation: lk-confirmation-in 190ms ease-out; }
+@keyframes lk-spinner { to { transform: rotate(360deg); } }
+@keyframes lk-confirmation-in {
+    from { opacity: 0; transform: translateY(5px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+@media (prefers-reduced-motion: reduce) {
+    .lk-sheet, .lk-sheet::backdrop, #main-app .lk-stepper button, #main-app .lk-primary,
+    #main-app .lk-link, .lk-history-head button { transition: none; }
+    #main-app .lk-stepper button:not(:disabled):active, #main-app .lk-primary:not(:disabled):active,
+    #main-app .lk-link:active, .lk-history-head button:active { transform: none; }
+    #main-app .lk-complete:not([hidden]), #main-app #btn-confirm-order[aria-busy="true"]::before,
+    #main-app.fade-in, #main-app .fade-in { animation: none; }
 }
 </style>
 <!-- Meta Pixel Code -->
@@ -514,7 +567,7 @@ src="https://www.facebook.com/tr?id=1579626687172302&ev=PageView&noscript=1"
     </div>
 
     <!-- ІСТОРІЯ ЗАМОВЛЕНЬ -->
-    <dialog id="modal-history" aria-labelledby="history-title">
+    <dialog id="modal-history" class="lk-sheet" aria-labelledby="history-title">
         <div class="lk-history-panel">
             <header class="lk-history-head">
                 <h2 id="history-title">Мої замовлення</h2>
@@ -531,12 +584,11 @@ src="https://www.facebook.com/tr?id=1579626687172302&ev=PageView&noscript=1"
     </dialog>
 
     <!-- МОДАЛЬНЕ ВІКНО: ВИБІР ТЕЛЕФОНУ (ТІЛЬКИ МОБІЛЬНІ) -->
-    <div id="modal-call" class="fixed inset-0 z-[80] flex flex-col justify-end modal-overlay md:hidden">
-        <div class="absolute inset-0 bg-slate-900/40 dark:bg-black/60 backdrop-blur-sm" id="modal-call-bg"></div>
-        <div id="modal-call-content" class="bg-gray-50 dark:bg-slate-900 w-full rounded-t-[2rem] relative z-10 flex flex-col shadow-2xl modal-content border border-white/50 dark:border-slate-700 p-6 pb-10">
+    <dialog id="modal-call" class="lk-sheet" aria-labelledby="call-title">
+        <div class="bg-gray-50 dark:bg-slate-900 w-full rounded-t-[2rem] relative z-10 flex flex-col shadow-2xl border border-white/50 dark:border-slate-700 p-6 pb-10">
             <div class="flex justify-between items-center mb-6">
-                <h3 class="text-2xl font-black text-gray-900 dark:text-white">Зателефонувати</h3>
-                <button id="btn-close-call" class="bg-gray-100 dark:bg-slate-700 hover:bg-gray-200 dark:hover:bg-slate-600 text-gray-500 dark:text-gray-300 p-2.5 rounded-full transition-colors active:scale-90">
+                <h2 id="call-title" class="text-2xl font-black text-gray-900 dark:text-white">Зателефонувати</h2>
+                <button id="btn-close-call" type="button" autofocus aria-label="Закрити вікно дзвінка" class="bg-gray-100 dark:bg-slate-700 hover:bg-gray-200 dark:hover:bg-slate-600 text-gray-500 dark:text-gray-300 p-2.5 rounded-full transition-colors active:scale-90">
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
                 </button>
             </div>
@@ -555,7 +607,7 @@ src="https://www.facebook.com/tr?id=1579626687172302&ev=PageView&noscript=1"
                 </a>
             </div>
         </div>
-    </div>
+    </dialog>
 
     <div class="app-wrapper">
 
@@ -676,22 +728,13 @@ src="https://www.facebook.com/tr?id=1579626687172302&ev=PageView&noscript=1"
                     <div class="pointer-events-auto flex items-center gap-2 md:gap-4">
                         <img src="https://i.ibb.co/Y7jCqPDF/c660937a-9272-4146-82e4-074b94f35d73.png" alt="Sky Source" class="lk-brand md:hidden object-contain rounded-md">
                         
-                        <button id="theme-toggle" type="button" aria-label="Змінити тему" class="w-10 h-10 flex items-center justify-center bg-white/90 dark:bg-slate-800/90 backdrop-blur-md rounded-full shadow-sm border border-gray-100 dark:border-slate-700 transition-all hover:shadow-md active:scale-95 text-gray-600 dark:text-gray-300">
-                            <svg id="icon-sun" class="w-5 h-5 block dark:hidden" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M12 3v2.25m6.364.386l-1.591 1.591M21 12h-2.25m-.386 6.364l-1.591-1.591M12 18.75V21m-4.773-2.773l-1.591 1.591M5.25 12H3m4.227-4.773L5.636 5.636M15.75 12a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0z" />
-                            </svg>
-                            <svg id="icon-moon" class="w-5 h-5 hidden dark:block" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M21.752 15.002A9.718 9.718 0 0118 15.75c-5.385 0-9.75-4.365-9.75-9.75 0-1.33.266-2.597.748-3.752A9.753 9.753 0 003 11.25C3 16.635 7.365 21 12.75 21a9.753 9.753 0 009.002-5.998z" />
-                            </svg>
-                        </button>
-
                         <div id="pc-header-title-container" class="hidden md:flex items-center gap-4 transition-opacity duration-300 opacity-0">
                             <h2 id="pc-header-title" class="text-4xl font-black text-gray-900 dark:text-white tracking-tight"></h2>
                             <div id="pc-avg-rating" class="hidden items-center bg-white/80 dark:bg-slate-800/80 backdrop-blur-md px-3 py-1.5 rounded-xl shadow-sm border border-gray-100 dark:border-slate-700"></div>
                         </div>
                     </div>
                     
-                    <button id="btn-open-history" type="button" aria-haspopup="dialog" class="pointer-events-auto flex items-center gap-3 bg-white/90 dark:bg-slate-800/90 backdrop-blur-md px-4 py-2 rounded-full shadow-sm border border-gray-100 dark:border-slate-700 hover:shadow-md transition-all active:scale-95 ml-auto">
+                    <button id="btn-open-history" type="button" aria-haspopup="dialog" aria-controls="modal-history" class="pointer-events-auto flex items-center gap-3 bg-white/90 dark:bg-slate-800/90 backdrop-blur-md px-4 py-2 rounded-full shadow-sm border border-gray-100 dark:border-slate-700 hover:shadow-md transition-all active:scale-95 ml-auto">
                         <div id="header-avatar-container" class="w-6 h-6 bg-blue-100 dark:bg-slate-700 rounded-full flex items-center justify-center text-xs overflow-hidden shrink-0">
                             <span id="header-avatar-icon">👤</span>
                             <img id="header-avatar-img" alt="" class="w-full h-full object-cover hidden">
@@ -716,7 +759,7 @@ src="https://www.facebook.com/tr?id=1579626687172302&ev=PageView&noscript=1"
                                 <div class="lk-row">
                                     <div>
                                         <p class="lk-label">Кількість бутлів</p>
-                                        <p id="order-summary-rate" class="lk-detail">1 бутель — 100 ₴</p>
+                                        <p class="lk-detail">100 ₴ за бутель</p>
                                     </div>
                                     <div class="lk-stepper" role="group" aria-label="Кількість бутлів">
                                         <button type="button" id="btn-qty-minus" aria-label="Зменшити кількість" disabled>−</button>
@@ -731,7 +774,6 @@ src="https://www.facebook.com/tr?id=1579626687172302&ev=PageView&noscript=1"
                                     </div>
                                     <button type="button" id="btn-change-address" class="lk-link">Змінити</button>
                                 </div>
-                                <p class="lk-rate">Від 2 бутлів — по 90 ₴</p>
                             </div>
                             <div class="lk-summary">
                                 <div class="lk-total">
@@ -842,9 +884,9 @@ src="https://www.facebook.com/tr?id=1579626687172302&ev=PageView&noscript=1"
 
             <!-- BOTTOM NAVIGATION (ТІЛЬКИ МОБІЛЬНІ - DOCK STYLE) -->
             <div class="lk-dock md:hidden fixed bottom-5 left-4 right-4 bg-white/90 dark:bg-slate-900/90 backdrop-blur-xl border border-gray-100/50 dark:border-slate-700/50 shadow-[0_20px_40px_-10px_rgba(0,0,0,0.1)] dark:shadow-[0_20px_40px_-10px_rgba(0,0,0,0.5)] rounded-[2rem] p-1.5 flex justify-between items-center z-50">
-                <button id="btn-open-call" class="flex flex-col items-center justify-center p-2 text-green-500 w-[70px] h-[60px] rounded-2xl active:scale-90 transition-transform">
+                <button id="btn-open-call" type="button" aria-haspopup="dialog" aria-controls="modal-call" class="flex flex-col items-center justify-center p-2 text-green-500 w-[70px] h-[60px] rounded-2xl active:scale-90 transition-transform">
                     <svg class="w-6 h-6 mb-1" fill="currentColor" viewBox="0 0 24 24"><path d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"/></svg>
-                    <span class="text-[10px] font-bold">Виклик</span>
+                    <span class="text-[10px] font-bold">Дзвінок</span>
                 </button>
                 <button class="nav-item flex flex-col items-center justify-center p-2 text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/30 w-[70px] h-[60px] rounded-2xl transition-all duration-300 active:scale-90 scale-105" data-target="tab-home">
                     <svg class="w-6 h-6 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg>
@@ -885,7 +927,8 @@ src="https://www.facebook.com/tr?id=1579626687172302&ev=PageView&noscript=1"
 
         // Захист від вставки HTML у відгуках / історії
         const esc = v => String(v ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
-        const calcPrice = q => (q === 1 ? 100 : q * 90);
+        const UNIT_PRICE = 100;
+        const calcPrice = quantity => quantity * UNIT_PRICE;
 
         let currentUser = null;
         let hasUnsavedChanges = false;
@@ -894,16 +937,6 @@ src="https://www.facebook.com/tr?id=1579626687172302&ev=PageView&noscript=1"
 
         document.addEventListener('DOMContentLoaded', () => {
             
-            // --- ТЕМА ---
-            const themeToggle = document.getElementById('theme-toggle');
-            document.documentElement.classList.toggle('dark', localStorage.getItem('theme') === 'dark');
-            themeToggle.setAttribute('aria-pressed', String(document.documentElement.classList.contains('dark')));
-            themeToggle.addEventListener('click', () => {
-                const isDark = document.documentElement.classList.toggle('dark');
-                localStorage.setItem('theme', isDark ? 'dark' : 'light');
-                themeToggle.setAttribute('aria-pressed', String(isDark));
-            });
-
             // --- УВЕДОМЛЕНИЯ ---
             const toast = document.getElementById('toast');
             const toastMsg = document.getElementById('toast-msg');
@@ -955,6 +988,7 @@ src="https://www.facebook.com/tr?id=1579626687172302&ev=PageView&noscript=1"
                 } else {
                     currentUser = null;
                     closeHistory();
+                    if (modalCall.open) modalCall.close();
                     resetOrder();
                     switchAuthScreen('screen-login');
                 }
@@ -1155,26 +1189,30 @@ src="https://www.facebook.com/tr?id=1579626687172302&ev=PageView&noscript=1"
             const orderPlus = document.getElementById('btn-qty-plus');
             const orderSubmit = document.getElementById('btn-confirm-order');
             const orderError = document.getElementById('order-error');
+            const orderTotal = document.getElementById('display-price');
+            const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+            let totalAnimation;
             const currency = new Intl.NumberFormat('uk-UA');
             const orderDate = new Intl.DateTimeFormat('uk-UA', {
                 dateStyle: 'medium', timeStyle: 'short', timeZone: 'Europe/Kyiv'
             });
             const formatMoney = value => currency.format(value) + ' ₴';
-            const maxQuantity = Math.floor(Number.MAX_SAFE_INTEGER / 100);
+            const maxQuantity = Math.floor(Number.MAX_SAFE_INTEGER / UNIT_PRICE);
 
             function updateOrderSummary() {
                 document.getElementById('display-qty').textContent = currency.format(orderQty);
-                document.getElementById('display-price').textContent = formatMoney(calcPrice(orderQty));
+                orderTotal.textContent = formatMoney(calcPrice(orderQty));
                 document.getElementById('order-summary-address').textContent = localStorage.getItem('app_address') || 'Додайте адресу у профілі';
-                document.getElementById('order-summary-rate').textContent = orderQty === 1 ? '1 бутель — 100 ₴' : '90 ₴ за бутель';
                 orderMinus.disabled = orderQty <= 1 || Boolean(orderRequest);
                 orderPlus.disabled = orderQty >= maxQuantity || Boolean(orderRequest);
                 orderSubmit.disabled = Boolean(orderRequest);
+                orderSubmit.setAttribute('aria-busy', String(Boolean(orderRequest)));
                 orderSubmit.textContent = orderRequest ? 'Оформлюємо…' : 'Оформити замовлення';
             }
 
-            function resetOrder(quantity = 1) {
-                orderQty = quantity;
+            function resetOrder() {
+                totalAnimation?.cancel();
+                orderQty = 1;
                 orderRequest = null;
                 orderForm.hidden = false;
                 orderComplete.hidden = true;
@@ -1182,8 +1220,20 @@ src="https://www.facebook.com/tr?id=1579626687172302&ev=PageView&noscript=1"
                 updateOrderSummary();
             }
 
-            orderMinus.onclick = () => { orderQty--; updateOrderSummary(); };
-            orderPlus.onclick = () => { orderQty++; updateOrderSummary(); };
+            function changeQuantity(delta) {
+                orderQty += delta;
+                updateOrderSummary();
+                if (!reduceMotion.matches && typeof orderTotal.animate === 'function') {
+                    totalAnimation?.cancel();
+                    totalAnimation = orderTotal.animate(
+                        [{ opacity: .7, transform: 'translateY(3px)' }, { opacity: 1, transform: 'translateY(0)' }],
+                        { duration: 170, easing: 'ease-out' }
+                    );
+                }
+            }
+
+            orderMinus.onclick = () => changeQuantity(-1);
+            orderPlus.onclick = () => changeQuantity(1);
             document.getElementById('btn-new-order').onclick = () => {
                 resetOrder();
                 document.getElementById('lk-home-title').focus();
@@ -1250,19 +1300,6 @@ src="https://www.facebook.com/tr?id=1579626687172302&ev=PageView&noscript=1"
                 if (modalHistory.open) modalHistory.close();
             }
 
-            function repeatOrder(quantity) {
-                if (orderRequest) {
-                    closeHistory();
-                    showToast('Зачекайте, поки оформиться поточне замовлення', 'error');
-                    return;
-                }
-                closeHistory();
-                if (!navigateTab('tab-home')) return;
-                resetOrder(quantity);
-                document.getElementById('lk-home-title').focus();
-                showToast('Кількість відновлено. Перевірте адресу й суму.');
-            }
-
             function timestampMillis(value) {
                 const millis = typeof value === 'number' ? value : value?.toMillis?.();
                 return Number.isFinite(millis) && Math.abs(millis) <= 8.64e15 ? millis : 0;
@@ -1272,7 +1309,7 @@ src="https://www.facebook.com/tr?id=1579626687172302&ev=PageView&noscript=1"
                 const delivered = order.status === 'archived' || order.status === 'completed';
                 const quantity = Number(order.quantity);
                 const total = Number(order.totalPrice);
-                const canRepeat = Number.isSafeInteger(quantity) && quantity >= 1 && quantity <= maxQuantity;
+                const hasQuantity = Number.isSafeInteger(quantity) && quantity >= 1;
                 const item = document.createElement('article');
                 item.className = 'lk-history-item';
                 const header = document.createElement('header');
@@ -1285,7 +1322,7 @@ src="https://www.facebook.com/tr?id=1579626687172302&ev=PageView&noscript=1"
                     description.append(time);
                 }
                 const title = document.createElement('h3');
-                title.textContent = (canRepeat ? currency.format(quantity) + ' бут.' : 'Замовлення')
+                title.textContent = (hasQuantity ? currency.format(quantity) + ' бут.' : 'Замовлення')
                     + (order.totalPrice != null && Number.isFinite(total) ? ' · ' + formatMoney(total) : '');
                 description.append(title);
                 const badge = document.createElement('span');
@@ -1296,14 +1333,6 @@ src="https://www.facebook.com/tr?id=1579626687172302&ev=PageView&noscript=1"
                 address.className = 'lk-history-address';
                 address.textContent = order.address || '';
                 item.append(header, address);
-                if (canRepeat) {
-                    const repeat = document.createElement('button');
-                    repeat.type = 'button';
-                    repeat.className = 'lk-link';
-                    repeat.textContent = 'Повторити';
-                    repeat.addEventListener('click', () => repeatOrder(quantity));
-                    item.append(repeat);
-                }
                 return item;
             }
 
@@ -1336,17 +1365,19 @@ src="https://www.facebook.com/tr?id=1579626687172302&ev=PageView&noscript=1"
             document.getElementById('btn-order-history').onclick = openHistory;
             document.getElementById('btn-close-history').onclick = closeHistory;
             historyRetry.onclick = openHistory;
-            modalHistory.addEventListener('click', event => {
-                if (event.target === modalHistory) closeHistory();
-            });
-
-            // --- ВИКЛИК (МОДАЛКА) ---
+            // --- ДЗВІНОК ---
             const modalCall = document.getElementById('modal-call');
-            const modalCallBg = document.getElementById('modal-call-bg');
-            const modalCallContent = document.getElementById('modal-call-content');
-            document.getElementById('btn-open-call').onclick = () => { modalCall.classList.add('active'); modalCallContent.classList.add('active'); };
-            function closeCall() { modalCall.classList.remove('active'); modalCallContent.classList.remove('active'); }
-            document.getElementById('btn-close-call').onclick = closeCall; modalCallBg.onclick = closeCall;
+            document.getElementById('btn-open-call').onclick = () => modalCall.showModal();
+            document.getElementById('btn-close-call').onclick = () => modalCall.close();
+            for (const dialog of [modalHistory, modalCall]) {
+                dialog.addEventListener('click', event => {
+                    if (event.target !== dialog) return;
+                    const bounds = dialog.getBoundingClientRect();
+                    const outside = event.clientX < bounds.left || event.clientX >= bounds.right
+                        || event.clientY < bounds.top || event.clientY >= bounds.bottom;
+                    if (outside) dialog.close();
+                });
+            }
 
             // --- ВІДГУКИ ТА РЕЙТИНГ (ІЗ FIRESTORE) ---
             const modalReview = document.getElementById('modal-add-review');
