@@ -75,6 +75,21 @@
         }
         input[type=number]::-webkit-inner-spin-button, 
         input[type=number]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
+        #saved-orders[hidden], #order-notice[hidden], #refill-status[hidden] { display: none; }
+        #order-card { scroll-margin-top: 6rem; }
+        #order-notice {
+            top: calc(5.75rem + env(safe-area-inset-top, 0px));
+            right: 1rem;
+            width: min(21rem, calc(100% - 2rem));
+            animation: notice-in 180ms ease-out;
+        }
+        @keyframes notice-in {
+            from { opacity: 0; transform: translateY(-6px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @media (prefers-reduced-motion: reduce) {
+            #order-notice { animation: none; }
+        }
     </style>
 </head>
 <body class="text-slate-800 antialiased relative min-h-screen flex flex-col bg-pattern overflow-x-hidden">
@@ -119,7 +134,20 @@
             </p>
         </div>
 
-        <div class="w-full max-w-md bg-white rounded-[2rem] shadow-soft border border-slate-100 p-6 sm:p-8 relative overflow-hidden">
+        <section id="saved-orders" hidden aria-labelledby="saved-orders-title" class="w-full max-w-md mb-5 rounded-3xl border border-blue-100 bg-white p-5 sm:p-6 shadow-soft">
+            <h2 id="saved-orders-title" class="text-lg font-extrabold text-brand-dark">Ви вже замовляли у Sky Source</h2>
+            <p class="mt-1 text-sm text-slate-500">Можна знову використати дані попереднього замовлення.</p>
+            <button type="button" id="repeat-last" class="mt-4 w-full rounded-xl bg-blue-50 px-4 py-3 text-sm font-bold text-blue-800 hover:bg-blue-100 disabled:opacity-50">
+                Повторити останнє замовлення
+            </button>
+            <details id="history-details" class="mt-3 border-t border-slate-100 pt-3">
+                <summary class="cursor-pointer py-1 text-sm font-bold text-brand-dark">Історія замовлень <span id="history-count" class="ml-1 text-slate-500 font-medium"></span></summary>
+                <ul id="history-list" class="mt-2 divide-y divide-slate-100"></ul>
+                <button type="button" id="forget-orders" class="mt-3 py-2 text-sm text-slate-600 underline hover:text-brand-dark">Забути дані на цьому пристрої</button>
+            </details>
+        </section>
+
+        <div id="order-card" class="w-full max-w-md bg-white rounded-[2rem] shadow-soft border border-slate-100 p-6 sm:p-8 relative overflow-hidden">
             <div class="absolute top-0 left-0 w-full h-1.5 bg-gradient-to-r from-brand-dark to-brand-light"></div>
             
             <form id="order-form" onsubmit="handleFormSubmit(event)">
@@ -133,7 +161,7 @@
                         
                         <div class="w-20 text-center">
                             <span id="display-qty" class="text-5xl font-black text-brand-dark">1</span>
-                            <span class="block text-xs font-bold text-slate-400 mt-1 uppercase" id="qty-label">бутль</span>
+                            <span class="block text-xs font-bold text-slate-400 mt-1 uppercase" id="qty-label">бутель</span>
                         </div>
 
                         <button type="button" aria-label="Збільшити кількість бутлів" onclick="increaseQty()" class="w-14 h-14 rounded-full bg-brand-light/10 border-2 border-brand-light/20 flex items-center justify-center text-3xl text-brand-light hover:bg-brand-light hover:text-white active:scale-95 transition-all shadow-glow">
@@ -175,6 +203,14 @@
                     </div>
                 </div>
 
+                <div class="mt-5 space-y-3 text-sm text-slate-600">
+                    <label class="flex cursor-pointer items-start gap-2.5">
+                        <input type="checkbox" id="remember-orders" class="mt-0.5 h-4 w-4 shrink-0 accent-blue-700">
+                        <span>Запам’ятати ім’я, телефон, адресу та замовлення в цьому браузері</span>
+                    </label>
+                </div>
+                <p id="refill-status" role="status" hidden class="mt-4 rounded-xl bg-blue-50 px-3 py-2 text-sm text-blue-900"></p>
+
                 <button type="submit" id="btn-submit" class="w-full mt-6 py-4 px-6 bg-brand-dark hover:bg-slate-800 text-white rounded-2xl font-bold text-lg shadow-lg shadow-brand-dark/20 active:scale-[0.98] transition-all flex items-center justify-center gap-2">
                     Оформити замовлення
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
@@ -214,6 +250,22 @@
     </main>
 
     <footer class="w-full py-6 text-center border-t border-slate-200 mt-auto bg-white">
+        <section aria-labelledby="app-title" class="max-w-5xl mx-auto px-4 mb-6">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-5 rounded-[1.75rem] border border-blue-100 bg-gradient-to-br from-blue-50 to-white p-5 sm:p-7 text-left">
+                <div class="flex items-center gap-4 sm:gap-6">
+                    <div class="shrink-0 flex items-center justify-center w-20 h-16 sm:w-24 sm:h-20 rounded-2xl bg-white shadow-soft">
+                        <img src="https://i.ibb.co/Y7jCqPDF/c660937a-9272-4146-82e4-074b94f35d73.png" alt="Sky Source" loading="lazy" class="w-16 sm:w-20 h-auto object-contain">
+                    </div>
+                    <div>
+                        <h2 id="app-title" class="text-lg sm:text-xl font-extrabold text-brand-dark">Особистий кабінет Sky Source</h2>
+                        <p class="mt-1 text-sm text-slate-600">Увійдіть або зареєструйтеся, щоб керувати замовленнями в додатку.</p>
+                    </div>
+                </div>
+                <a href="https://skysource.com.ua/" class="shrink-0 inline-flex items-center justify-center gap-2 rounded-xl bg-brand-dark px-5 py-3.5 text-sm font-bold text-white hover:bg-slate-800 transition-colors">
+                    Увійти в додаток <span aria-hidden="true">↗</span>
+                </a>
+            </div>
+        </section>
         <div class="max-w-5xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-3">
             <p class="text-sm text-slate-400 font-medium">© 2026 Sky Source Дніпро. Всі права захищені.</p>
             <a href="https://skysource.com.ua/privacy.html" target="_blank" class="text-xs text-slate-400 hover:text-brand-accent transition-colors underline">
@@ -222,9 +274,18 @@
         </div>
     </footer>
 
+    <div id="order-notice" hidden class="fixed z-[60] flex items-start gap-3 rounded-2xl border border-blue-100 bg-white p-3 shadow-xl" aria-label="Підтвердження вашого замовлення">
+        <span aria-hidden="true" class="mt-1.5 h-2.5 w-2.5 shrink-0 rounded-full bg-emerald-500"></span>
+        <div role="status" aria-atomic="true" class="min-w-0 flex-1">
+            <p class="text-xs font-bold text-slate-500">Ваше замовлення прийнято</p>
+            <p id="notice-text" class="break-words text-sm font-bold text-brand-dark"></p>
+        </div>
+        <button type="button" id="dismiss-notice" aria-label="Закрити сповіщення" class="shrink-0 rounded-lg px-2 py-1 text-slate-500 hover:bg-slate-100">×</button>
+    </div>
+
     <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
-    import { getFirestore, collection, addDoc, setDoc, doc } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
+    import { getFirestore, collection, doc, writeBatch } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
 
     // Настройки Firebase из вашей системы
     const firebaseConfig = {
@@ -240,17 +301,39 @@
     const db = getFirestore(app);
 
     const UNIT_PRICE = 100;
+    const MAX_QUANTITY = 50;
+    const HISTORY_LIMIT = 12;
+    const HISTORY_KEY = 'skysource.landing.orderHistory.v1';
     let currentQty = 1;
 
     const displayQty = document.getElementById('display-qty');
     const qtyLabel = document.getElementById('qty-label');
     const totalPrice = document.getElementById('total-price');
     const phoneInput = document.getElementById('phone');
+    const nameInput = document.getElementById('name');
+    const streetInput = document.getElementById('street');
+    const houseInput = document.getElementById('house');
+    const orderForm = document.getElementById('order-form');
+    const submitButton = document.getElementById('btn-submit');
+    const rememberOrders = document.getElementById('remember-orders');
+    const savedOrders = document.getElementById('saved-orders');
+    const repeatLast = document.getElementById('repeat-last');
+    const historyDetails = document.getElementById('history-details');
+    const historyList = document.getElementById('history-list');
+    const historyCount = document.getElementById('history-count');
+    const forgetOrders = document.getElementById('forget-orders');
+    const refillStatus = document.getElementById('refill-status');
+    const notice = document.getElementById('order-notice');
+    const noticeText = document.getElementById('notice-text');
+    const dateFormat = new Intl.DateTimeFormat('uk-UA', { dateStyle: 'medium', timeZone: 'Europe/Kyiv' });
+    let history = loadHistory();
+    let usingSavedDetails = false;
+    let noticeTimer;
 
     // Делаем функции глобальными, так как type="module" изолирует область видимости, 
     // а у вас в HTML используются атрибуты onclick
     window.increaseQty = function() {
-        if (currentQty < 50) {
+        if (currentQty < MAX_QUANTITY) {
             currentQty++;
             updateUI();
         }
@@ -266,20 +349,132 @@
     function updateUI() {
         displayQty.innerText = currentQty;
         totalPrice.innerText = currentQty * UNIT_PRICE;
-        
-        const lastDigit = currentQty % 10;
-        const lastTwoDigits = currentQty % 100;
+        qtyLabel.innerText = bottleLabel(currentQty);
+    }
 
-        if (lastTwoDigits >= 11 && lastTwoDigits <= 14) {
-            qtyLabel.innerText = "бутелів";
-        } else if (lastDigit === 1) {
-            qtyLabel.innerText = "бутль";
-        } else if (lastDigit >= 2 && lastDigit <= 4) {
-            qtyLabel.innerText = "бутелі";
-        } else {
-            qtyLabel.innerText = "бутелів";
+    function bottleLabel(quantity) {
+        const lastDigit = quantity % 10;
+        const lastTwoDigits = quantity % 100;
+        if (lastTwoDigits >= 11 && lastTwoDigits <= 14) return 'бутлів';
+        if (lastDigit === 1) return 'бутель';
+        if (lastDigit >= 2 && lastDigit <= 4) return 'бутлі';
+        return 'бутлів';
+    }
+
+    function validQuantity(quantity) {
+        return Number.isInteger(quantity) && quantity >= 1 && quantity <= MAX_QUANTITY;
+    }
+
+    function loadHistory() {
+        try {
+            const entries = JSON.parse(localStorage.getItem(HISTORY_KEY) ?? '[]');
+            if (!Array.isArray(entries)) return [];
+            return entries.filter((entry) => entry
+                && typeof entry.id === 'string'
+                && typeof entry.name === 'string'
+                && typeof entry.phone === 'string'
+                && typeof entry.street === 'string'
+                && typeof entry.house === 'string'
+                && Number.isFinite(entry.timestamp)
+                && Math.abs(entry.timestamp) <= 8.64e15
+                && Number.isFinite(entry.totalPrice)
+                && entry.totalPrice >= 0
+                && validQuantity(entry.quantity)).slice(0, HISTORY_LIMIT);
+        } catch {
+            return [];
         }
     }
+
+    function saveHistory(entry) {
+        try {
+            const entries = [entry, ...loadHistory().filter(({ id }) => id !== entry.id)].slice(0, HISTORY_LIMIT);
+            localStorage.setItem(HISTORY_KEY, JSON.stringify(entries));
+            history = entries;
+            renderHistory();
+            return true;
+        } catch {
+            return false;
+        }
+    }
+
+    function renderHistory() {
+        savedOrders.hidden = history.length === 0;
+        historyCount.textContent = history.length ? '(' + history.length + ')' : '';
+        repeatLast.disabled = submitButton.disabled;
+        historyList.replaceChildren();
+        for (const entry of history) {
+            const row = document.createElement('li');
+            row.className = 'flex flex-wrap items-center justify-between gap-x-3 gap-y-1 py-3';
+            const content = document.createElement('div');
+            content.className = 'min-w-0';
+            const title = document.createElement('p');
+            title.className = 'text-sm font-bold text-brand-dark';
+            title.textContent = dateFormat.format(entry.timestamp) + ' · '
+                + entry.quantity + ' ' + bottleLabel(entry.quantity) + ' · ' + entry.totalPrice + ' ₴';
+            const address = document.createElement('p');
+            address.className = 'break-words text-xs text-slate-600';
+            address.textContent = entry.street + ', ' + entry.house;
+            const repeat = document.createElement('button');
+            repeat.type = 'button';
+            repeat.className = 'rounded-lg px-2.5 py-2 text-sm font-bold text-blue-800 hover:bg-blue-50 disabled:opacity-50';
+            repeat.textContent = 'Повторити';
+            repeat.setAttribute('aria-label', 'Повторити замовлення від ' + dateFormat.format(entry.timestamp));
+            repeat.disabled = submitButton.disabled;
+            repeat.addEventListener('click', () => repeatOrder(entry));
+            content.append(title, address);
+            row.append(content, repeat);
+            historyList.append(row);
+        }
+    }
+
+    function setRefillStatus(message) {
+        refillStatus.textContent = message;
+        refillStatus.hidden = !message;
+    }
+
+    function repeatOrder(entry) {
+        if (!entry || submitButton.disabled) return;
+        usingSavedDetails = true;
+        nameInput.value = entry.name;
+        phoneInput.value = entry.phone;
+        streetInput.value = entry.street;
+        houseInput.value = entry.house;
+        currentQty = entry.quantity;
+        updateUI();
+        setRefillStatus('Дані підставлено. Перевірте адресу та суму перед оформленням.');
+        document.getElementById('order-card').scrollIntoView({ block: 'start' });
+        submitButton.focus({ preventScroll: true });
+    }
+
+    repeatLast.addEventListener('click', () => repeatOrder(history[0]));
+    forgetOrders.addEventListener('click', () => {
+        try {
+            localStorage.removeItem(HISTORY_KEY);
+        } catch {
+            setRefillStatus('Браузер не дозволив очистити історію.');
+            return;
+        }
+        if (usingSavedDetails) {
+            usingSavedDetails = false;
+            nameInput.value = '';
+            phoneInput.value = '';
+            streetInput.value = '';
+            houseInput.value = '';
+        }
+        history = [];
+        historyDetails.open = false;
+        rememberOrders.checked = false;
+        renderHistory();
+        setRefillStatus('Збережені дані видалено з цього браузера.');
+        rememberOrders.focus();
+    });
+
+    window.addEventListener('storage', (event) => {
+        if (event.key !== HISTORY_KEY && event.key !== null) return;
+        history = loadHistory();
+        if (!history.length) rememberOrders.checked = false;
+        renderHistory();
+    });
 
     phoneInput.addEventListener('input', function (e) {
         let val = e.target.value.replace(/\D/g, ''); 
@@ -294,45 +489,62 @@
 
     window.handleFormSubmit = async function(e) {
         e.preventDefault();
-        const btn = document.getElementById('btn-submit');
-        const phoneVal = phoneInput.value;
-        const nameVal = document.getElementById('name').value;
-        const addressVal = document.getElementById('street').value + ', ' + document.getElementById('house').value;
-        const currentTimestamp = Date.now();
+        if (submitButton.disabled) return;
 
-        const orderData = {
-            name: nameVal,
-            phone: phoneVal,
-            address: addressVal,
+        const street = streetInput.value;
+        const house = houseInput.value;
+        const order = {
+            name: nameInput.value,
+            phone: phoneInput.value,
+            address: street + ', ' + house,
             quantity: currentQty,
             totalPrice: currentQty * UNIT_PRICE,
             status: 'processing',
-            timestamp: currentTimestamp,
+            timestamp: Date.now(),
             source: 'landing_page'
         };
+        const orderRef = doc(collection(db, 'orders'));
+        const customerRef = doc(db, 'users', 'landing_' + order.phone.replace(/\D/g, ''));
+        const customer = {
+            name: order.name,
+            phone: order.phone,
+            address: order.address,
+            addedBy: 'landing',
+            timestamp: order.timestamp
+        };
 
-        btn.disabled = true;
-        btn.innerHTML = `<svg class="w-5 h-5 animate-spin" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg> Обробка...`;
+        submitButton.disabled = true;
+        submitButton.innerHTML = '<span class="animate-pulse">Обробка…</span>';
+        setRefillStatus('');
+        renderHistory();
 
         try {
-            // Запись заказа в коллекцию orders
-            await addDoc(collection(db, "orders"), orderData);
-            
-            // Также добавляем/обновляем клиента в базу, чтобы он отображался во вкладке "База клієнтів"
-            await setDoc(doc(db, "users", 'landing_' + phoneVal.replace(/\D/g, '')), { 
-                name: nameVal, 
-                phone: phoneVal, 
-                address: addressVal, 
-                addedBy: 'landing', 
-                timestamp: currentTimestamp 
-            }, { merge: true });
-
-            showSuccessState(btn);
+            const batch = writeBatch(db);
+            batch.set(orderRef, order);
+            batch.set(customerRef, customer, { merge: true });
+            await batch.commit();
         } catch (error) {
             console.error(error);
-            btn.disabled = false;
-            btn.innerHTML = `Помилка. Спробуйте ще раз`;
+            submitButton.disabled = false;
+            submitButton.textContent = 'Помилка. Спробуйте ще раз';
+            renderHistory();
+            return;
         }
+
+        if (rememberOrders.checked && !saveHistory({
+            id: orderRef.id,
+            name: order.name,
+            phone: order.phone,
+            street,
+            house,
+            quantity: order.quantity,
+            totalPrice: order.totalPrice,
+            timestamp: order.timestamp
+        })) {
+            setRefillStatus('Замовлення прийнято. Браузер не дозволив зберегти історію.');
+        }
+        showSuccessState(submitButton);
+        showOrderNotice(order);
     }
 
     function showSuccessState(btn) {
@@ -341,17 +553,37 @@
         btn.innerHTML = `<svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg> Замовлення прийнято!`;
         
         setTimeout(() => {
-            document.getElementById('order-form').reset();
+            const keepRemembering = rememberOrders.checked && history.length > 0;
+            orderForm.reset();
+            usingSavedDetails = false;
+            rememberOrders.checked = keepRemembering;
             currentQty = 2;
             updateUI();
             
             btn.disabled = false;
             btn.classList.remove('bg-green-500', 'hover:bg-green-600');
             btn.classList.add('bg-brand-dark', 'hover:bg-slate-800');
+            renderHistory();
             btn.innerHTML = `Оформити замовлення <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>`;
         }, 3000);
     }
 
+    function showOrderNotice(order) {
+        notice.hidden = false;
+        noticeText.textContent = order.quantity + ' ' + bottleLabel(order.quantity) + ' води · ' + order.totalPrice + ' ₴';
+        clearTimeout(noticeTimer);
+        noticeTimer = setTimeout(hideOrderNotice, 6000);
+    }
+
+    function hideOrderNotice() {
+        clearTimeout(noticeTimer);
+        notice.hidden = true;
+    }
+
+    document.getElementById('dismiss-notice').addEventListener('click', hideOrderNotice);
+
+    rememberOrders.checked = history.length > 0;
+    renderHistory();
     updateUI();
 </script>
 </body>
