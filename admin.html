@@ -923,8 +923,8 @@ function renderAnalytics() {
 
 /* =========================================================
    ВІДГУКИ
-   approved === false → на перевірці (не видно на сайті)
-   інакше             → опубліковано
+   approved === true → опубліковано
+   інакше            → на перевірці
 ========================================================= */
 async function loadReviews(render) {
     if (!can('reviews')) return;
@@ -933,7 +933,7 @@ async function loadReviews(render) {
         const snap = await getDocs(collection(db, 'reviews'));
         state.reviews = []; snap.forEach(d => state.reviews.push({ id: d.id, ...d.data() }));
         state.reviews.sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
-        const pending = state.reviews.filter(r => r.approved === false).length;
+        const pending = state.reviews.filter(r => r.approved !== true).length;
         $('#cnt-pending').textContent = pending;
         setBadge('reviews', pending, 'bg-amber-400 text-slate-900');
         if (currentPanel === 'reviews') renderReviews();
@@ -941,7 +941,7 @@ async function loadReviews(render) {
 }
 function renderReviews() {
     const pend = state.reviewFilter === 'pending';
-    const list = state.reviews.filter(r => pend ? r.approved === false : r.approved !== false);
+    const list = state.reviews.filter(r => pend ? r.approved !== true : r.approved === true);
     if (!list.length) { $('#reviews-list').innerHTML = `<p class="col-span-full text-center text-slate-400 font-bold py-14">${pend ? 'Нових відгуків на перевірку немає' : 'Опублікованих відгуків немає'}</p>`; return; }
     $('#reviews-list').innerHTML = list.map(r => {
         const rating = Math.max(1, Math.min(5, parseInt(r.rating) || 5));

@@ -376,6 +376,12 @@
 }
 #main-app .lk-page { width: min(100%, 675px); margin-inline: auto; }
 #main-app .lk-intro { margin-bottom: 23px; }
+#main-app .lk-delivery-car {
+    display: block;
+    width: clamp(112px, 14vw, 166px);
+    height: auto;
+    margin: 0 auto 9px;
+}
 #main-app .lk-intro h1 { margin: 0; font-size: clamp(30px, 4.3vw, 48px); line-height: 1.04; font-weight: 800; letter-spacing: -.045em; }
 #main-app .lk-intro p { margin-top: 9px; color: var(--lk-muted); font-size: 15px; }
 #main-app .lk-card {
@@ -485,7 +491,8 @@
     #main-app .lk-total { display: flex; align-items: center; justify-content: space-between; }
 }
 @media (max-width: 767px) {
-    #main-app .lk-home { padding: 83px 14px 105px; }
+    #main-app .lk-home { padding: 66px 14px 105px; }
+    #main-app .lk-delivery-car { width: 112px; margin-bottom: 7px; }
     #main-app .lk-intro { margin-bottom: 14px; }
     #main-app .lk-intro p { margin-top: 5px; font-size: 14px; }
     #main-app .lk-details, #main-app .lk-summary { padding: 13px; }
@@ -737,7 +744,7 @@ src="https://www.facebook.com/tr?id=1579626687172302&ev=PageView&noscript=1"
                     <button id="btn-open-history" type="button" aria-haspopup="dialog" aria-controls="modal-history" class="pointer-events-auto flex items-center gap-3 bg-white/90 dark:bg-slate-800/90 backdrop-blur-md px-4 py-2 rounded-full shadow-sm border border-gray-100 dark:border-slate-700 hover:shadow-md transition-all active:scale-95 ml-auto">
                         <div id="header-avatar-container" class="w-6 h-6 bg-blue-100 dark:bg-slate-700 rounded-full flex items-center justify-center text-xs overflow-hidden shrink-0">
                             <span id="header-avatar-icon">👤</span>
-                            <img id="header-avatar-img" alt="" class="w-full h-full object-cover hidden">
+                            <img id="header-avatar-img" alt="" referrerpolicy="no-referrer" class="w-full h-full object-cover hidden">
                         </div>
                         <div class="flex flex-col items-start">
                             <span id="display-user-name" class="text-xs font-black text-gray-900 dark:text-white leading-none mb-0.5"></span>
@@ -747,9 +754,10 @@ src="https://www.facebook.com/tr?id=1579626687172302&ev=PageView&noscript=1"
                 </div>
 
                 <!-- ВКЛАДКА: ЗАМОВЛЕННЯ -->
-                <section id="tab-home" class="lk-home fade-in" aria-labelledby="lk-home-title">
+                <section id="tab-home" class="lk-home no-scrollbar fade-in" aria-labelledby="lk-home-title">
                     <div class="lk-page">
                         <header class="lk-intro">
+                            <img class="lk-delivery-car" src="assets/delivery-car.webp" width="480" height="320" alt="" decoding="async">
                             <h1 id="lk-home-title" tabindex="-1">Замовити воду</h1>
                             <p>Безкоштовна доставка по Дніпру</p>
                         </header>
@@ -807,8 +815,12 @@ src="https://www.facebook.com/tr?id=1579626687172302&ev=PageView&noscript=1"
                     <div class="lk-reviews-toolbar shrink-0">
                         <button id="btn-show-add-review" class="lk-primary" type="button">Залишити відгук</button>
                     </div>
-                    <div id="reviews-list" class="flex-1 overflow-y-auto no-scrollbar grid grid-cols-1 md:grid-cols-2 gap-5 content-start pr-1">
-                        <div class="text-center mt-12 text-gray-500 w-full col-span-full">Завантаження відгуків...</div>
+                    <div class="flex-1 min-h-0 overflow-y-auto no-scrollbar pr-1">
+                        <div id="reviews-state" class="rounded-2xl border border-slate-200 bg-white p-5 text-center">
+                            <p id="reviews-status" class="text-sm text-slate-600" role="status">Завантаження відгуків…</p>
+                            <button id="btn-retry-reviews" class="lk-link mt-1" type="button" hidden>Спробувати ще раз</button>
+                        </div>
+                        <div id="reviews-list" class="grid grid-cols-1 md:grid-cols-2 gap-5 content-start"></div>
                     </div>
                     
                 </div>
@@ -818,16 +830,14 @@ src="https://www.facebook.com/tr?id=1579626687172302&ev=PageView&noscript=1"
                     <h3 class="text-3xl font-black text-gray-900 dark:text-white mb-8 shrink-0 md:hidden">Профіль</h3>
                     <div class="lk-fields flex-1 overflow-y-auto no-scrollbar space-y-4 max-w-2xl w-full pr-1 pb-4">
                         <div class="flex items-center gap-5 w-full mb-6">
-                            <div id="settings-avatar-wrapper" class="w-20 h-20 rounded-full bg-blue-100 dark:bg-slate-800 border-2 border-blue-500 overflow-hidden flex items-center justify-center cursor-pointer relative group shrink-0">
+                            <div class="w-20 h-20 rounded-full bg-blue-100 dark:bg-slate-800 border-2 border-blue-500 overflow-hidden flex items-center justify-center shrink-0">
                                 <span id="settings-avatar-icon" class="text-3xl">👤</span>
-                                <img id="settings-avatar-img" alt="" class="w-full h-full object-cover hidden">
-                                <div class="absolute inset-0 bg-black/50 hidden group-hover:flex items-center justify-center text-white text-[10px] font-bold transition-all uppercase tracking-wider">Змінити</div>
+                                <img id="settings-avatar-img" alt="" referrerpolicy="no-referrer" class="w-full h-full object-cover hidden">
                             </div>
                             <div>
                                 <h4 class="text-xl font-black text-gray-900 dark:text-white" id="settings-display-name">Користувач</h4>
-                                <p class="text-sm text-gray-500 dark:text-gray-400">Натисніть на фото, щоб оновити</p>
+                                <p class="text-sm text-gray-500 dark:text-gray-400">Фото з облікового запису Google</p>
                             </div>
-                            <input type="file" id="avatar-upload-input" accept="image/*" class="hidden">
                         </div>
 
                         <div class="flex flex-col md:flex-row gap-4 w-full">
@@ -968,21 +978,17 @@ src="https://www.facebook.com/tr?id=1579626687172302&ev=PageView&noscript=1"
                                 localStorage.setItem('app_name', data.name || user.displayName || '');
                                 localStorage.setItem('app_phone', data.phone);
                                 localStorage.setItem('app_address', data.address);
-                                localStorage.setItem('app_avatar', data.avatar || user.photoURL || '');
                                 initAppUI();
                             } else {
                                 localStorage.setItem('app_name', data.name || user.displayName || '');
-                                localStorage.setItem('app_avatar', data.avatar || user.photoURL || '');
                                 switchAuthScreen('screen-address');
                             }
                         } else {
                             localStorage.setItem('app_name', user.displayName || '');
-                            localStorage.setItem('app_avatar', user.photoURL || '');
                             switchAuthScreen('screen-address');
                         }
                     } catch (error) {
                         localStorage.setItem('app_name', user.displayName || '');
-                        localStorage.setItem('app_avatar', user.photoURL || '');
                         switchAuthScreen('screen-address');
                     }
                 } else {
@@ -1030,44 +1036,30 @@ src="https://www.facebook.com/tr?id=1579626687172302&ev=PageView&noscript=1"
                 localStorage.setItem('app_name', n); localStorage.setItem('app_phone', p);
                 if (currentUser) {
                     try {
-                        await setDoc(doc(db, "users", currentUser.uid), { name: n, phone: p, address: localStorage.getItem('app_address'), avatar: localStorage.getItem('app_avatar') }, { merge: true });
+                        await setDoc(doc(db, "users", currentUser.uid), { name: n, phone: p, address: localStorage.getItem('app_address'), avatar: googleAvatarUrl() }, { merge: true });
                         initAppUI();
                     } catch (error) { showToast("Помилка БД! Перевірте Rules", "error"); }
                 }
             };
             document.getElementById('btn-logout').onclick = () => { signOut(auth); localStorage.clear(); };
 
-            // --- АВАТАР (IMGBB) ---
-            const avatarUploadInput = document.getElementById('avatar-upload-input');
-            document.getElementById('settings-avatar-wrapper').addEventListener('click', () => { avatarUploadInput.click(); });
-            avatarUploadInput.addEventListener('change', async (e) => {
-                const file = e.target.files[0]; if(!file) return;
-                const IMGBB_API_KEY = 'd7aec9ed693c8efb3fb88781683399e0'; 
-                const formData = new FormData(); formData.append('image', file);
-                try {
-                    showToast('Завантаження фото...', 'success');
-                    const res = await fetch(`https://api.imgbb.com/1/upload?expiration=0&key=${IMGBB_API_KEY}`, { method: 'POST', body: formData });
-                    const data = await res.json();
-                    if(data.success) {
-                        localStorage.setItem('app_avatar', data.data.url);
-                        updateAvatarUI();
-                        if (currentUser) await setDoc(doc(db, "users", currentUser.uid), { avatar: data.data.url }, { merge: true });
-                        showToast('Фото успішно оновлено!', 'success');
-                    } else showToast('Помилка завантаження фото', 'error');
-                } catch(error) { showToast('Помилка мережі', 'error'); }
-            });
+            function googleAvatarUrl() {
+                return currentUser?.providerData?.find(account => account.providerId === 'google.com')?.photoURL || '';
+            }
 
             function updateAvatarUI() {
-                const avatarUrl = localStorage.getItem('app_avatar');
-                const headerImg = document.getElementById('header-avatar-img'); const headerIcon = document.getElementById('header-avatar-icon');
-                const settingsImg = document.getElementById('settings-avatar-img'); const settingsIcon = document.getElementById('settings-avatar-icon');
-                if (avatarUrl) {
-                    headerImg.src = avatarUrl; settingsImg.src = avatarUrl;
-                    headerImg.classList.remove('hidden'); settingsImg.classList.remove('hidden');
-                    headerIcon.classList.add('hidden'); settingsIcon.classList.add('hidden');
-                } else {
-                    headerImg.classList.add('hidden'); settingsImg.classList.add('hidden');
-                    headerIcon.classList.remove('hidden'); settingsIcon.classList.remove('hidden');
+                const avatarUrl = googleAvatarUrl();
+                for (const slot of ['header', 'settings']) {
+                    const img = document.getElementById(slot + '-avatar-img');
+                    const icon = document.getElementById(slot + '-avatar-icon');
+                    img.onerror = () => {
+                        img.classList.add('hidden');
+                        icon.classList.remove('hidden');
+                    };
+                    img.classList.toggle('hidden', !avatarUrl);
+                    icon.classList.toggle('hidden', Boolean(avatarUrl));
+                    if (avatarUrl) img.src = avatarUrl;
+                    else img.removeAttribute('src');
                 }
             }
 
@@ -1114,7 +1106,7 @@ src="https://www.facebook.com/tr?id=1579626687172302&ev=PageView&noscript=1"
                 if(!n || p.replace(/\D/g, '').length < 12 || !a) { showToast('Перевірте ім\'я, повний телефон та адресу', 'error'); return; }
                 if(currentUser) {
                     try {
-                        await setDoc(doc(db, "users", currentUser.uid), {name: n, phone: p, address: a, avatar: localStorage.getItem('app_avatar'), timestamp: Date.now() }, { merge: true });
+                        await setDoc(doc(db, "users", currentUser.uid), {name: n, phone: p, address: a, avatar: googleAvatarUrl(), timestamp: Date.now() }, { merge: true });
                         localStorage.setItem('app_name', n); localStorage.setItem('app_phone', p); localStorage.setItem('app_address', a);
                         updateOrderSummary();
                         document.getElementById('display-user-name').innerText = n;
@@ -1426,43 +1418,69 @@ src="https://www.facebook.com/tr?id=1579626687172302&ev=PageView&noscript=1"
                 pcAvg.innerHTML = avgStarsHtml;
             }
 
+            const reviewsState = document.getElementById('reviews-state');
+            const reviewsStatus = document.getElementById('reviews-status');
+            const reviewsList = document.getElementById('reviews-list');
+            const retryReviews = document.getElementById('btn-retry-reviews');
+            let reviewsRequest = 0;
+
             async function loadReviewsFromDB() {
-                const list = document.getElementById('reviews-list');
+                const request = ++reviewsRequest;
+                const mobileRating = document.getElementById('mobile-avg-rating');
+                mobileRating.classList.add('hidden');
+                mobileRating.classList.remove('flex');
+                document.getElementById('pc-avg-rating').replaceChildren();
+                reviewsList.replaceChildren();
+                reviewsState.hidden = false;
+                reviewsStatus.textContent = 'Завантаження відгуків…';
+                retryReviews.hidden = true;
+
                 try {
-                    // Зчитуємо всі відгуки та сортуємо на клієнті
-                    const querySnapshot = await getDocs(collection(db, "reviews"));
-                    let reviews = [];
-                    // approved === false — відгук ще на модерації і на сайті не показується
-                    querySnapshot.forEach(doc => { const r = doc.data(); if (r.approved !== false) reviews.push(r); });
-                    reviews.sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
+                    const published = query(collection(db, 'reviews'), where('approved', '==', true));
+                    const snapshot = await getDocs(published);
+                    if (request !== reviewsRequest) return;
+                    const reviews = [];
+                    snapshot.forEach(entry => {
+                        const review = entry.data();
+                        if (review.approved !== true || typeof review.text !== 'string' || !review.text.trim()) return;
+                        const rating = Number.parseInt(review.rating, 10);
+                        reviews.push({
+                            name: review.name || 'Користувач',
+                            text: review.text.trim(),
+                            rating: rating >= 1 && rating <= 5 ? rating : 5,
+                            timestamp: timestampMillis(review.timestamp)
+                        });
+                    });
+                    reviews.sort((a, b) => b.timestamp - a.timestamp);
 
                     if (reviews.length === 0) {
-                        list.innerHTML = '<div class="text-center mt-12 text-gray-400 w-full col-span-full font-bold">Немає відгуків. Будьте першим!</div>';
+                        reviewsStatus.textContent = 'Поки що немає опублікованих відгуків.';
                         return;
                     }
 
                     updateAverageRatingUI(reviews);
-                    list.innerHTML = reviews.map(r => {
-                        let dateStr = "Нещодавно";
-                        if (r.timestamp) {
-                            const dateObj = new Date(r.timestamp);
-                            dateStr = dateObj.toLocaleDateString('uk-UA');
-                        }
+                    reviewsList.innerHTML = reviews.map(review => {
+                        const date = review.timestamp ? new Date(review.timestamp).toLocaleDateString('uk-UA') : '';
                         return `
-                        <div class="bg-white dark:bg-slate-800 p-6 rounded-[1.5rem] border border-gray-100 dark:border-slate-700 shadow-sm">
-                            <div class="flex justify-between items-end mb-1">
-                                <span class="font-black text-gray-900 dark:text-white text-lg">${esc(r.name)}</span>
-                                <span class="text-[9px] text-gray-400 font-bold uppercase tracking-wider">${dateStr}</span>
+                        <article class="bg-white p-6 rounded-[1.5rem] border border-gray-100 shadow-sm">
+                            <div class="flex justify-between items-start gap-3 mb-1">
+                                <h4 class="font-black text-gray-900 break-words min-w-0">${esc(review.name)}</h4>
+                                <span class="text-xs text-gray-500 shrink-0">${date}</span>
                             </div>
-                            ${generateStarsHtml(Math.min(5, parseInt(r.rating) || 5))}
-                            <p class="text-gray-600 dark:text-gray-300 text-sm font-medium whitespace-pre-line">${esc(r.text)}</p>
-                        </div>`;
+                            ${generateStarsHtml(review.rating)}
+                            <p class="text-gray-600 text-sm font-medium whitespace-pre-line break-words">${esc(review.text)}</p>
+                        </article>`;
                     }).join('');
+                    reviewsState.hidden = true;
                 } catch (error) {
-                    list.innerHTML = '<div class="text-center mt-12 text-red-500 w-full col-span-full">Помилка завантаження відгуків (Перевірте Rules)</div>';
+                    if (request !== reviewsRequest) return;
+                    reviewsStatus.textContent = 'Не вдалося завантажити відгуки.';
+                    retryReviews.hidden = false;
                     console.error(error);
                 }
             }
+
+            retryReviews.onclick = loadReviewsFromDB;
 
             document.getElementById('btn-show-add-review').onclick = () => { 
                 modalReview.classList.remove('hidden-view'); 
