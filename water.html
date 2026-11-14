@@ -112,7 +112,7 @@
             </div>
             <h1 class="text-3xl sm:text-5xl md:text-6xl font-black text-brand-dark leading-tight tracking-tight mb-4">
                 Безкоштовна доставка <br>
-                <span class="text-brand-light">ідеальної води</span> до дверей
+                <span class="text-brand-light">питної води</span> до дверей
             </h1>
             <p class="text-base sm:text-lg text-slate-500 font-medium max-w-xl mx-auto">
                 Природна питна вода <b>по місту Дніпро</b>. Оформіть замовлення за 30 секунд — ми привеземо у зручний для вас час.
@@ -127,24 +127,27 @@
                     <label class="block text-sm font-bold text-slate-400 uppercase tracking-wider mb-4">Оберіть кількість (18.9 л)</label>
                     
                     <div class="flex items-center justify-center gap-6">
-                        <button type="button" onclick="decreaseQty()" class="w-14 h-14 rounded-full bg-slate-50 border-2 border-slate-100 flex items-center justify-center text-3xl text-slate-400 hover:text-brand-dark hover:border-slate-200 active:scale-95 transition-all">
+                        <button type="button" aria-label="Зменшити кількість бутлів" onclick="decreaseQty()" class="w-14 h-14 rounded-full bg-slate-50 border-2 border-slate-100 flex items-center justify-center text-3xl text-slate-400 hover:text-brand-dark hover:border-slate-200 active:scale-95 transition-all">
                             −
                         </button>
                         
                         <div class="w-20 text-center">
-                            <span id="display-qty" class="text-5xl font-black text-brand-dark">2</span>
-                            <span class="block text-xs font-bold text-slate-400 mt-1 uppercase" id="qty-label">бутелі</span>
+                            <span id="display-qty" class="text-5xl font-black text-brand-dark">1</span>
+                            <span class="block text-xs font-bold text-slate-400 mt-1 uppercase" id="qty-label">бутль</span>
                         </div>
 
-                        <button type="button" onclick="increaseQty()" class="w-14 h-14 rounded-full bg-brand-light/10 border-2 border-brand-light/20 flex items-center justify-center text-3xl text-brand-light hover:bg-brand-light hover:text-white active:scale-95 transition-all shadow-glow">
+                        <button type="button" aria-label="Збільшити кількість бутлів" onclick="increaseQty()" class="w-14 h-14 rounded-full bg-brand-light/10 border-2 border-brand-light/20 flex items-center justify-center text-3xl text-brand-light hover:bg-brand-light hover:text-white active:scale-95 transition-all shadow-glow">
                             +
                         </button>
                     </div>
 
                     <div class="mt-6 flex items-center justify-between bg-slate-50 rounded-2xl p-4">
-                        <span class="text-slate-500 font-medium">До сплати:</span>
-                        <div class="flex items-baseline gap-1">
-                            <span id="total-price" class="text-2xl font-black text-brand-dark">200</span>
+                        <div class="text-left">
+                            <div class="text-slate-500 font-medium">До сплати:</div>
+                            <div class="text-xs text-slate-500">100 грн за бутель</div>
+                        </div>
+                        <div role="status" aria-label="Сума до сплати" class="flex items-baseline gap-1">
+                            <span id="total-price" class="text-2xl font-black text-brand-dark">100</span>
                             <span class="text-slate-500 font-bold">₴</span>
                         </div>
                     </div>
@@ -262,7 +265,7 @@
 
     function updateUI() {
         displayQty.innerText = currentQty;
-        totalPrice.innerText = currentQty === 1 ? 100 : currentQty * 90; // логика скидки от количества, как в приложении
+        totalPrice.innerText = currentQty * UNIT_PRICE;
         
         const lastDigit = currentQty % 10;
         const lastTwoDigits = currentQty % 100;
@@ -302,7 +305,7 @@
             phone: phoneVal,
             address: addressVal,
             quantity: currentQty,
-            totalPrice: currentQty === 1 ? 100 : currentQty * 90,
+            totalPrice: currentQty * UNIT_PRICE,
             status: 'processing',
             timestamp: currentTimestamp,
             source: 'landing_page'
