@@ -3,7 +3,7 @@
 from html import escape
 from json import dumps
 from pathlib import Path
-from urllib.parse import urlencode
+from urllib.parse import quote, urlencode
 from xml.etree import ElementTree as ET
 
 from posts import POSTS
@@ -127,7 +127,7 @@ def share_panel(title, canonical):
             <h2>Поділитися статтею</h2>
             <div class="share-links">
                 {links}
-                <a href="viber://forward?{escape(urlencode({'text': caption}))}">Viber</a>
+                <a href="viber://forward?text={quote(caption, safe='')}">Viber</a>
                 <button type="button" data-copy-link>Копіювати посилання</button>
             </div>
             <input class="copy-input" type="url" value="{canonical}" readonly hidden aria-label="Посилання на статтю">
